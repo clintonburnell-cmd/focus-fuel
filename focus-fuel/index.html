@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Focus Fuel</title>
+<style>
+  :root{
+    --bg-top:#eef5ee;
+    --bg-bottom:#dcebe0;
+    --card:#ffffff;
+    --ink:#1f2a24;
+    --muted:#6b7d72;
+    --accent:#3f9142;
+    --accent-dark:#2c6b2f;
+    --break-accent:#3f7fa1;
+    --break-accent-dark:#2c5e78;
+    --ring-track:#e2ece2;
+    --pot:#b5651d;
+    --pot-dark:#8a4a15;
+    --shadow: 0 20px 50px -20px rgba(31,42,36,0.25);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg-top:#131c15;
+      --bg-bottom:#0c1310;
+      --card:#182019;
+      --ink:#e7f0e8;
+      --muted:#8fa397;
+      --ring-track:#253026;
+      --shadow: 0 20px 50px -20px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg-top:#131c15;
+    --bg-bottom:#0c1310;
+    --card:#182019;
+    --ink:#e7f0e8;
+    --muted:#8fa397;
+    --ring-track:#253026;
+    --shadow: 0 20px 50px -20px rgba(0,0,0,0.6);
+  }
+  :root[data-theme="light"]{
+    --bg-top:#eef5ee;
+    --bg-bottom:#dcebe0;
+    --card:#ffffff;
+    --ink:#1f2a24;
+    --muted:#6b7d72;
+    --ring-track:#e2ece2;
+    --shadow: 0 20px 50px -20px rgba(31,42,36,0.25);
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; margin:0; overflow-x:hidden; }
+  body{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: radial-gradient(circle at 50% -10%, var(--bg-top), var(--bg-bottom));
+    color: var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+  }
+
+  .app{
+    width:100%;
+    max-width: 420px;
+    background: var(--card);
+    border-radius: 28px;
+    box-shadow: var(--shadow);
+    padding: 32px 28px 28px;
+    text-align:center;
+    transition: background 0.4s ease;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    font-weight:700;
+    font-size: 15px;
+    letter-spacing:0.02em;
+    color: var(--muted);
+    margin-bottom: 18px;
+    text-transform: uppercase;
+  }
+  .brand .dot{
+    width:8px; height:8px; border-radius:50%;
+    background: var(--accent);
+  }
+
+  .mode-toggle{
+    display:inline-flex;
+    background: var(--ring-track);
+    border-radius: 999px;
+    padding: 4px;
+    margin-bottom: 22px;
+    gap:4px;
+  }
+  .mode-toggle button{
+    border:none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor:pointer;
+    transition: all 0.25s ease;
+  }
+  .mode-toggle button.active{
+    background: var(--accent);
+    color: white;
+  }
+  body.break-mode .mode-toggle button.active{
+    background: var(--break-accent);
+  }
+
+  .stage{
+    position:relative;
+    width: 260px;
+    height: 260px;
+    margin: 0 auto 20px;
+  }
+
+  svg.ring{
+    position:absolute; inset:0;
+    transform: rotate(-90deg);
+  }
+  .ring-track{ fill:none; stroke:var(--ring-track); stroke-width:10; }
+  .ring-progress{
+    fill:none;
+    stroke: var(--accent);
+    stroke-width:10;
+    stroke-linecap:round;
+    transition: stroke-dashoffset 0.3s linear, stroke 0.4s ease;
+  }
+  body.break-mode .ring-progress{ stroke: var(--break-accent); }
+
+  .plant-wrap{
+    position:absolute;
+    inset: 0;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    padding-bottom: 28px;
+  }
+
+  #plantSvg{
+    width: 150px;
+    height: 170px;
+    overflow:visible;
+  }
+
+  .stem{
+    fill:none;
+    stroke: var(--accent);
+    stroke-width: 5;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.4s ease, stroke 0.6s ease;
+  }
+  .leaf{
+    fill: var(--accent);
+    opacity:0;
+    transform-origin: center;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .leaf.show{ opacity:1; transform: scale(1); }
+  .leaf{ transform: scale(0.2); }
+
+  .flower{
+    opacity:0;
+    transform: scale(0.2);
+    transform-origin: center;
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.34,1.56,.64,1);
+  }
+  .flower.show{ opacity:1; transform: scale(1); }
+
+  .pot{ fill: var(--pot); }
+  .pot-rim{ fill: var(--pot-dark); }
+
+  .plant-group.wilting{
+    animation: wilt 0.9s ease forwards;
+  }
+  @keyframes wilt{
+    0%{ transform: rotate(0deg); opacity:1; }
+    60%{ transform: rotate(35deg) translateY(4px); opacity:0.7; }
+    100%{ transform: rotate(55deg) translateY(10px); opacity:0; }
+  }
+
+  .timer{
+    font-size: 44px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .session-label{
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 22px;
+    min-height: 16px;
+  }
+
+  .controls{
+    display:flex;
+    gap: 10px;
+    justify-content:center;
+    margin-bottom: 20px;
+  }
+  .controls button{
+    border:none;
+    cursor:pointer;
+    font-weight:600;
+    font-size: 14px;
+    border-radius: 14px;
+    padding: 12px 20px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+  }
+  .controls button:active{ transform: scale(0.96); }
+  .btn-primary{
+    background: var(--accent);
+    color:white;
+    flex:1;
+  }
+  body.break-mode .btn-primary{ background: var(--break-accent); }
+  .btn-secondary{
+    background: var(--ring-track);
+    color: var(--ink);
+  }
+  .btn-secondary:disabled{ opacity:0.5; cursor:not-allowed; }
+
+  .stats{
+    display:flex;
+    justify-content:space-around;
+    padding-top: 18px;
+    border-top: 1px solid var(--ring-track);
+  }
+  .stat{ text-align:center; }
+  .stat .num{ font-size:20px; font-weight:700; }
+  .stat .label{ font-size: 11px; color: var(--muted); text-transform:uppercase; letter-spacing:0.04em; margin-top:2px; }
+
+  .settings{
+    display:flex;
+    justify-content:center;
+    gap: 18px;
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .settings label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .settings input{
+    width: 46px;
+    padding: 4px 6px;
+    border-radius: 8px;
+    border: 1px solid var(--ring-track);
+    background: transparent;
+    color: var(--ink);
+    font-size: 12px;
+    text-align:center;
+  }
+  .settings input:disabled{ opacity:0.5; }
+</style>
+</head>
+<body>
+
+  <div class="app">
+    <div class="brand"><span class="dot"></span> Focus Fuel</div>
+
+    <div class="mode-toggle">
+      <button id="modeFocusBtn" class="active" data-mode="focus">Focus</button>
+      <button id="modeBreakBtn" data-mode="break">Break</button>
+    </div>
+
+    <div class="stage">
+      <svg class="ring" viewBox="0 0 260 260">
+        <circle class="ring-track" cx="130" cy="130" r="115"></circle>
+        <circle id="ringProgress" class="ring-progress" cx="130" cy="130" r="115"></circle>
+      </svg>
+
+      <div class="plant-wrap">
+        <svg id="plantSvg" viewBox="0 0 150 170">
+          <g class="plant-group" id="plantGroup">
+            <!-- pot -->
+            <path class="pot" d="M40 150 L110 150 L102 168 L48 168 Z"></path>
+            <rect class="pot-rim" x="36" y="142" width="78" height="12" rx="4"></rect>
+
+            <!-- stem: total length ~90, from (75,148) up to (75,58) -->
+            <path id="stem" class="stem" d="M75 148 C 75 120, 75 90, 75 58"
+                  stroke-dasharray="95" stroke-dashoffset="95"></path>
+
+            <!-- leaves -->
+            <ellipse id="leaf1" class="leaf" cx="58" cy="118" rx="16" ry="8" transform="rotate(-25 58 118)"></ellipse>
+            <ellipse id="leaf2" class="leaf" cx="92" cy="118" rx="16" ry="8" transform="rotate(25 92 118)"></ellipse>
+            <ellipse id="leaf3" class="leaf" cx="55" cy="88" rx="15" ry="7" transform="rotate(-30 55 88)"></ellipse>
+            <ellipse id="leaf4" class="leaf" cx="95" cy="88" rx="15" ry="7" transform="rotate(30 95 88)"></ellipse>
+
+            <!-- flower -->
+            <g id="flower" class="flower" transform="translate(75 52)">
+              <circle cx="0" cy="0" r="7" fill="#ffd35c"></circle>
+              <circle cx="0" cy="-11" r="7" fill="#ff9fb2"></circle>
+              <circle cx="10" cy="-5" r="7" fill="#ff9fb2"></circle>
+              <circle cx="10" cy="6" r="7" fill="#ff9fb2"></circle>
+              <circle cx="0" cy="11" r="7" fill="#ff9fb2"></circle>
+              <circle cx="-10" cy="6" r="7" fill="#ff9fb2"></circle>
+              <circle cx="-10" cy="-5" r="7" fill="#ff9fb2"></circle>
+            </g>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="timer" id="timerDisplay">25:00</div>
+    <div class="session-label" id="sessionLabel">Ready to grow something?</div>
+
+    <div class="controls">
+      <button class="btn-primary" id="startPauseBtn">Start</button>
+      <button class="btn-secondary" id="resetBtn">Reset</button>
+    </div>
+
+    <div class="settings">
+      <label>Focus <input id="focusInput" type="number" min="1" max="90" value="25"></label>
+      <label>Break <input id="breakInput" type="number" min="1" max="30" value="5"></label>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="num" id="plantsToday">0</div><div class="label">Today</div></div>
+      <div class="stat"><div class="num" id="plantsTotal">0</div><div class="label">Total Grown</div></div>
+      <div class="stat"><div class="num" id="wiltedTotal">0</div><div class="label">Wilted</div></div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const RADIUS = 115;
+  const CIRC = 2 * Math.PI * RADIUS;
+  const ring = document.getElementById('ringProgress');
+  ring.style.strokeDasharray = CIRC;
+  ring.style.strokeDashoffset = CIRC;
+
+  const timerDisplay = document.getElementById('timerDisplay');
+  const sessionLabel = document.getElementById('sessionLabel');
+  const startPauseBtn = document.getElementById('startPauseBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const modeFocusBtn = document.getElementById('modeFocusBtn');
+  const modeBreakBtn = document.getElementById('modeBreakBtn');
+  const focusInput = document.getElementById('focusInput');
+  const breakInput = document.getElementById('breakInput');
+  const plantsTodayEl = document.getElementById('plantsToday');
+  const plantsTotalEl = document.getElementById('plantsTotal');
+  const wiltedTotalEl = document.getElementById('wiltedTotal');
+
+  const stem = document.getElementById('stem');
+  const leaves = [
+    document.getElementById('leaf1'),
+    document.getElementById('leaf2'),
+    document.getElementById('leaf3'),
+    document.getElementById('leaf4'),
+  ];
+  const flower = document.getElementById('flower');
+  const plantGroup = document.getElementById('plantGroup');
+  const plantSvg = document.getElementById('plantSvg');
+
+  const STEM_LEN = 95;
+
+  let mode = 'focus'; // 'focus' | 'break'
+  let running = false;
+  let totalSeconds = parseInt(focusInput.value,10) * 60;
+  let secondsLeft = totalSeconds;
+  let tickHandle = null;
+
+  const STORE_KEY = 'focusFuelStats';
+  function loadStats(){
+    try{
+      const raw = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+      const today = new Date().toDateString();
+      if(raw.date !== today){
+        raw.date = today;
+        raw.today = 0;
+      }
+      raw.total = raw.total || 0;
+      raw.wilted = raw.wilted || 0;
+      raw.today = raw.today || 0;
+      return raw;
+    }catch(e){
+      return { date: new Date().toDateString(), today:0, total:0, wilted:0 };
+    }
+  }
+  let stats = loadStats();
+  function saveStats(){ localStorage.setItem(STORE_KEY, JSON.stringify(stats)); }
+  function renderStats(){
+    plantsTodayEl.textContent = stats.today;
+    plantsTotalEl.textContent = stats.total;
+    wiltedTotalEl.textContent = stats.wilted;
+  }
+  renderStats();
+
+  function fmt(s){
+    const m = Math.floor(s/60).toString().padStart(2,'0');
+    const ss = Math.floor(s%60).toString().padStart(2,'0');
+    return m+':'+ss;
+  }
+
+  function updatePlant(progress){
+    // progress 0..1
+    const offset = STEM_LEN - (STEM_LEN * Math.min(progress / 0.85, 1));
+    stem.style.strokeDashoffset = Math.max(offset, 0);
+
+    const thresholds = [0.15, 0.35, 0.55, 0.75];
+    leaves.forEach((leaf, i) => {
+      if(progress >= thresholds[i]) leaf.classList.add('show');
+      else leaf.classList.remove('show');
+    });
+
+    if(progress >= 1) flower.classList.add('show');
+    else flower.classList.remove('show');
+  }
+
+  function resetPlantVisual(){
+    plantGroup.classList.remove('wilting');
+    stem.style.strokeDashoffset = STEM_LEN;
+    leaves.forEach(l => l.classList.remove('show'));
+    flower.classList.remove('show');
+  }
+
+  function wiltPlant(){
+    plantGroup.classList.add('wilting');
+    stats.wilted += 1;
+    saveStats();
+    renderStats();
+    setTimeout(() => { resetPlantVisual(); }, 950);
+  }
+
+  function updateRing(){
+    const progress = 1 - (secondsLeft / totalSeconds);
+    const offset = CIRC * (1 - progress);
+    ring.style.strokeDashoffset = offset;
+    if(mode === 'focus') updatePlant(progress);
+  }
+
+  function updateDisplay(){
+    timerDisplay.textContent = fmt(secondsLeft);
+    updateRing();
+  }
+
+  function setMode(newMode, opts){
+    opts = opts || {};
+    if(running && !opts.force) return; // don't allow switching mid-run via toggle
+    mode = newMode;
+    document.body.classList.toggle('break-mode', mode === 'break');
+    modeFocusBtn.classList.toggle('active', mode === 'focus');
+    modeBreakBtn.classList.toggle('active', mode === 'break');
+    totalSeconds = (mode === 'focus' ? parseInt(focusInput.value,10) : parseInt(breakInput.value,10)) * 60;
+    secondsLeft = totalSeconds;
+    focusInput.disabled = running;
+    breakInput.disabled = running;
+    if(mode === 'focus'){
+      resetPlantVisual();
+      sessionLabel.textContent = 'Ready to grow something?';
+    } else {
+      sessionLabel.textContent = 'Take a breather.';
+    }
+    updateDisplay();
+  }
+
+  function playChime(){
+    try{
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const notes = mode === 'focus' ? [660, 880] : [520, 660];
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.value = 0.0001;
+        osc.connect(gain); gain.connect(ctx.destination);
+        const start = ctx.currentTime + i*0.16;
+        gain.gain.exponentialRampToValueAtTime(0.15, start+0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start+0.4);
+        osc.start(start); osc.stop(start+0.45);
+      });
+    }catch(e){ /* audio not available, ignore */ }
+  }
+
+  function tick(){
+    secondsLeft -= 1;
+    if(secondsLeft <= 0){
+      secondsLeft = 0;
+      updateDisplay();
+      finishSession();
+      return;
+    }
+    updateDisplay();
+  }
+
+  function finishSession(){
+    stopTimer();
+    playChime();
+    if(mode === 'focus'){
+      stats.today += 1;
+      stats.total += 1;
+      saveStats();
+      renderStats();
+      sessionLabel.textContent = 'Grown! Time for a break.';
+      setMode('break', { force:true });
+    } else {
+      sessionLabel.textContent = 'Break over. New pot, new plant.';
+      setMode('focus', { force:true });
+    }
+    startPauseBtn.textContent = 'Start';
+  }
+
+  function startTimer(){
+    running = true;
+    focusInput.disabled = true;
+    breakInput.disabled = true;
+    startPauseBtn.textContent = 'Pause';
+    sessionLabel.textContent = mode === 'focus' ? 'Growing…' : 'Breathing…';
+    tickHandle = setInterval(tick, 1000);
+  }
+
+  function stopTimer(){
+    running = false;
+    clearInterval(tickHandle);
+    startPauseBtn.textContent = 'Start';
+    focusInput.disabled = false;
+    breakInput.disabled = false;
+  }
+
+  startPauseBtn.addEventListener('click', () => {
+    if(running){
+      stopTimer();
+      sessionLabel.textContent = 'Paused';
+    } else {
+      if(secondsLeft <= 0){ secondsLeft = totalSeconds; }
+      startTimer();
+    }
+  });
+
+  resetBtn.addEventListener('click', () => {
+    const wasRunningFocusMidway = mode === 'focus' && secondsLeft > 0 && secondsLeft < totalSeconds;
+    stopTimer();
+    secondsLeft = totalSeconds;
+    updateDisplay();
+    if(wasRunningFocusMidway){
+      wiltPlant();
+      sessionLabel.textContent = 'Wilted. Try again?';
+    } else {
+      resetPlantVisual();
+      sessionLabel.textContent = mode === 'focus' ? 'Ready to grow something?' : 'Take a breather.';
+    }
+  });
+
+  modeFocusBtn.addEventListener('click', () => setMode('focus'));
+  modeBreakBtn.addEventListener('click', () => setMode('break'));
+
+  focusInput.addEventListener('change', () => {
+    let v = Math.min(90, Math.max(1, parseInt(focusInput.value,10) || 25));
+    focusInput.value = v;
+    if(mode === 'focus' && !running){ totalSeconds = v*60; secondsLeft = totalSeconds; updateDisplay(); }
+  });
+  breakInput.addEventListener('change', () => {
+    let v = Math.min(30, Math.max(1, parseInt(breakInput.value,10) || 5));
+    breakInput.value = v;
+    if(mode === 'break' && !running){ totalSeconds = v*60; secondsLeft = totalSeconds; updateDisplay(); }
+  });
+
+  updateDisplay();
+})();
+</script>
+</body>
+</html>
