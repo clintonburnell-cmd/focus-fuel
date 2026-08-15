@@ -223,14 +223,67 @@ svg.spine { width: 100%; max-width: 256px; height: auto; display: block; touch-a
 .seg.is-selected .bone { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.8; }
 .seg.is-selected .spinous { fill: var(--accent); stroke: var(--accent); }
 .seg.is-selected .lvl { fill: var(--accent); font-weight: 700; }
+.seg.is-focus .bone { stroke-width: 2.4; }
 .seg:focus { outline: none; }
 .seg:focus-visible .bone { stroke: var(--accent); stroke-width: 2.2; stroke-dasharray: 3 2; }
 
 .seg .hit { fill: transparent; }
 .seg .hit:hover { fill: var(--accent); fill-opacity: .09; }
+/* only the hit rects take pointer events — a transparent marker or a bone path
+   sitting above a neighbour's hit zone would otherwise swallow the click */
+.seg .bone, .seg .spinous, .seg .lvl, .dot, .pdot { pointer-events: none; }
 
 .dot { fill: var(--accent); stroke: var(--panel); stroke-width: 1.2; }
-.dot.left, .dot.right { fill: var(--accent-deep); }
+/* hollow ring = queued for this record; filled dot inside = already recorded */
+.pdot { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 2.4 2; }
+
+.sel-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin-bottom: 10px; padding: 7px 10px; border-radius: 7px;
+  border: 1px solid var(--line); background: var(--panel); font-size: 12px; color: var(--ink-3);
+  transition: border-color .13s, background .13s, color .13s;
+}
+.sel-bar.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-deep); font-weight: 600; }
+.sel-bar button { visibility: hidden; }
+.sel-bar.active button { visibility: visible; }
+
+.sel-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  border: 1px solid var(--accent); background: var(--accent-soft); color: var(--accent-deep);
+  border-radius: 999px; padding: 2px 3px 2px 9px; font-size: 12px;
+}
+.sel-chip .code { font-family: var(--mono); font-weight: 700; }
+.sel-chip .sd {
+  font-family: var(--mono); font-size: 10px; font-weight: 700; cursor: pointer;
+  border: 1px solid currentColor; background: transparent; color: inherit;
+  border-radius: 3px; padding: 0 4px; line-height: 1.5;
+}
+.sel-chip .sd:hover { background: var(--accent); color: var(--accent-on); border-color: var(--accent); }
+.sel-chip .x {
+  border: 0; background: transparent; color: inherit; cursor: pointer;
+  font-size: 14px; line-height: 1; padding: 2px 6px 3px; border-radius: 999px;
+}
+.sel-chip .x:hover { background: var(--alert-soft); color: var(--alert); }
+
+details.seg-eff { border: 1px solid var(--line); border-radius: 8px; background: var(--ground); margin-bottom: 8px; }
+details.seg-eff > summary {
+  cursor: pointer; padding: 10px 13px; display: flex; align-items: center; gap: 9px;
+  list-style: none; font-size: 13.5px;
+}
+details.seg-eff > summary::-webkit-details-marker { display: none; }
+details.seg-eff > summary::before {
+  content: "\25B8"; color: var(--accent); font-size: 12px; display: inline-block; transition: transform .15s;
+}
+details.seg-eff[open] > summary::before { transform: rotate(90deg); }
+details.seg-eff > summary:hover { color: var(--accent-deep); }
+details.seg-eff .code {
+  font-family: var(--mono); font-weight: 700; color: var(--accent-on); background: var(--accent);
+  border-radius: 4px; padding: 1px 6px; font-size: 12px;
+}
+details.seg-eff .sm { color: var(--ink-3); font-size: 12px; }
+details.seg-eff .body { padding: 0 13px 13px; }
+
+.hint-line { font-size: 12px; color: var(--ink-3); margin: 0 0 12px; }
 
 .region-band { font-family: var(--mono); font-size: 8.5px; letter-spacing: .12em; text-transform: uppercase; }
 .rail { stroke-width: 3; stroke-linecap: round; }
@@ -450,13 +503,23 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
       <div class="pane-head">
         <h2>Where you adjusted</h2>
       </div>
+
+      <div class="sel-bar" id="sel-bar">
+        <span id="sel-count">Nothing selected</span>
+        <button class="btn sm ghost" id="btn-clear-sel">Clear</button>
+      </div>
+
       <div class="spine-wrap">
         <svg class="spine" id="spine" viewBox="0 0 256 660" role="group" aria-label="Interactive spine chart"></svg>
       </div>
 
       <div class="side-key">
-        Click the <b>left wing</b>, <b>body</b>, or <b>right wing</b> of a segment to set the side of contact.
-        Arrow keys move between levels; <b>&larr;</b>/<b>&rarr;</b> change side.
+        Click a segment's <b>left wing</b>, <b>body</b>, or <b>right wing</b> to add it and set the side of contact.
+        Keep clicking to select <b>everything you adjusted today</b>; <b>shift-click</b> takes a whole run of levels.
+        Clicking the same side again removes it.
+        <br><br>
+        Keyboard: <b>&uarr;</b>/<b>&darr;</b> move, <b>space</b> selects, <b>shift</b>+<b>&uarr;</b>/<b>&darr;</b>
+        extends, <b>&larr;</b>/<b>&rarr;</b> change side, <b>enter</b> records.
       </div>
 
       <div class="legend">
@@ -464,7 +527,8 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
         <span><i style="background:var(--thor)"></i>Thoracic</span>
         <span><i style="background:var(--lumb)"></i>Lumbar</span>
         <span><i style="background:var(--sacr)"></i>Sacropelvic</span>
-        <span><i style="background:var(--accent);border-radius:999px"></i>Adjusted this visit</span>
+        <span><i style="background:var(--accent);border-radius:999px"></i>Recorded</span>
+        <span><i style="border:1.5px dashed var(--accent);border-radius:999px"></i>Selected, not yet recorded</span>
       </div>
     </section>
 
@@ -867,7 +931,19 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
       symptoms:"Sacroiliac conditions, spinal curvatures.",
       extra:["Sacral base correction changes the position of the lumbar spine above it — reassess lumbar findings after adjusting the sacrum rather than before."] },
 
-    { id:"ILI", name:"Ilium", sub:"Sacroiliac joint — left and right", region:"sacr",
+    { id:"SI-L", name:"Left sacroiliac joint", sub:"Left innominate", region:"sacr", blade:"L", fixedSide:"L",
+      motion:"Anterior and posterior innominate rotation, with inflare and outflare; the joint that couples the spine to the leg.",
+      roots:"Innervated segmentally from roughly L4–S3.",
+      derm:"Referral typically buttock, posterior thigh, and groin rather than a clean dermatome.",
+      myo:"Gluteus medius and maximus; piriformis.",
+      reflex:"—",
+      present:"Sacroiliac pain pointed to with one finger just medial to the PSIS; pain rolling in bed, climbing stairs, or standing from sitting; leg-length asymmetry on the table.",
+      supplies:"Hips, pelvis, buttocks, lower limb mechanics.",
+      symptoms:"Sacroiliac conditions, hip and buttock pain, sciatic-type leg pain.",
+      extra:["Correcting innominate rotation typically resolves the functional leg-length difference measured before the adjustment — record both measurements.",
+             "Reduces gluteal and piriformis guarding on the contacted side and restores symmetry of stance and step length."] },
+
+    { id:"SI-R", name:"Right sacroiliac joint", sub:"Right innominate", region:"sacr", blade:"R", fixedSide:"R",
       motion:"Anterior and posterior innominate rotation, with inflare and outflare; the joint that couples the spine to the leg.",
       roots:"Innervated segmentally from roughly L4–S3.",
       derm:"Referral typically buttock, posterior thigh, and groin rather than a clean dermatome.",
@@ -892,10 +968,10 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
   ];
 
   var REGION_META = {
-    cerv: { label: "Cervical",    color: "var(--cerv)" },
-    thor: { label: "Thoracic",    color: "var(--thor)" },
-    lumb: { label: "Lumbar",      color: "var(--lumb)" },
-    sacr: { label: "Sacropelvic", color: "var(--sacr)" }
+    cerv: { label: "Cervical",    short: "Cervical", color: "var(--cerv)" },
+    thor: { label: "Thoracic",    short: "Thoracic", color: "var(--thor)" },
+    lumb: { label: "Lumbar",      short: "Lumbar",   color: "var(--lumb)" },
+    sacr: { label: "Sacropelvic", short: "Pelvic",   color: "var(--sacr)" }
   };
 
   var LISTINGS = {
@@ -905,7 +981,8 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
     thor:["—", "PR", "PL", "PRS", "PLS", "PRI", "PLI", "PRS-T", "PLS-T", "Rib PI (posterior-inferior)", "Rib AS (anterior-superior)"],
     lumb:["—", "PR", "PL", "PRS", "PLS", "PRI", "PLI", "PRS-SP", "PLS-SP", "Anterior body"],
     SAC: ["—", "P-L (sacral base posterior left)", "P-R (sacral base posterior right)", "Base posterior", "Sacral apex anterior"],
-    ILI: ["—", "PI (posterior-inferior)", "AS (anterior-superior)", "In (inflare)", "Ex (outflare)", "PI-Ex", "AS-In"],
+    "SI-L": ["—", "PI (posterior-inferior)", "AS (anterior-superior)", "In (inflare)", "Ex (outflare)", "PI-Ex", "AS-In"],
+    "SI-R": ["—", "PI (posterior-inferior)", "AS (anterior-superior)", "In (inflare)", "Ex (outflare)", "PI-Ex", "AS-In"],
     COC: ["—", "Anterior", "Anterior-left", "Anterior-right"]
   };
 
@@ -954,9 +1031,10 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
   var STORE_KEY = "listingBoard.v1";
 
   var state = {
-    selected: null,           // level id
-    side: "C",                // L | C | R
-    draft: {},                // per-level working form values
+    selection: [],            // [{id, side}] — every segment queued to be recorded
+    focus: null,              // last segment touched; drives the single-segment view
+    draft: {},                // per-level form values (single-segment mode)
+    batch: null,              // shared form values (multi-segment mode)
     entries: [],              // recorded adjustments this visit
     noteTab: "clinical"
   };
@@ -964,6 +1042,35 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
   function levelById(id) {
     for (var i = 0; i < LEVELS.length; i++) if (LEVELS[i].id === id) return LEVELS[i];
     return null;
+  }
+
+  function levelIndex(id) {
+    for (var i = 0; i < LEVELS.length; i++) if (LEVELS[i].id === id) return i;
+    return -1;
+  }
+
+  /* --- selection set --------------------------------------- */
+
+  function selIndex(id) {
+    for (var i = 0; i < state.selection.length; i++) if (state.selection[i].id === id) return i;
+    return -1;
+  }
+  function isSelected(id) { return selIndex(id) > -1; }
+  function selSideOf(id) { var i = selIndex(id); return i > -1 ? state.selection[i].side : null; }
+  function sortSelection() {
+    state.selection.sort(function (a, b) { return levelIndex(a.id) - levelIndex(b.id); });
+  }
+
+  // Listings valid for every segment currently selected.
+  function commonListings() {
+    if (!state.selection.length) return ["—"];
+    var out = listingsFor(levelById(state.selection[0].id)).slice();
+    for (var i = 1; i < state.selection.length; i++) {
+      var set = listingsFor(levelById(state.selection[i].id));
+      out = out.filter(function (v) { return set.indexOf(v) > -1; });
+    }
+    if (out.indexOf("—") === -1) out.unshift("—");
+    return out;
   }
 
   function listingsFor(lv) {
@@ -976,9 +1083,32 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
   // "C1 (Atlas)" but plain "T4" — avoid printing the name twice when it equals the code
   function fullName(lv) { return lv.name === lv.id ? lv.id : lv.id + " (" + lv.name + ")"; }
 
+  // The SI joints carry their side in the level itself, so don't append it again.
+  function sideLabel(lv, side) { return lv && lv.fixedSide ? "" : sideWord(side); }
+  function withSide(lv, side, sep) {
+    var w = sideLabel(lv, side);
+    return w ? (sep || " ") + w.toLowerCase() : "";
+  }
+
+  function blankBatch() {
+    return {
+      listing: "—",
+      technique: TECHNIQUES[0].name,
+      position: POSITIONS[0],
+      part: [],
+      response: [],
+      notes: ""
+    };
+  }
+
+  function batchDraft() {
+    if (!state.batch) state.batch = blankBatch();
+    return state.batch;
+  }
+
   function blankDraft(lv) {
     return {
-      side: state.side,
+      side: "C",
       listing: listingsFor(lv)[0],
       technique: TECHNIQUES[0].name,
       position: POSITIONS[0],
@@ -1014,7 +1144,9 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
       var lv = LEVELS[i], h, bw, tp, gap;
       if (lv.id === "OCC")      { h = 24; bw = 104; tp = 0;  gap = 8; }
       else if (lv.id === "SAC") { h = 50; bw = 76;  tp = 30; gap = 4; }
-      else if (lv.id === "ILI") { h = 44; bw = 0;   tp = 46; gap = 4; y -= 54; }
+      // both SI blades flank the sacrum, so they share one row of vertical space
+      else if (lv.id === "SI-L") { h = 44; bw = 0;  tp = 46; gap = 4; y -= 54; }
+      else if (lv.id === "SI-R") { h = 44; bw = 0;  tp = 46; gap = 4; y -= 48; }
       else if (lv.id === "COC") { h = 16; bw = 22;  tp = 0;  gap = 4; y += 10; }
       else if (lv.region === "cerv") { h = 13; bw = 40 + i * 1.4; tp = 15; gap = 4; }
       else if (lv.region === "thor") { h = 15; bw = 52 + (i - 8) * 1.3; tp = 21; gap = 4; }
@@ -1066,13 +1198,11 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
           grp.appendChild(el("line", { x1: CX - 30 + s * 3, y1: top + s * (h / 4),
             x2: CX + 30 - s * 3, y2: top + s * (h / 4), stroke: "var(--bone-line)", "stroke-width": ".7", "stroke-opacity": ".65" }));
         }
-      } else if (lv.id === "ILI") {
+      } else if (lv.blade) {
+        var s = lv.blade === "L" ? -1 : 1;
         grp.appendChild(el("path", { class: "bone",
-          d: "M" + (CX - 42) + "," + top + " Q" + (CX - 74) + "," + (top + 14) + " " + (CX - 58) + "," + (top + h) +
-             " Q" + (CX - 40) + "," + (top + h + 6) + " " + (CX - 30) + "," + (top + h - 6) + " Z" }));
-        grp.appendChild(el("path", { class: "bone",
-          d: "M" + (CX + 42) + "," + top + " Q" + (CX + 74) + "," + (top + 14) + " " + (CX + 58) + "," + (top + h) +
-             " Q" + (CX + 40) + "," + (top + h + 6) + " " + (CX + 30) + "," + (top + h - 6) + " Z" }));
+          d: "M" + (CX + s * 42) + "," + top + " Q" + (CX + s * 74) + "," + (top + 14) + " " + (CX + s * 58) + "," + (top + h) +
+             " Q" + (CX + s * 40) + "," + (top + h + 6) + " " + (CX + s * 30) + "," + (top + h - 6) + " Z" }));
       } else if (lv.id === "COC") {
         grp.appendChild(el("path", { class: "bone",
           d: "M" + (CX - 8) + "," + top + " L" + (CX + 8) + "," + top + " L" + (CX + 3) + "," + (top + h) +
@@ -1090,26 +1220,39 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
           width: 6.4, height: h * 0.76, rx: 2 }));
       }
 
-      // level label
-      var lab = el("text", { class: "lvl", x: 18, y: top + h / 2 });
+      // Level label. The SI blades overlap the sacrum's row, so their labels drop
+      // below it — and the right one anchors to the right edge rather than running off it.
+      var labAttrs = { class: "lvl", x: 18, y: top + h / 2 };
+      if (lv.blade === "L") { labAttrs.y = top + h + 7; }
+      if (lv.blade === "R") { labAttrs.x = 250; labAttrs.y = top + h + 7; labAttrs["text-anchor"] = "end"; }
+      var lab = el("text", labAttrs);
       lab.textContent = lv.id;
       grp.appendChild(lab);
 
-      // side markers (populated on render)
-      grp.appendChild(el("circle", { class: "dot mL", cx: CX - half - gm.tp - 9, cy: top + h / 2, r: 3.4, opacity: 0 }));
-      grp.appendChild(el("circle", { class: "dot mC", cx: CX, cy: top + h / 2, r: 3.4, opacity: 0 }));
-      grp.appendChild(el("circle", { class: "dot mR", cx: CX + half + gm.tp + 9, cy: top + h / 2, r: 3.4, opacity: 0 }));
+      // markers: hollow ring = queued for this record, filled dot = already recorded
+      var mx = { L: CX - half - gm.tp - 9, C: CX, R: CX + half + gm.tp + 9 };
+      ["L", "C", "R"].forEach(function (k) {
+        grp.appendChild(el("circle", { class: "pdot p" + k, cx: mx[k], cy: top + h / 2, r: 5.6, opacity: 0 }));
+        grp.appendChild(el("circle", { class: "dot m" + k, cx: mx[k], cy: top + h / 2, r: 3.4, opacity: 0 }));
+      });
 
       // hit zones — left wing / body / right wing
       var hitTop = top - 2, hitH = h + 4;
       var reach = half + gm.tp + 14;
-      if (lv.id === "OCC" || lv.id === "ILI") reach = 78;
-      if (lv.id === "SAC") reach = 46;
+      if (lv.id === "OCC") reach = 78;
+      if (lv.id === "SAC") reach = 40;   // tiles against the ilium zones below
       if (lv.id === "COC") reach = 26;
 
-      grp.appendChild(el("rect", { class: "hit", "data-side": "L", x: CX - reach, y: hitTop, width: reach - 8, height: hitH }));
-      grp.appendChild(el("rect", { class: "hit", "data-side": "C", x: CX - 8, y: hitTop, width: 16, height: hitH }));
-      grp.appendChild(el("rect", { class: "hit", "data-side": "R", x: CX + 8, y: hitTop, width: reach - 8, height: hitH }));
+      if (lv.blade) {
+        // Each SI blade flanks the sacrum, so its hit zone must start outside the
+        // sacrum's own reach or it would cover it. One zone only — the joint is the side.
+        grp.appendChild(el("rect", { class: "hit", "data-side": lv.blade,
+          x: lv.blade === "L" ? CX - 84 : CX + 42, y: hitTop, width: 42, height: hitH }));
+      } else {
+        grp.appendChild(el("rect", { class: "hit", "data-side": "L", x: CX - reach, y: hitTop, width: reach - 8, height: hitH }));
+        grp.appendChild(el("rect", { class: "hit", "data-side": "C", x: CX - 8, y: hitTop, width: 16, height: hitH }));
+        grp.appendChild(el("rect", { class: "hit", "data-side": "R", x: CX + 8, y: hitTop, width: reach - 8, height: hitH }));
+      }
 
       svg.appendChild(grp);
     }
@@ -1119,7 +1262,7 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
       var grp = e.target.closest(".seg");
       if (!grp) return;
       var side = hit ? hit.getAttribute("data-side") : "C";
-      select(grp.getAttribute("data-id"), side);
+      pick(grp.getAttribute("data-id"), side, e.shiftKey);
       grp.focus();
     });
 
@@ -1128,23 +1271,27 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
       if (!grp) return;
       var id = grp.getAttribute("data-id");
       var idx = LEVELS.findIndex(function (l) { return l.id === id; });
+      var curSide = selSideOf(id) || "C";
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         e.preventDefault();
         var next = idx + (e.key === "ArrowDown" ? 1 : -1);
         if (next < 0 || next >= LEVELS.length) return;
         var target = document.querySelector('.seg[data-id="' + LEVELS[next].id + '"]');
         target.focus();
-        select(LEVELS[next].id, state.side);
+        // shift-arrow extends the selection, plain arrow just moves the cursor
+        if (e.shiftKey) pick(LEVELS[next].id, curSide, true);
       } else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
         e.preventDefault();
         var order = ["L", "C", "R"];
-        var si = order.indexOf(state.side);
-        si += (e.key === "ArrowRight" ? 1 : -1);
+        var si = order.indexOf(curSide) + (e.key === "ArrowRight" ? 1 : -1);
         if (si < 0) si = 0; if (si > 2) si = 2;
-        select(id, order[si]);
-      } else if (e.key === "Enter" || e.key === " ") {
+        if (isSelected(id)) setSideOf(id, order[si]); else pick(id, order[si], false);
+      } else if (e.key === " ") {
         e.preventDefault();
-        if (state.selected === id) recordEntry(); else select(id, state.side);
+        pick(id, curSide, false);            // space toggles this segment in or out
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        if (isSelected(id)) recordSelection(); else pick(id, curSide, false);
       }
     });
   }
@@ -1153,15 +1300,24 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
     var segs = document.querySelectorAll(".seg");
     for (var i = 0; i < segs.length; i++) {
       var id = segs[i].getAttribute("data-id");
-      segs[i].classList.toggle("is-selected", id === state.selected);
-      var sides = { L: 0, C: 0, R: 0 };
+      segs[i].classList.toggle("is-selected", isSelected(id));
+      segs[i].classList.toggle("is-focus", id === state.focus);
+
+      var rec = { L: 0, C: 0, R: 0 };
       for (var j = 0; j < state.entries.length; j++) {
-        if (state.entries[j].id === id) sides[state.entries[j].side] = 1;
+        if (state.entries[j].id === id) rec[state.entries[j].side] = 1;
       }
-      segs[i].querySelector(".mL").setAttribute("opacity", sides.L ? 1 : 0);
-      segs[i].querySelector(".mC").setAttribute("opacity", sides.C ? 1 : 0);
-      segs[i].querySelector(".mR").setAttribute("opacity", sides.R ? 1 : 0);
+      var pend = selSideOf(id);
+      ["L", "C", "R"].forEach(function (k) {
+        segs[i].querySelector(".m" + k).setAttribute("opacity", rec[k] ? 1 : 0);
+        segs[i].querySelector(".p" + k).setAttribute("opacity", pend === k ? 1 : 0);
+      });
     }
+    var n = state.selection.length;
+    var bar = document.getElementById("sel-bar");
+    document.getElementById("sel-count").textContent =
+      n === 0 ? "Nothing selected" : n + (n === 1 ? " segment selected" : " segments selected");
+    bar.classList.toggle("active", n > 0);
   }
 
   /* =========================================================
@@ -1179,50 +1335,173 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
     return "";
   }
 
-  function select(id, side) {
-    state.selected = id;
-    if (side) state.side = side;
-    var lv = levelById(id);
-    draftFor(lv).side = state.side;
+  /* Click a segment: adds it to the selection. Clicking the same side again
+     removes it; clicking a different side moves the contact to that side.
+     Shift-click selects the whole run between the last segment and this one. */
+  function pick(id, side, extend) {
+    side = levelById(id).fixedSide || side || "C";
+
+    if (extend && state.focus && state.focus !== id) {
+      var a = levelIndex(state.focus), b = levelIndex(id);
+      if (a > b) { var t = a; a = b; b = t; }
+      for (var i = a; i <= b; i++) {
+        if (selIndex(LEVELS[i].id) === -1) state.selection.push({ id: LEVELS[i].id, side: side });
+      }
+      state.focus = id;
+    } else {
+      var at = selIndex(id);
+      if (at === -1) {
+        state.selection.push({ id: id, side: side });
+        state.focus = id;
+      } else if (state.selection[at].side !== side) {
+        state.selection[at].side = side;          // same segment, different contact
+        state.focus = id;
+      } else {
+        state.selection.splice(at, 1);            // same side twice = deselect
+        if (state.focus === id) {
+          state.focus = state.selection.length ? state.selection[state.selection.length - 1].id : null;
+        }
+      }
+    }
+
+    sortSelection();
+    if (state.selection.length === 1) draftFor(levelById(state.selection[0].id)).side = state.selection[0].side;
     renderDetail();
     paintSpine();
   }
 
-  function renderDetail() {
-    var host = document.getElementById("detail");
-    if (!state.selected) return;
-    var lv = levelById(state.selected);
-    var d = draftFor(lv);
-    var rm = REGION_META[lv.region];
+  function setSideOf(id, side) {
+    var at = selIndex(id);
+    if (at === -1) return;
+    var lv = levelById(id);
+    if (lv.fixedSide) return;                 // the SI joints are their own side
+    state.selection[at].side = side;
+    if (state.selection.length === 1) draftFor(levelById(id)).side = side;
+    renderDetail();
+    paintSpine();
+  }
 
-    var listingOpts = listingsFor(lv).map(function (o) {
-      return '<option' + (o === d.listing ? " selected" : "") + '>' + esc(o) + "</option>";
+  function deselect(id) {
+    var at = selIndex(id);
+    if (at === -1) return;
+    state.selection.splice(at, 1);
+    if (state.focus === id) state.focus = state.selection.length ? state.selection[0].id : null;
+    renderDetail();
+    paintSpine();
+  }
+
+  function clearSelection() {
+    state.selection = [];
+    state.focus = null;
+    renderDetail();
+    paintSpine();
+  }
+
+  /* ---- shared form pieces, used by both the single and multi views ---- */
+
+  function techOptionsHTML(cur) {
+    return TECHNIQUES.map(function (t) {
+      return '<option' + (t.name === cur ? " selected" : "") + ">" + esc(t.name) + "</option>";
     }).join("");
-
-    var techOpts = TECHNIQUES.map(function (t) {
-      return '<option' + (t.name === d.technique ? " selected" : "") + '>' + esc(t.name) + "</option>";
+  }
+  function posOptionsHTML(cur) {
+    return POSITIONS.map(function (p) {
+      return '<option' + (p === cur ? " selected" : "") + ">" + esc(p) + "</option>";
     }).join("");
-
-    var posOpts = POSITIONS.map(function (p) {
-      return '<option' + (p === d.position ? " selected" : "") + '>' + esc(p) + "</option>";
+  }
+  function listingOptionsHTML(list, cur) {
+    return list.map(function (o) {
+      return '<option' + (o === cur ? " selected" : "") + ">" + esc(o) + "</option>";
     }).join("");
-
-    var partBoxes = PART_ITEMS.map(function (p) {
+  }
+  function partBoxesHTML(d) {
+    return PART_ITEMS.map(function (p) {
       var on = d.part.indexOf(p.k) > -1;
       return '<label class="check' + (on ? " on" : "") + '">' +
-             '<input type="checkbox" data-part="' + p.k + '"' + (on ? " checked" : "") + '>' +
-             '<span class="k">' + p.k + '</span>' + esc(p.label) + "</label>";
+             '<input type="checkbox" data-part="' + p.k + '"' + (on ? " checked" : "") + ">" +
+             '<span class="k">' + p.k + "</span>" + esc(p.label) + "</label>";
     }).join("");
-
-    var respBoxes = RESPONSES.map(function (r) {
+  }
+  function respBoxesHTML(d) {
+    return RESPONSES.map(function (r) {
       var on = d.response.indexOf(r) > -1;
       return '<label class="check' + (on ? " on" : "") + '">' +
              '<input type="checkbox" data-resp="' + esc(r) + '"' + (on ? " checked" : "") + ">" + esc(r) + "</label>";
     }).join("");
+  }
 
+  // The auto-populated "what this does" body for one level.
+  function effectsHTML(lv, technique) {
     var mech = REGION_EFFECTS[lv.region].concat(lv.extra || []);
-    var mechLis = mech.map(function (m) { return "<li>" + esc(m) + "</li>"; }).join("");
-    var flagLis = REGION_FLAGS[lv.region].map(function (f) { return "<li>" + esc(f) + "</li>"; }).join("");
+    return '<div class="eff"><h4>Segmental mechanics</h4>' +
+             '<p style="margin:0 0 8px"><b>Normal motion here:</b> ' + esc(lv.motion) + "</p><ul>" +
+             mech.map(function (m) { return "<li>" + esc(m) + "</li>"; }).join("") + "</ul></div>" +
+
+           '<div class="eff"><h4>Technique delivered</h4><p style="margin:0">' + esc(techEffect(technique)) + "</p></div>" +
+
+           '<div class="eff"><h4>Neurological territory of this level</h4><dl>' +
+             "<dt>Root</dt><dd>" + esc(lv.roots) + "</dd>" +
+             "<dt>Dermatome</dt><dd>" + esc(lv.derm) + "</dd>" +
+             "<dt>Myotome</dt><dd>" + esc(lv.myo) + "</dd>" +
+             "<dt>Reflex</dt><dd>" + esc(lv.reflex) + "</dd></dl></div>" +
+
+           '<div class="eff"><h4>Commonly presents as</h4><p style="margin:0">' + esc(lv.present) + "</p></div>" +
+
+           '<div class="eff traditional"><h4>Traditional chart association</h4>' +
+             "<dl><dt>Areas</dt><dd>" + esc(lv.supplies) + "</dd>" +
+             "<dt>Chart lists</dt><dd>" + esc(lv.symptoms) + "</dd></dl>" +
+             '<div class="note-inline">From the historical meric / spinal nerve chart. Long-standing chiropractic teaching, ' +
+             "not established physiological causation — carried into the patient handout with the same wording.</div></div>";
+  }
+
+  function cautionHTML(regions) {
+    var seen = [], html = "";
+    regions.forEach(function (r) {
+      if (seen.indexOf(r) > -1) return;
+      seen.push(r);
+      html += (regions.length > 1 || seen.length > 1 ? "<p style=\"margin:8px 0 4px\"><b>" + esc(REGION_META[r].label) + "</b></p>" : "") +
+              "<ul>" + REGION_FLAGS[r].map(function (f) { return "<li>" + esc(f) + "</li>"; }).join("") + "</ul>";
+    });
+    return '<div class="eff caution"><h4>Before you thrust here</h4>' + html + "</div>";
+  }
+
+  function selChipsHTML() {
+    return state.selection.map(function (s) {
+      var lv = levelById(s.id);
+      return '<span class="sel-chip" data-chip="' + esc(s.id) + '">' +
+               '<span class="code">' + esc(s.id) + "</span>" +
+               '<button type="button" class="sd" data-cycle="' + esc(s.id) + '" title="Change side of contact">' +
+                 esc(s.side) + "</button>" +
+               '<button type="button" class="x" data-drop="' + esc(s.id) + '" ' +
+                 'aria-label="Remove ' + esc(lv.name) + ' from selection">&times;</button>' +
+             "</span>";
+    }).join("");
+  }
+
+  /* ---- render ------------------------------------------------------- */
+
+  function renderDetail() {
+    var host = document.getElementById("detail");
+    var n = state.selection.length;
+
+    if (n === 0) {
+      host.innerHTML =
+        '<div class="empty"><h2>Select what you adjusted</h2>' +
+        "<p>Click any segment on the spine to add it. Keep clicking to build up everything you adjusted " +
+        "today — shift-click to take a whole run of levels at once. The segmental effect, neurological " +
+        "territory, and screening populate automatically for every segment you pick.</p></div>";
+      return;
+    }
+
+    if (n === 1) renderSingle(levelById(state.selection[0].id));
+    else renderBatch();
+  }
+
+  function renderSingle(lv) {
+    var host = document.getElementById("detail");
+    var d = draftFor(lv);
+    d.side = selSideOf(lv.id) || d.side;
+    var rm = REGION_META[lv.region];
 
     host.innerHTML =
       '<div class="seg-head">' +
@@ -1232,7 +1511,7 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
           "<p>" + esc(lv.sub) + "</p>" +
           '<div class="chips">' +
             '<span class="chip region" style="background:' + rm.color + '">' + esc(rm.label) + "</span>" +
-            '<span class="chip">Contact: ' + esc(sideWord(d.side)) + "</span>" +
+            (lv.fixedSide ? "" : '<span class="chip">Contact: ' + esc(sideWord(d.side)) + "</span>") +
             '<span class="chip">Root ' + esc(lv.roots.split("—")[0].trim().replace(/\.$/, "").slice(0, 22)) + "</span>" +
           "</div>" +
         "</div>" +
@@ -1246,72 +1525,110 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
               '<button type="button" data-side="L" aria-pressed="' + (d.side === "L") + '">Left</button>' +
               '<button type="button" data-side="C" aria-pressed="' + (d.side === "C") + '">Central</button>' +
               '<button type="button" data-side="R" aria-pressed="' + (d.side === "R") + '">Right</button>' +
-            "</div>" +
-          "</div>" +
-          '<div class="field"><label for="f-listing">Listing</label><select id="f-listing">' + listingOpts + "</select></div>" +
+            "</div></div>" +
+          '<div class="field"><label for="f-listing">Listing</label><select id="f-listing">' +
+            listingOptionsHTML(listingsFor(lv), d.listing) + "</select></div>" +
         "</div>" +
         '<div class="form-row">' +
-          '<div class="field grow"><label for="f-tech">Technique</label><select id="f-tech">' + techOpts + "</select></div>" +
-          '<div class="field"><label for="f-pos">Patient position</label><select id="f-pos">' + posOpts + "</select></div>" +
+          '<div class="field grow"><label for="f-tech">Technique</label><select id="f-tech">' +
+            techOptionsHTML(d.technique) + "</select></div>" +
+          '<div class="field"><label for="f-pos">Patient position</label><select id="f-pos">' +
+            posOptionsHTML(d.position) + "</select></div>" +
         "</div>" +
-        '<div class="field" style="margin-bottom:12px"><label>PART findings (CMS)</label><div class="checks">' + partBoxes + "</div></div>" +
-        '<div class="field" style="margin-bottom:12px"><label>Response to adjustment</label><div class="checks">' + respBoxes + "</div></div>" +
+        '<div class="field" style="margin-bottom:12px"><label>PART findings (CMS)</label>' +
+          '<div class="checks">' + partBoxesHTML(d) + "</div></div>" +
+        '<div class="field" style="margin-bottom:12px"><label>Response to adjustment</label>' +
+          '<div class="checks">' + respBoxesHTML(d) + "</div></div>" +
         '<div class="field"><label for="f-notes">Additional note for this segment</label>' +
-          '<input id="f-notes" type="text" placeholder="Contact point, line of drive, patient comment…" value="' + esc(d.notes) + '"></div>' +
-        '<div style="margin-top:14px;display:flex;gap:8px">' +
-          '<button class="btn primary" id="btn-record">Record ' + esc(lv.id) + " " + esc(sideWord(d.side).toLowerCase()) + "</button>" +
+          '<input id="f-notes" type="text" placeholder="Contact point, line of drive, patient comment…" value="' +
+          esc(d.notes) + '"></div>' +
+        '<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">' +
+          '<button class="btn primary" id="btn-record">Record ' + esc(lv.id) + " " +
+            esc(sideLabel(lv, d.side).toLowerCase()) + "</button>" +
           '<button class="btn" id="btn-clear-seg">Reset fields</button>' +
         "</div>" +
       "</div>" +
 
-      '<div class="card">' +
-        "<h3>What this adjustment does</h3>" +
-        '<div class="effects">' +
+      '<div class="card"><h3>What this adjustment does</h3>' +
+        '<div class="effects">' + effectsHTML(lv, d.technique) + cautionHTML([lv.region]) + "</div></div>";
 
-          '<div class="eff"><h4>Segmental mechanics</h4>' +
-            "<p style=\"margin:0 0 8px\"><b>Normal motion here:</b> " + esc(lv.motion) + "</p>" +
-            "<ul>" + mechLis + "</ul></div>" +
-
-          '<div class="eff"><h4>Technique delivered</h4><p style="margin:0">' + esc(techEffect(d.technique)) + "</p></div>" +
-
-          '<div class="eff"><h4>Neurological territory of this level</h4><dl>' +
-            "<dt>Root</dt><dd>" + esc(lv.roots) + "</dd>" +
-            "<dt>Dermatome</dt><dd>" + esc(lv.derm) + "</dd>" +
-            "<dt>Myotome</dt><dd>" + esc(lv.myo) + "</dd>" +
-            "<dt>Reflex</dt><dd>" + esc(lv.reflex) + "</dd>" +
-          "</dl></div>" +
-
-          '<div class="eff"><h4>Commonly presents as</h4><p style="margin:0">' + esc(lv.present) + "</p></div>" +
-
-          '<div class="eff traditional"><h4>Traditional chart association</h4>' +
-            "<dl><dt>Areas</dt><dd>" + esc(lv.supplies) + "</dd>" +
-            "<dt>Chart lists</dt><dd>" + esc(lv.symptoms) + "</dd></dl>" +
-            '<div class="note-inline">From the historical meric / spinal nerve chart. Long-standing chiropractic teaching, ' +
-            "not established physiological causation — carried into the patient handout with the same wording.</div></div>" +
-
-          '<div class="eff caution"><h4>Before you thrust here</h4><ul>' + flagLis + "</ul></div>" +
-        "</div>" +
-      "</div>";
-
-    wireDetail(lv, d);
+    wireSingle(lv, d);
   }
 
-  function wireDetail(lv, d) {
-    var seg = document.getElementById("side-seg");
-    seg.addEventListener("click", function (e) {
-      var b = e.target.closest("button[data-side]");
-      if (!b) return;
-      select(lv.id, b.getAttribute("data-side"));
+  function renderBatch() {
+    var host = document.getElementById("detail");
+    var b = batchDraft();
+    var n = state.selection.length;
+    var regions = state.selection.map(function (s) { return levelById(s.id).region; });
+    var labels = [];
+    regions.forEach(function (r) {
+      if (labels.indexOf(REGION_META[r].label) === -1) labels.push(REGION_META[r].label);
     });
 
-    document.getElementById("f-listing").addEventListener("change", function () { d.listing = this.value; });
-    document.getElementById("f-pos").addEventListener("change", function () { d.position = this.value; });
-    document.getElementById("f-notes").addEventListener("input", function () { d.notes = this.value; });
-    document.getElementById("f-tech").addEventListener("change", function () {
-      d.technique = this.value;
-      renderDetail(); // technique changes the auto-populated effect text
-    });
+    var common = commonListings();
+    if (common.indexOf(b.listing) === -1) b.listing = "—";
+    var mixedListings = common.length <= 1;
 
+    var perSegment = state.selection.map(function (s, i) {
+      var lv = levelById(s.id);
+      return '<details class="seg-eff"' + (i === 0 ? " open" : "") + ">" +
+               "<summary><span class=\"code\">" + esc(lv.id) + "</span> " + esc(lv.name) +
+                 ' <span class="sm">' + esc(sideLabel(lv, s.side).toLowerCase()) + "</span></summary>" +
+               '<div class="body"><div class="effects" style="margin-top:12px">' +
+                 effectsHTML(lv, b.technique) + "</div></div></details>";
+    }).join("");
+
+    host.innerHTML =
+      '<div class="seg-head">' +
+        '<div class="seg-code">' + n + "</div>" +
+        '<div class="seg-titles">' +
+          "<h2>" + n + " segments selected</h2>" +
+          "<p>" + esc(labels.join(", ")) + " — the settings below apply to all of them.</p>" +
+          '<div class="chips" id="sel-chips">' + selChipsHTML() + "</div>" +
+        "</div>" +
+      "</div>" +
+
+      '<div class="card">' +
+        "<h3>Record all " + n + " adjustments</h3>" +
+        '<div class="form-row">' +
+          '<div class="field grow"><label for="f-tech">Technique</label><select id="f-tech">' +
+            techOptionsHTML(b.technique) + "</select></div>" +
+          '<div class="field"><label for="f-pos">Patient position</label><select id="f-pos">' +
+            posOptionsHTML(b.position) + "</select></div>" +
+          '<div class="field"><label for="f-listing">Listing</label><select id="f-listing"' +
+            (mixedListings ? " disabled" : "") + ">" +
+            listingOptionsHTML(common, b.listing) + "</select></div>" +
+        "</div>" +
+        (mixedListings
+          ? '<p class="hint-line">These segments do not share a listing system, so listings stay blank. ' +
+            "Record them now, then click a single segment to set its listing individually.</p>"
+          : "") +
+        '<div class="field" style="margin-bottom:12px"><label>PART findings (CMS) — applied to every selected segment</label>' +
+          '<div class="checks">' + partBoxesHTML(b) + "</div></div>" +
+        '<div class="field" style="margin-bottom:12px"><label>Response to adjustment</label>' +
+          '<div class="checks">' + respBoxesHTML(b) + "</div></div>" +
+        '<div class="field"><label for="f-notes">Note applied to each segment</label>' +
+          '<input id="f-notes" type="text" placeholder="Optional — applies to all selected" value="' +
+          esc(b.notes) + '"></div>' +
+        '<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">' +
+          '<button class="btn primary" id="btn-record">Record all ' + n + "</button>" +
+          '<button class="btn" id="btn-clear-seg">Reset fields</button>' +
+          '<button class="btn ghost" id="btn-drop-all">Clear selection</button>' +
+        "</div>" +
+      "</div>" +
+
+      '<div class="card"><h3>What these adjustments do</h3>' +
+        '<p class="hint-line" style="margin-top:-4px">Open any segment to see its mechanics, neurology, and chart association. ' +
+        "All of it goes into the note whether or not you open it here.</p>" +
+        perSegment +
+        '<div class="effects" style="margin-top:12px">' + cautionHTML(regions) + "</div></div>";
+
+    wireBatch(b);
+  }
+
+  /* ---- wiring ------------------------------------------------------- */
+
+  function wireChecks(d) {
     var boxes = document.querySelectorAll("#detail input[type=checkbox]");
     for (var i = 0; i < boxes.length; i++) {
       boxes[i].addEventListener("change", function () {
@@ -1324,46 +1641,115 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
         this.parentNode.classList.toggle("on", this.checked);
       });
     }
+  }
 
-    document.getElementById("btn-record").addEventListener("click", recordEntry);
+  function wireSingle(lv, d) {
+    document.getElementById("side-seg").addEventListener("click", function (e) {
+      var btn = e.target.closest("button[data-side]");
+      if (btn) setSideOf(lv.id, btn.getAttribute("data-side"));
+    });
+    document.getElementById("f-listing").addEventListener("change", function () { d.listing = this.value; });
+    document.getElementById("f-pos").addEventListener("change", function () { d.position = this.value; });
+    document.getElementById("f-notes").addEventListener("input", function () { d.notes = this.value; });
+    document.getElementById("f-tech").addEventListener("change", function () {
+      d.technique = this.value;
+      renderDetail();                       // technique changes the auto-populated effect text
+    });
+    wireChecks(d);
+    document.getElementById("btn-record").addEventListener("click", recordSelection);
     document.getElementById("btn-clear-seg").addEventListener("click", function () {
       state.draft[lv.id] = blankDraft(lv);
+      state.draft[lv.id].side = selSideOf(lv.id) || "C";
       renderDetail();
     });
+  }
+
+  function wireBatch(b) {
+    var chips = document.getElementById("sel-chips");
+    chips.addEventListener("click", function (e) {
+      var cyc = e.target.closest("[data-cycle]");
+      if (cyc) {
+        var id = cyc.getAttribute("data-cycle");
+        var order = ["L", "C", "R"];
+        var next = order[(order.indexOf(selSideOf(id)) + 1) % 3];
+        setSideOf(id, next);
+        return;
+      }
+      var drop = e.target.closest("[data-drop]");
+      if (drop) deselect(drop.getAttribute("data-drop"));
+    });
+
+    var listing = document.getElementById("f-listing");
+    if (!listing.disabled) listing.addEventListener("change", function () { b.listing = this.value; });
+    document.getElementById("f-pos").addEventListener("change", function () { b.position = this.value; });
+    document.getElementById("f-notes").addEventListener("input", function () { b.notes = this.value; });
+    document.getElementById("f-tech").addEventListener("change", function () {
+      b.technique = this.value;
+      renderDetail();
+    });
+    wireChecks(b);
+    document.getElementById("btn-record").addEventListener("click", recordSelection);
+    document.getElementById("btn-clear-seg").addEventListener("click", function () {
+      state.batch = blankBatch();
+      renderDetail();
+    });
+    document.getElementById("btn-drop-all").addEventListener("click", clearSelection);
   }
 
   /* =========================================================
      5. ENTRIES + NOTE
      ========================================================= */
 
-  function recordEntry() {
-    if (!state.selected) return;
-    var lv = levelById(state.selected);
-    var d = draftFor(lv);
-
-    var entry = {
-      id: lv.id, name: lv.name, region: lv.region, side: d.side,
-      listing: d.listing, technique: d.technique, position: d.position,
+  // Build one entry from a selected segment. `shared` is the batch form when
+  // several segments are being recorded together.
+  function entryFor(sel, shared) {
+    var lv = levelById(sel.id);
+    var d = shared || draftFor(lv);
+    var listing = d.listing;
+    // a shared listing only carries to segments where it is actually valid
+    if (shared && listing !== "—" && listingsFor(lv).indexOf(listing) === -1) listing = "—";
+    return {
+      id: lv.id, name: lv.name, region: lv.region, side: sel.side,
+      listing: listing, technique: d.technique, position: d.position,
       part: d.part.slice(), response: d.response.slice(), notes: d.notes
     };
+  }
 
-    // replace an existing entry for the same level+side rather than duplicating
-    var replaced = false;
+  // Replace an existing entry for the same level+side rather than duplicating it.
+  function upsertEntry(entry) {
     for (var i = 0; i < state.entries.length; i++) {
       if (state.entries[i].id === entry.id && state.entries[i].side === entry.side) {
-        state.entries[i] = entry; replaced = true; break;
+        state.entries[i] = entry;
+        return true;
       }
     }
-    if (!replaced) state.entries.push(entry);
+    state.entries.push(entry);
+    return false;
+  }
 
-    state.entries.sort(function (a, b) {
-      return LEVELS.findIndex(function (l) { return l.id === a.id; }) -
-             LEVELS.findIndex(function (l) { return l.id === b.id; });
+  function recordSelection() {
+    if (!state.selection.length) return;
+    var shared = state.selection.length > 1 ? batchDraft() : null;
+    var added = 0, updated = 0;
+
+    state.selection.forEach(function (sel) {
+      if (upsertEntry(entryFor(sel, shared))) updated++; else added++;
     });
+
+    state.entries.sort(function (a, b) { return levelIndex(a.id) - levelIndex(b.id); });
 
     renderLog();
     paintSpine();
-    toast(entry.id + " " + sideWord(entry.side).toLowerCase() + (replaced ? " updated" : " recorded"));
+
+    if (state.selection.length === 1) {
+      var one = state.selection[0];
+      toast(one.id + withSide(levelById(one.id), one.side) + (updated ? " updated" : " recorded"));
+    } else {
+      var bits = [];
+      if (added) bits.push(added + " recorded");
+      if (updated) bits.push(updated + " updated");
+      toast(bits.join(", "));
+    }
   }
 
   function renderLog() {
@@ -1382,7 +1768,7 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
       state.entries.forEach(function (e) { byRegion[e.region]++; });
       stats.innerHTML = Object.keys(byRegion).map(function (r) {
         return '<div class="stat ' + r + '"><div class="n">' + byRegion[r] + '</div><div class="l">' +
-               REGION_META[r].label + "</div></div>";
+               REGION_META[r].short + "</div></div>";
       }).join("");
 
       list.innerHTML = state.entries.map(function (e, i) {
@@ -1392,7 +1778,7 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
         bits.push(e.position.toLowerCase());
         return '<div class="log-item">' +
           '<span class="lcode">' + esc(e.id) + "</span>" +
-          '<span class="lbody"><b>' + esc(e.name) + "</b> — " + esc(sideWord(e.side).toLowerCase()) +
+          '<span class="lbody"><b>' + esc(e.name) + "</b>" + esc(withSide(levelById(e.id), e.side, " — ")) +
           '<br><span class="lmeta">' + esc(bits.join(" · ")) + "</span></span>" +
           '<button class="lx" data-rm="' + i + '" title="Remove" aria-label="Remove ' + esc(e.id) + '">&times;</button>' +
           "</div>";
@@ -1439,7 +1825,7 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
     state.entries.forEach(function (e) {
       var found = PART_ITEMS.filter(function (p) { return e.part.indexOf(p.k) > -1; })
                             .map(function (p) { return p.k + " — " + p.label.toLowerCase(); });
-      L.push("  " + fullName(levelById(e.id)) + ", " + sideWord(e.side).toLowerCase() + ": " +
+      L.push("  " + fullName(levelById(e.id)) + withSide(levelById(e.id), e.side, ", ") + ": " +
              (found.length ? found.join("; ") : "no PART elements documented"));
     });
     L.push("");
@@ -1448,7 +1834,7 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
     L.push("  Regions adjusted: " + regionsTouched().join(", ") +
            "  (" + state.entries.length + " segment" + (state.entries.length === 1 ? "" : "s") + ")");
     state.entries.forEach(function (e, i) {
-      var line = "  " + (i + 1) + ". " + e.id + " " + sideWord(e.side).toLowerCase();
+      var line = "  " + (i + 1) + ". " + e.id + withSide(levelById(e.id), e.side);
       if (e.listing && e.listing !== "—") line += " — listing " + e.listing;
       line += " — " + e.technique + ", " + e.position.toLowerCase() + ".";
       L.push(line);
@@ -1502,7 +1888,7 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
     state.entries.forEach(function (e) {
       var lv = levelById(e.id);
       L.push("-------------------------------------------------------------");
-      L.push(fullName(lv) + "  —  " + sideWord(e.side).toLowerCase() + " side");
+      L.push(fullName(lv) + (lv.fixedSide ? "" : "  —  " + sideWord(e.side).toLowerCase() + " side"));
       L.push("");
       L.push("Where it is:  " + lv.sub);
       L.push("What it does: " + lv.motion);
@@ -1579,8 +1965,11 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
     }
     if (!match) { toast("No previous visit found"); return; }
     state.entries = JSON.parse(JSON.stringify(match.entries));
-    renderLog(); paintSpine();
-    if (state.selected) renderDetail();
+    // bring the same segments forward as a live selection, ready to re-record or amend
+    state.selection = match.entries.map(function (e) { return { id: e.id, side: e.side }; });
+    sortSelection();
+    state.focus = state.selection.length ? state.selection[0].id : null;
+    renderLog(); paintSpine(); renderDetail();
     toast("Loaded " + match.entries.length + " adjustments from " + (match.date || "the last visit"));
   }
 
@@ -1602,7 +1991,9 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
     document.getElementById("f-date").value = v.date || "";
     document.getElementById("f-provider").value = v.provider || "";
     state.entries = JSON.parse(JSON.stringify(v.entries));
-    renderLog(); paintSpine();
+    state.selection = [];
+    state.focus = null;
+    renderLog(); paintSpine(); renderDetail();
     toast("Loaded visit from " + (v.date || "storage"));
   }
 
@@ -1610,9 +2001,11 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
     if (state.entries.length && !window.confirm("Clear " + state.entries.length + " recorded adjustments and start a new visit?")) return;
     state.entries = [];
     state.draft = {};
+    state.batch = null;
+    state.selection = [];
+    state.focus = null;
     document.getElementById("f-date").value = new Date().toISOString().slice(0, 10);
-    renderLog(); paintSpine();
-    if (state.selected) renderDetail();
+    renderLog(); paintSpine(); renderDetail();
     toast("New visit started");
   }
 
@@ -1663,7 +2056,10 @@ footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
 
   drawSpine();
   renderLog();
+  renderDetail();
+  paintSpine();
   document.getElementById("f-date").value = new Date().toISOString().slice(0, 10);
+  document.getElementById("btn-clear-sel").addEventListener("click", clearSelection);
 
   document.getElementById("tab-clinical").addEventListener("click", function () {
     state.noteTab = "clinical";

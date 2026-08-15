@@ -20,11 +20,23 @@ be served as an artifact, and browsers render it correctly either way.
 
 ## What it covers
 
-- **28 levels** — occiput, C1–C7, T1–T12, L1–L5, sacrum, ilium (SI joints, left and right),
-  coccyx. Click a segment's left wing, body, or right wing to set the side of contact, or
-  drive the whole chart from the keyboard (up/down between levels, left/right for side).
+- **29 levels** — occiput, C1–C7, T1–T12, L1–L5, sacrum, left and right SI joints, coccyx.
+  Click a segment's left wing, body, or right wing to set the side of contact. The two SI
+  joints are separate selectable levels, so a bilateral SI adjustment records as two entries.
+- **Multi-segment selection.** Keep clicking to build up everything you adjusted that day;
+  shift-click takes a whole run of levels at once (say C5 through T2). With more than one
+  segment selected, technique, position, PART findings, response, and note apply to all of
+  them and "Record all" writes one entry per segment. Clicking the same side again removes
+  a segment; each selected segment shows as a chip you can re-side or drop.
+  Keyboard throughout: up/down to move, space to select, shift+up/down to extend,
+  left/right for side, enter to record.
+- **Shared listings are computed, not assumed.** In multi-segment mode the listing dropdown
+  offers only listings valid for every selected segment — pick C2–T12 and you get the
+  PR/PL/PRS/PLS/PRI/PLI family; include C1, whose atlas listings share nothing with the rest,
+  and listings stay blank rather than writing a meaningless one into the record.
 - **Listings** by region — Palmer/Gonstead atlas listings (ASRA/ASRP/ASLA/ASLP), the PR/PL/PRS/PLS
   family for cervical, thoracic and lumbar, rib listings, sacral base and innominate listings.
+  Set individually per segment in single-segment mode.
 - **11 techniques** — Diversified, Gonstead, toggle recoil, Thompson drop, Activator/instrument,
   flexion-distraction, mobilisation, muscle energy, SOT blocking, traction, soft tissue. Changing
   the technique changes the generated effect text.
