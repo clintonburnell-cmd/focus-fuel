@@ -374,10 +374,12 @@
   let secondsLeft = totalSeconds;
   let tickHandle = null;
 
-  const STORE_KEY = 'focusFuelStats';
+  const STORE_KEY = 'ClintDev';
+  const LEGACY_STORE_KEY = 'focusFuelStats';
   function loadStats(){
     try{
-      const raw = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+      const stored = localStorage.getItem(STORE_KEY) || localStorage.getItem(LEGACY_STORE_KEY) || '{}';
+      const raw = JSON.parse(stored);
       const today = new Date().toDateString();
       if(raw.date !== today){
         raw.date = today;

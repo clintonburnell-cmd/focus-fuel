@@ -24,10 +24,12 @@ dependencies, and no test suite. Run it by opening the file in a browser.
 
 ## State
 
-Stats persist in `localStorage` under the key `focusFuelStats`, shaped
+Stats persist in `localStorage` under the key `ClintDev`, shaped
 `{ date, today, total, wilted }`. `date` is a `toDateString()` value used to
-roll `today` over at midnight. `loadStats()` must stay tolerant of missing or
-malformed values — it is the only migration path for existing users.
+roll `today` over at midnight. `loadStats()` falls back to the previous key
+`focusFuelStats` when the current one is absent, so returning users keep their
+counts; it must also stay tolerant of missing or malformed values, since it is
+the only migration path for existing users.
 
 ## Verifying changes
 
