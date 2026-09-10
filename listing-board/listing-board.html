@@ -1,0 +1,2101 @@
+<title>Listing Board</title>
+
+<style>
+/* ============================================================
+   Listing Board — interactive spinal charting
+   Palette: radiograph slate ground, bone-ivory vertebrae,
+   teal accent, cool analogous ramp for spinal regions.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  /* --- light (default) --- */
+  --ground:      #F1F3F5;
+  --panel:       #FFFFFF;
+  --panel-2:     #E8ECF0;
+  --panel-3:     #DFE4EA;
+  --line:        #CFD6DE;
+  --line-soft:   #E2E7EC;
+  --ink:         #151A21;
+  --ink-2:       #46515E;
+  --ink-3:       #6F7B88;
+  --bone:        #E7E0D2;
+  --bone-2:      #D6CDB9;
+  --bone-line:   #A99E88;
+  --accent:      #0E7C7B;
+  --accent-deep: #0A5B5A;
+  --accent-soft: #D3ECEA;
+  --accent-on:   #FFFFFF;
+  --ok:          #2E7D52;
+  --ok-soft:     #DDF0E5;
+  --warn:        #8A5D04;
+  --warn-soft:   #F7EBD2;
+  --alert:       #AF212C;
+  --alert-soft:  #F8DEE0;
+  --cerv:        #0E7C7B;
+  --thor:        #2F6B9A;
+  --lumb:        #4B58A6;
+  --sacr:        #6E4E96;
+  --shadow:      0 1px 2px rgba(21,26,33,.06), 0 8px 24px -12px rgba(21,26,33,.18);
+  --ring:        0 0 0 3px var(--accent-soft);
+
+  --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --sans:  ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono:  ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #0F141A;
+    --panel:       #161D25;
+    --panel-2:     #1D262F;
+    --panel-3:     #24303B;
+    --line:        #2C3742;
+    --line-soft:   #212A33;
+    --ink:         #E6ECF2;
+    --ink-2:       #A7B4C0;
+    --ink-3:       #7A8794;
+    --bone:        #CDC4B0;
+    --bone-2:      #B2A88F;
+    --bone-line:   #857C6C;
+    --accent:      #3FBFB8;
+    --accent-deep: #8CE0D9;
+    --accent-soft: #10352F;
+    --accent-on:   #06201F;
+    --ok:          #5FBF88;
+    --ok-soft:     #14301F;
+    --warn:        #D9A63C;
+    --warn-soft:   #2E2510;
+    --alert:       #E8636E;
+    --alert-soft:  #38181C;
+    --cerv:        #3FBFB8;
+    --thor:        #6AA9DC;
+    --lumb:        #8E9BE8;
+    --sacr:        #B490DC;
+    --shadow:      0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+    --ring:        0 0 0 3px var(--accent-soft);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground:      #0F141A;
+  --panel:       #161D25;
+  --panel-2:     #1D262F;
+  --panel-3:     #24303B;
+  --line:        #2C3742;
+  --line-soft:   #212A33;
+  --ink:         #E6ECF2;
+  --ink-2:       #A7B4C0;
+  --ink-3:       #7A8794;
+  --bone:        #CDC4B0;
+  --bone-2:      #B2A88F;
+  --bone-line:   #857C6C;
+  --accent:      #3FBFB8;
+  --accent-deep: #8CE0D9;
+  --accent-soft: #10352F;
+  --accent-on:   #06201F;
+  --ok:          #5FBF88;
+  --ok-soft:     #14301F;
+  --warn:        #D9A63C;
+  --warn-soft:   #2E2510;
+  --alert:       #E8636E;
+  --alert-soft:  #38181C;
+  --cerv:        #3FBFB8;
+  --thor:        #6AA9DC;
+  --lumb:        #8E9BE8;
+  --sacr:        #B490DC;
+  --shadow:      0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { font-family: var(--serif); font-weight: 600; margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* ---------- shell ---------- */
+
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+
+.topbar {
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  padding: 12px 20px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  position: sticky; top: 0; z-index: 40;
+}
+
+.brand { display: flex; align-items: baseline; gap: 10px; margin-right: 4px; }
+.brand h1 { font-size: 19px; }
+.brand .tag {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-soft);
+  padding: 3px 7px; border-radius: 4px;
+}
+
+.visit-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex: 1 1 320px; }
+
+.field { display: flex; flex-direction: column; gap: 3px; }
+.field > label {
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.field input, .field select, .field textarea {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  padding: 6px 9px; min-width: 0;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); box-shadow: var(--ring); outline: none; }
+.field.w-name input { width: 168px; }
+.field.w-sm input, .field.w-sm select { width: 124px; }
+
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+.btn {
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+  border-radius: 6px; padding: 7px 12px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: background .12s, border-color .12s, transform .08s;
+}
+.btn:hover { background: var(--panel-2); border-color: var(--ink-3); }
+.btn:active { transform: translateY(1px); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-on); font-weight: 600; }
+.btn.primary:hover { background: var(--accent-deep); border-color: var(--accent-deep); }
+.btn.ghost { background: transparent; }
+.btn.sm { padding: 4px 9px; font-size: 12.5px; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+
+/* ---------- grid ---------- */
+
+.grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 292px minmax(0, 1fr) 400px;
+  gap: 0;
+  align-items: start;
+}
+.pane { padding: 18px; min-width: 0; }
+.pane.spine  { border-right: 1px solid var(--line); position: sticky; top: 61px; }
+.pane.detail { min-height: 60vh; }
+.pane.log    { border-left: 1px solid var(--line); background: var(--panel); min-height: calc(100vh - 61px); }
+
+@media (max-width: 1240px) {
+  .grid { grid-template-columns: 260px minmax(0, 1fr); }
+  .pane.log { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--line); min-height: 0; }
+}
+@media (max-width: 820px) {
+  .grid { grid-template-columns: 1fr; }
+  .pane.spine { position: static; border-right: 0; border-bottom: 1px solid var(--line); }
+}
+
+/* ---------- spine chart ---------- */
+
+.pane-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.pane-head h2 { font-size: 15px; }
+.pane-head .hint { font-size: 11.5px; color: var(--ink-3); }
+
+.spine-wrap { display: flex; justify-content: center; }
+svg.spine { width: 100%; max-width: 256px; height: auto; display: block; touch-action: manipulation; }
+
+.seg { cursor: pointer; }
+.seg .bone { fill: var(--bone); stroke: var(--bone-line); stroke-width: 1; transition: fill .13s, stroke .13s; }
+.seg .spinous { fill: var(--bone-2); stroke: var(--bone-line); stroke-width: .8; }
+.seg .lvl {
+  font-family: var(--mono); font-size: 9px; fill: var(--ink-3);
+  dominant-baseline: middle; letter-spacing: .02em;
+}
+.seg:hover .bone { fill: var(--panel-3); stroke: var(--ink-3); }
+.seg:hover .lvl { fill: var(--ink); }
+.seg.is-selected .bone { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.8; }
+.seg.is-selected .spinous { fill: var(--accent); stroke: var(--accent); }
+.seg.is-selected .lvl { fill: var(--accent); font-weight: 700; }
+.seg.is-focus .bone { stroke-width: 2.4; }
+.seg:focus { outline: none; }
+.seg:focus-visible .bone { stroke: var(--accent); stroke-width: 2.2; stroke-dasharray: 3 2; }
+
+.seg .hit { fill: transparent; }
+.seg .hit:hover { fill: var(--accent); fill-opacity: .09; }
+/* only the hit rects take pointer events — a transparent marker or a bone path
+   sitting above a neighbour's hit zone would otherwise swallow the click */
+.seg .bone, .seg .spinous, .seg .lvl, .dot, .pdot { pointer-events: none; }
+
+.dot { fill: var(--accent); stroke: var(--panel); stroke-width: 1.2; }
+/* hollow ring = queued for this record; filled dot inside = already recorded */
+.pdot { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 2.4 2; }
+
+.sel-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin-bottom: 10px; padding: 7px 10px; border-radius: 7px;
+  border: 1px solid var(--line); background: var(--panel); font-size: 12px; color: var(--ink-3);
+  transition: border-color .13s, background .13s, color .13s;
+}
+.sel-bar.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-deep); font-weight: 600; }
+.sel-bar button { visibility: hidden; }
+.sel-bar.active button { visibility: visible; }
+
+.sel-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  border: 1px solid var(--accent); background: var(--accent-soft); color: var(--accent-deep);
+  border-radius: 999px; padding: 2px 3px 2px 9px; font-size: 12px;
+}
+.sel-chip .code { font-family: var(--mono); font-weight: 700; }
+.sel-chip .sd {
+  font-family: var(--mono); font-size: 10px; font-weight: 700; cursor: pointer;
+  border: 1px solid currentColor; background: transparent; color: inherit;
+  border-radius: 3px; padding: 0 4px; line-height: 1.5;
+}
+.sel-chip .sd:hover { background: var(--accent); color: var(--accent-on); border-color: var(--accent); }
+.sel-chip .x {
+  border: 0; background: transparent; color: inherit; cursor: pointer;
+  font-size: 14px; line-height: 1; padding: 2px 6px 3px; border-radius: 999px;
+}
+.sel-chip .x:hover { background: var(--alert-soft); color: var(--alert); }
+
+details.seg-eff { border: 1px solid var(--line); border-radius: 8px; background: var(--ground); margin-bottom: 8px; }
+details.seg-eff > summary {
+  cursor: pointer; padding: 10px 13px; display: flex; align-items: center; gap: 9px;
+  list-style: none; font-size: 13.5px;
+}
+details.seg-eff > summary::-webkit-details-marker { display: none; }
+details.seg-eff > summary::before {
+  content: "\25B8"; color: var(--accent); font-size: 12px; display: inline-block; transition: transform .15s;
+}
+details.seg-eff[open] > summary::before { transform: rotate(90deg); }
+details.seg-eff > summary:hover { color: var(--accent-deep); }
+details.seg-eff .code {
+  font-family: var(--mono); font-weight: 700; color: var(--accent-on); background: var(--accent);
+  border-radius: 4px; padding: 1px 6px; font-size: 12px;
+}
+details.seg-eff .sm { color: var(--ink-3); font-size: 12px; }
+details.seg-eff .body { padding: 0 13px 13px; }
+
+.hint-line { font-size: 12px; color: var(--ink-3); margin: 0 0 12px; }
+
+.region-band { font-family: var(--mono); font-size: 8.5px; letter-spacing: .12em; text-transform: uppercase; }
+.rail { stroke-width: 3; stroke-linecap: round; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 5px 12px; margin-top: 12px; font-size: 11px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+.side-key {
+  margin-top: 14px; padding: 10px 12px; border: 1px dashed var(--line);
+  border-radius: 8px; font-size: 12px; color: var(--ink-2); background: var(--panel);
+}
+.side-key b { color: var(--ink); font-weight: 600; }
+
+/* ---------- detail ---------- */
+
+.empty {
+  border: 1px dashed var(--line); border-radius: 12px; padding: 44px 28px;
+  text-align: center; color: var(--ink-3); background: var(--panel);
+}
+.empty h2 { font-size: 20px; color: var(--ink); margin-bottom: 6px; }
+.empty p { margin: 0 auto; max-width: 44ch; }
+
+.seg-head {
+  display: flex; align-items: flex-start; gap: 14px; flex-wrap: wrap;
+  padding-bottom: 14px; margin-bottom: 16px; border-bottom: 2px solid var(--line);
+}
+.seg-code {
+  font-family: var(--mono); font-size: 30px; font-weight: 700; line-height: 1;
+  padding: 10px 14px; border-radius: 9px; color: var(--accent-on); background: var(--accent);
+  letter-spacing: -.02em;
+}
+.seg-titles { flex: 1 1 200px; }
+.seg-titles h2 { font-size: 23px; }
+.seg-titles p { margin: 2px 0 0; color: var(--ink-2); font-size: 13px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 7px; }
+.chip {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-2);
+  background: var(--panel);
+}
+.chip.region { border-color: transparent; color: var(--accent-on); }
+
+.card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 15px 16px; box-shadow: var(--shadow); margin-bottom: 14px;
+}
+.card > h3 {
+  font-family: var(--sans); font-size: 10.5px; font-weight: 700; letter-spacing: .11em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 11px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card > h3::after { content: ""; flex: 1; height: 1px; background: var(--line-soft); }
+
+.form-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+.form-row > .field { flex: 1 1 170px; }
+.form-row > .field.grow { flex: 2 1 260px; }
+.field select, .field input[type="text"] { width: 100%; }
+
+.segmented { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.segmented button {
+  flex: 1; border: 0; background: var(--panel); padding: 6px 4px; cursor: pointer;
+  font-size: 12.5px; border-right: 1px solid var(--line); transition: background .12s, color .12s;
+}
+.segmented button:last-child { border-right: 0; }
+.segmented button:hover { background: var(--panel-2); }
+.segmented button[aria-pressed="true"] { background: var(--accent); color: var(--accent-on); font-weight: 600; }
+
+.checks { display: flex; flex-wrap: wrap; gap: 7px; }
+.check {
+  display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px;
+  background: var(--panel); font-size: 12.5px; transition: background .12s, border-color .12s;
+}
+.check:hover { background: var(--panel-2); }
+.check input { accent-color: var(--accent); margin: 0; }
+.check.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-deep); }
+.check .k { font-family: var(--mono); font-weight: 700; color: var(--accent); }
+
+/* auto-populated effects */
+.effects { display: grid; gap: 12px; }
+.eff {
+  border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  border-radius: 8px; padding: 12px 14px; background: var(--panel);
+}
+.eff h4 {
+  font-family: var(--sans); font-size: 10.5px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 7px;
+}
+.eff ul { margin: 0; padding-left: 18px; }
+.eff li { margin-bottom: 5px; }
+.eff li:last-child { margin-bottom: 0; }
+.eff dl { margin: 0; display: grid; grid-template-columns: minmax(84px, auto) 1fr; gap: 5px 14px; }
+.eff dt {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--ink-3); padding-top: 2px;
+}
+.eff dd { margin: 0; }
+.eff.traditional { border-left-color: var(--warn); }
+.eff.traditional h4 { color: var(--warn); }
+.eff.caution { border-left-color: var(--alert); background: var(--alert-soft); }
+.eff.caution h4 { color: var(--alert); }
+.eff.caution li { color: var(--ink); }
+
+.note-inline {
+  font-size: 11.5px; color: var(--ink-2); background: var(--warn-soft);
+  border-radius: 5px; padding: 7px 10px; margin-top: 9px;
+}
+
+/* ---------- log pane ---------- */
+
+.log-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.log-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; background: var(--ground);
+}
+.log-item .lcode {
+  font-family: var(--mono); font-weight: 700; font-size: 13px; color: var(--accent-on);
+  background: var(--accent); border-radius: 5px; padding: 2px 7px; min-width: 40px; text-align: center;
+}
+.log-item .lbody { flex: 1; min-width: 0; font-size: 12.5px; line-height: 1.5; }
+.log-item .lbody b { font-weight: 600; }
+.log-item .lmeta { color: var(--ink-3); font-size: 11.5px; }
+.log-item .lx {
+  border: 0; background: transparent; color: var(--ink-3); cursor: pointer;
+  font-size: 16px; line-height: 1; padding: 2px 4px; border-radius: 4px;
+}
+.log-item .lx:hover { color: var(--alert); background: var(--alert-soft); }
+
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+.tabs button {
+  border: 0; background: transparent; cursor: pointer; padding: 8px 12px;
+  font-size: 12.5px; color: var(--ink-3); border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.tabs button:hover { color: var(--ink); }
+.tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+pre.note {
+  font-family: var(--mono); font-size: 11.5px; line-height: 1.62;
+  white-space: pre-wrap; word-wrap: break-word;
+  background: var(--ground); border: 1px solid var(--line); border-radius: 8px;
+  padding: 14px; margin: 0; max-height: 62vh; overflow: auto; color: var(--ink);
+}
+
+.stat-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 14px; }
+.stat { border: 1px solid var(--line); border-radius: 8px; padding: 8px 9px; background: var(--ground); min-width: 0; }
+.stat .l { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stat .n { font-family: var(--mono); font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.stat .l { font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.stat.cerv .n { color: var(--cerv); } .stat.thor .n { color: var(--thor); }
+.stat.lumb .n { color: var(--lumb); } .stat.sacr .n { color: var(--sacr); }
+
+footer.disclaimer {
+  border-top: 1px solid var(--line); padding: 14px 20px 22px;
+  color: var(--ink-3); font-size: 11.5px; background: var(--panel);
+}
+footer.disclaimer b { color: var(--ink-2); }
+footer.disclaimer p { margin: 0 0 5px; max-width: 100ch; }
+
+.toast {
+  position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--ink); color: var(--ground); padding: 9px 16px; border-radius: 999px;
+  font-size: 13px; z-index: 90; opacity: 0; transition: transform .22s, opacity .22s; pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+.printable { display: none; }
+
+@media print {
+  .topbar, .pane.spine, .pane.detail, footer.disclaimer, .tabs, .topbar-actions, .toast { display: none !important; }
+  .grid { display: block; }
+  .pane.log { border: 0; padding: 0; background: #fff; }
+  pre.note { border: 0; padding: 0; max-height: none; background: #fff; color: #000; font-size: 11px; }
+  .stat-row, .log-list { display: none; }
+}
+</style>
+
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <h1>Listing Board</h1>
+      <span class="tag">Spinal charting</span>
+    </div>
+
+    <div class="visit-meta">
+      <div class="field w-name">
+        <label for="f-patient">Patient</label>
+        <input id="f-patient" type="text" placeholder="Name or ID" autocomplete="off">
+      </div>
+      <div class="field w-sm">
+        <label for="f-dob">DOB</label>
+        <input id="f-dob" type="date">
+      </div>
+      <div class="field w-sm">
+        <label for="f-date">Visit date</label>
+        <input id="f-date" type="date">
+      </div>
+      <div class="field w-sm">
+        <label for="f-provider">Provider</label>
+        <input id="f-provider" type="text" placeholder="DC name" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <button class="btn sm" id="btn-repeat" title="Copy every adjustment from this patient's last saved visit">Repeat last visit</button>
+      <button class="btn sm" id="btn-history">History</button>
+      <button class="btn sm" id="btn-new">New visit</button>
+      <button class="btn sm primary" id="btn-save">Save visit</button>
+    </div>
+  </header>
+
+  <main class="grid">
+
+    <!-- ================= SPINE ================= -->
+    <section class="pane spine">
+      <div class="pane-head">
+        <h2>Where you adjusted</h2>
+      </div>
+
+      <div class="sel-bar" id="sel-bar">
+        <span id="sel-count">Nothing selected</span>
+        <button class="btn sm ghost" id="btn-clear-sel">Clear</button>
+      </div>
+
+      <div class="spine-wrap">
+        <svg class="spine" id="spine" viewBox="0 0 256 660" role="group" aria-label="Interactive spine chart"></svg>
+      </div>
+
+      <div class="side-key">
+        Click a segment's <b>left wing</b>, <b>body</b>, or <b>right wing</b> to add it and set the side of contact.
+        Keep clicking to select <b>everything you adjusted today</b>; <b>shift-click</b> takes a whole run of levels.
+        Clicking the same side again removes it.
+        <br><br>
+        Keyboard: <b>&uarr;</b>/<b>&darr;</b> move, <b>space</b> selects, <b>shift</b>+<b>&uarr;</b>/<b>&darr;</b>
+        extends, <b>&larr;</b>/<b>&rarr;</b> change side, <b>enter</b> records.
+      </div>
+
+      <div class="legend">
+        <span><i style="background:var(--cerv)"></i>Cervical</span>
+        <span><i style="background:var(--thor)"></i>Thoracic</span>
+        <span><i style="background:var(--lumb)"></i>Lumbar</span>
+        <span><i style="background:var(--sacr)"></i>Sacropelvic</span>
+        <span><i style="background:var(--accent);border-radius:999px"></i>Recorded</span>
+        <span><i style="border:1.5px dashed var(--accent);border-radius:999px"></i>Selected, not yet recorded</span>
+      </div>
+    </section>
+
+    <!-- ================= DETAIL ================= -->
+    <section class="pane detail" id="detail">
+      <div class="empty">
+        <h2>Select a segment</h2>
+        <p>Pick a level on the spine to record the adjustment. The segmental effect, neurological territory,
+           and expected response populate automatically from the level and technique you choose.</p>
+      </div>
+    </section>
+
+    <!-- ================= LOG ================= -->
+    <aside class="pane log">
+      <div class="pane-head">
+        <h2>This visit</h2>
+        <span class="hint" id="log-count">No adjustments recorded</span>
+      </div>
+
+      <div class="stat-row" id="stats"></div>
+      <div class="log-list" id="log-list"></div>
+
+      <div class="tabs" role="tablist">
+        <button role="tab" id="tab-clinical" aria-selected="true">Clinical note</button>
+        <button role="tab" id="tab-patient" aria-selected="false">Patient handout</button>
+      </div>
+
+      <pre class="note" id="note">Record an adjustment to generate the note.</pre>
+
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn sm" id="btn-copy">Copy note</button>
+        <button class="btn sm" id="btn-print">Print</button>
+        <button class="btn sm" id="btn-export">Export JSON</button>
+        <button class="btn sm ghost" id="btn-theme" title="Switch light / dark">Theme</button>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="disclaimer">
+    <p><b>Clinical use.</b> This tool assembles documentation from what you enter. It does not examine, diagnose,
+       or decide what is appropriate for a patient — every generated line is a draft for the treating clinician to
+       review, correct, and sign.</p>
+    <p><b>On the visceral chart.</b> The organ and symptom associations shown under &ldquo;Traditional chart association&rdquo;
+       come from the historical meric / spinal nerve chart. They are long-standing chiropractic teaching, not established
+       physiological causation, and they are labelled as such wherever they appear, including in the patient handout.</p>
+    <p><b>Storage.</b> Visits are saved in this browser only (localStorage). Nothing is transmitted anywhere. This is not a
+       certified EHR and has no HIPAA-compliant backup — export what you need to keep.</p>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* =========================================================
+     1. CLINICAL DATA
+     ========================================================= */
+
+  // Region-level effects that apply to every segment in the region.
+  var REGION_EFFECTS = {
+    cerv: [
+      "Restores accessory glide at the facet (zygapophyseal) joints of the contacted level, typically measurable as increased rotation and lateral flexion in-office.",
+      "Reduces mechanical nociceptive input from the facet capsule and periarticular tissue.",
+      "Short-term reduction in paraspinal and suboccipital muscle tone following the thrust.",
+      "Mechanoreceptor stimulation producing transient segmental hypoalgesia in the treated region."
+    ],
+    thor: [
+      "Restores motion at the costovertebral and costotransverse articulations as well as the facet joints, so rib mechanics change along with segmental motion.",
+      "Commonly followed by improved rib excursion and easier deep inspiration.",
+      "Reduces erector spinae and rhomboid guarding over the treated levels.",
+      "Transient hypoalgesia and improved thoracic rotation and extension."
+    ],
+    lumb: [
+      "Gapping of the facet joint at the contacted level with restored flexion, extension, and rotation glide.",
+      "Reduced multifidus and erector spinae guarding; increased multifidus recruitment reported after lumbar manipulation.",
+      "Transient hypoalgesia, most reliably measured local to the treated segment.",
+      "Reduced mechanical load on the posterior joint complex during gait and lifting."
+    ],
+    sacr: [
+      "Restores sacroiliac nutation / counternutation and load transfer between the trunk and lower limb.",
+      "Reduced gluteal and piriformis guarding on the contacted side.",
+      "Commonly followed by more symmetrical stance and step length.",
+      "Reduced nociceptive input from the sacroiliac ligamentous complex."
+    ]
+  };
+
+  var REGION_FLAGS = {
+    cerv: [
+      "Screen for cervical artery dysfunction (sudden severe headache, dizziness, diplopia, dysarthria, ataxia) before any cervical HVLA.",
+      "Rule out fracture and instability before thrusting — apply the Canadian C-Spine rule after trauma.",
+      "Progressive neurological deficit, or any long-tract or cord sign, means imaging and referral rather than manipulation."
+    ],
+    thor: [
+      "Osteoporosis, long-term corticosteroid use, or known malignancy raise fracture risk — reduce force or use a non-thrust alternative.",
+      "Unexplained chest, upper-back, or interscapular pain warrants cardiac, aortic, and visceral screening before it is treated as mechanical."
+    ],
+    lumb: [
+      "Screen for cauda equina syndrome — saddle anaesthesia, bowel or bladder change, bilateral leg symptoms — as an emergency referral, not a treatable finding.",
+      "Progressive motor loss, unexplained weight loss, night pain, or a history of cancer warrants imaging before manipulation.",
+      "Suspected abdominal aortic aneurysm in an older patient with back pain is a contraindication to lumbar HVLA."
+    ],
+    sacr: [
+      "Pregnancy: use side-posture or blocking with pelvic support; avoid prone drop-piece contact over the abdomen.",
+      "Inflammatory sacroiliitis (young patient, morning stiffness over 30 minutes, night pain) needs rheumatological workup alongside care."
+    ]
+  };
+
+  // id, name, sub, region, motion, roots, derm, myo, reflex,
+  // present (musculoskeletal), supplies + symptoms (traditional chart), extra effects
+  var LEVELS = [
+    { id:"OCC", name:"Occiput", sub:"C0 — occipito-atlantal joint", region:"cerv",
+      motion:"Flexion and extension — the nodding motion. Roughly 10–25 degrees; almost no rotation.",
+      roots:"Suboccipital nerve (C1); the greater occipital nerve (C2 dorsal ramus) passes through the suboccipital tissue.",
+      derm:"No true dermatome — sensory referral follows the greater and lesser occipital distribution over the posterior scalp.",
+      myo:"Suboccipital group: rectus capitis posterior major and minor, obliquus capitis superior and inferior.",
+      reflex:"—",
+      present:"Cervicogenic headache, suboccipital tension, restricted nodding, cervicogenic dizziness, eye strain with reading.",
+      supplies:"Blood supply to the head, scalp, base of the skull.",
+      symptoms:"Headache, occipital pressure, a heavy or foggy head.",
+      extra:["Upper cervical afferents converge with trigeminal afferents in the trigeminocervical nucleus — this convergence is the mechanism most often cited for headache relief after occipito-atlantal and C1–C2 work.",
+             "Restores the flexion–extension glide most often lost in sustained forward-head posture."] },
+
+    { id:"C1", name:"Atlas", sub:"C1 — atlanto-axial", region:"cerv",
+      motion:"Rotation. The C1–C2 joint provides roughly 45–50% of all cervical rotation.",
+      roots:"C1 — essentially motor (suboccipital nerve).",
+      derm:"No cutaneous dermatome.",
+      myo:"Upper cervical stabilisers and suboccipital extensors.",
+      reflex:"—",
+      present:"Cervicogenic headache, asymmetric rotation restriction, dizziness or unsteadiness, referral into the temple and behind the eye.",
+      supplies:"Blood supply to the head, pituitary gland, scalp, bones of the face, brain, inner and middle ear, sympathetic nervous system.",
+      symptoms:"Headaches, nervousness, insomnia, head colds, high blood pressure, migraine, chronic fatigue, dizziness.",
+      extra:["Restores atlanto-axial rotational glide — usually the largest single-segment rotation gain available in the cervical spine.",
+             "Reduces the asymmetric suboccipital tone that maintains atlas laterality.",
+             "Changes upper cervical proprioceptive input, which is implicated in cervicogenic dizziness and postural sway."] },
+
+    { id:"C2", name:"Axis", sub:"C2 — odontoid / greater occipital nerve", region:"cerv",
+      motion:"Rotation with C1; coupled lateral flexion and rotation begin below this level.",
+      roots:"C2 — greater occipital nerve.",
+      derm:"Posterior scalp to the vertex; angle of the jaw.",
+      myo:"Longus colli and capitis; cervical rotators.",
+      reflex:"—",
+      present:"Occipital neuralgia, cervicogenic headache, upper cervical facet pain referring into the head.",
+      supplies:"Eyes, optic nerves, auditory nerves, sinuses, mastoid bones, tongue, forehead.",
+      symptoms:"Sinus trouble, allergies, eye conditions, earache, fainting spells.",
+      extra:["Decompresses the greater occipital nerve where it pierces the semispinalis and trapezius — a frequent driver of occipital headache."] },
+
+    { id:"C3", name:"C3", sub:"Mid-cervical", region:"cerv",
+      motion:"Coupled lateral flexion and rotation to the same side; flexion and extension.",
+      roots:"C3 — contributes to the phrenic nerve (C3–C5).",
+      derm:"Lateral and posterior neck, the 'collar' region.",
+      myo:"Cervical lateral flexion; trapezius and levator scapulae contribution; diaphragm via the phrenic nerve.",
+      reflex:"—",
+      present:"Mid-cervical facet pain referring into the upper trapezius and scapular region; headache; wry neck.",
+      supplies:"Cheeks, outer ear, bones of the face, teeth, trigeminal nerve.",
+      symptoms:"Neuralgia, neuritis, acne, eczema.",
+      extra:["C3–C5 contribute to the phrenic nerve; restoring mid-cervical motion is frequently documented alongside improved diaphragmatic and rib excursion."] },
+
+    { id:"C4", name:"C4", sub:"Mid-cervical", region:"cerv",
+      motion:"Coupled lateral flexion and rotation; a common apex of mid-cervical restriction.",
+      roots:"C4 — phrenic contribution (C3–C5).",
+      derm:"Base of the neck across the top of the shoulder, the 'cape' distribution over the AC joint.",
+      myo:"Shoulder elevation (upper trapezius, levator scapulae); diaphragm.",
+      reflex:"—",
+      present:"Cape-region pain, levator scapulae strain, cervicothoracic restriction, referred shoulder-top ache.",
+      supplies:"Nose, lips, mouth, eustachian tube.",
+      symptoms:"Hay fever, catarrh, hearing loss, adenoids.",
+      extra:[] },
+
+    { id:"C5", name:"C5", sub:"Lower cervical", region:"cerv",
+      motion:"Flexion and extension with coupled rotation; high load in forward-head posture.",
+      roots:"C5 — upper trunk of the brachial plexus.",
+      derm:"Lateral deltoid — the 'regimental badge' patch.",
+      myo:"Shoulder abduction; elbow flexion.",
+      reflex:"Biceps (C5–C6).",
+      present:"C5 radiculopathy with deltoid weakness and shoulder-patch numbness; lower cervical facet pain referring to the scapula.",
+      supplies:"Vocal cords, neck glands, pharynx.",
+      symptoms:"Laryngitis, hoarseness, sore throat.",
+      extra:["Restoring lower cervical extension and opening the intervertebral foramen is the mechanical rationale where a C5 root is irritated — document motor and sensory findings before and after."] },
+
+    { id:"C6", name:"C6", sub:"Lower cervical", region:"cerv",
+      motion:"Flexion and extension; one of the most commonly degenerated cervical levels.",
+      roots:"C6 — upper and middle trunk.",
+      derm:"Lateral forearm to the thumb.",
+      myo:"Elbow flexion; wrist extension.",
+      reflex:"Brachioradialis (C6).",
+      present:"C6 radiculopathy with thumb-side paraesthesia and wrist extensor weakness; lower cervical facet referral.",
+      supplies:"Neck muscles, shoulders, tonsils.",
+      symptoms:"Stiff neck, pain in the upper arm, tonsillitis, croup.",
+      extra:[] },
+
+    { id:"C7", name:"C7", sub:"Vertebra prominens", region:"cerv",
+      motion:"Transition into the thoracic spine; rotation drops sharply below this level.",
+      roots:"C7 — middle trunk.",
+      derm:"Middle finger.",
+      myo:"Elbow extension; wrist flexion.",
+      reflex:"Triceps (C7).",
+      present:"C7 radiculopathy; cervicothoracic junction restriction; postural loading at the base of the neck.",
+      supplies:"Thyroid gland, bursae in the shoulders and elbows.",
+      symptoms:"Bursitis, colds, thyroid conditions.",
+      extra:["The cervicothoracic junction concentrates load between a mobile cervical and stiff thoracic spine — restoring motion here often changes symptoms felt several levels above."] },
+
+    { id:"T1", name:"T1", sub:"Cervicothoracic junction / 1st rib", region:"thor",
+      motion:"Junctional level; articulates with the first rib.",
+      roots:"C8 and T1 — lower trunk of the brachial plexus.",
+      derm:"Medial forearm and medial antecubital fossa.",
+      myo:"Finger abduction and adduction (interossei); thumb opposition.",
+      reflex:"—",
+      present:"First-rib elevation, thoracic outlet symptoms, ulnar-side paraesthesia, scalene tension.",
+      supplies:"Arms below the elbow, hands, wrists, fingers; oesophagus, trachea.",
+      symptoms:"Asthma, cough, difficult breathing, shortness of breath, pain in the lower arm and hand.",
+      extra:["Restoring first-rib and costovertebral motion is frequently documented alongside reduced thoracic outlet symptoms.",
+             "Horner-type signs or progressive wasting of the hand intrinsics call for imaging and referral before any HVLA here."] },
+
+    { id:"T2", name:"T2", sub:"Upper thoracic", region:"thor",
+      motion:"Rotation and extension; costovertebral articulation with the 2nd rib.",
+      roots:"T2 — sympathetic chain begins its thoracolumbar outflow (T1–L2).",
+      derm:"Medial arm and axilla.",
+      myo:"No discretely testable myotome (intercostals).",
+      reflex:"—",
+      present:"Interscapular pain, upper thoracic hypomobility, referred pain to the medial scapular border.",
+      supplies:"Heart with its valves and covering; coronary arteries.",
+      symptoms:"Functional heart conditions and certain chest conditions.",
+      extra:[] },
+
+    { id:"T3", name:"T3", sub:"Upper thoracic", region:"thor",
+      motion:"Rotation and extension; 3rd costovertebral and costotransverse joints.",
+      roots:"T3 — thoracic sympathetic chain.",
+      derm:"Third intercostal space.",
+      myo:"Intercostals.",
+      reflex:"—",
+      present:"Interscapular and rib pain, restricted deep inspiration, postural mid-back ache.",
+      supplies:"Lungs, bronchial tubes, pleura, chest, breast.",
+      symptoms:"Bronchitis, pleurisy, pneumonia, congestion, influenza.",
+      extra:[] },
+
+    { id:"T4", name:"T4", sub:"Mid thoracic", region:"thor",
+      motion:"Apex of thoracic kyphosis in many patients; rotation and extension.",
+      roots:"T4 — thoracic sympathetic chain.",
+      derm:"Nipple line.",
+      myo:"Intercostals.",
+      reflex:"—",
+      present:"'T4 syndrome' — diffuse upper limb paraesthesia with mid-thoracic restriction; interscapular pain.",
+      supplies:"Gallbladder, common bile duct.",
+      symptoms:"Gallbladder conditions, jaundice, shingles.",
+      extra:["Mid-thoracic restriction at T4 is classically associated with diffuse, non-dermatomal upper limb paraesthesia that resolves as segmental motion is restored."] },
+
+    { id:"T5", name:"T5", sub:"Mid thoracic", region:"thor",
+      motion:"Rotation and extension; costovertebral coupling.",
+      roots:"T5 — greater splanchnic contribution begins (T5–T9).",
+      derm:"Between the nipple line and the xiphoid.",
+      myo:"Intercostals.",
+      reflex:"—",
+      present:"Mid-thoracic facet and costovertebral pain; pain with deep breath or trunk rotation.",
+      supplies:"Liver, solar plexus, blood.",
+      symptoms:"Liver conditions, fevers, low blood pressure, anaemia, poor circulation, arthritis.",
+      extra:[] },
+
+    { id:"T6", name:"T6", sub:"Mid thoracic", region:"thor",
+      motion:"Rotation and extension.",
+      roots:"T6 — greater splanchnic nerve.",
+      derm:"Xiphoid process.",
+      myo:"Upper abdominals.",
+      reflex:"—",
+      present:"Mid-thoracic pain wrapping along the rib; pain on rotation.",
+      supplies:"Stomach.",
+      symptoms:"Stomach troubles including nervous stomach, indigestion, heartburn, dyspepsia.",
+      extra:[] },
+
+    { id:"T7", name:"T7", sub:"Mid thoracic", region:"thor",
+      motion:"Rotation and extension; thoracolumbar transition begins below.",
+      roots:"T7 — greater splanchnic nerve.",
+      derm:"Below the xiphoid.",
+      myo:"Upper abdominals.",
+      reflex:"—",
+      present:"Mid-thoracic restriction, rib pain, ache with prolonged sitting.",
+      supplies:"Pancreas, duodenum.",
+      symptoms:"Ulcers, gastritis.",
+      extra:[] },
+
+    { id:"T8", name:"T8", sub:"Lower thoracic", region:"thor",
+      motion:"Rotation and extension with increasing sagittal contribution.",
+      roots:"T8 — greater splanchnic nerve.",
+      derm:"Lower costal margin.",
+      myo:"Abdominals.",
+      reflex:"—",
+      present:"Lower thoracic hypomobility; referred flank ache.",
+      supplies:"Spleen.",
+      symptoms:"Lowered resistance.",
+      extra:[] },
+
+    { id:"T9", name:"T9", sub:"Lower thoracic", region:"thor",
+      motion:"Rotation and extension.",
+      roots:"T9 — greater and lesser splanchnic.",
+      derm:"Above the umbilicus.",
+      myo:"Abdominals.",
+      reflex:"—",
+      present:"Lower thoracic and thoracolumbar restriction.",
+      supplies:"Adrenal and suprarenal glands.",
+      symptoms:"Allergies, hives.",
+      extra:[] },
+
+    { id:"T10", name:"T10", sub:"Lower thoracic", region:"thor",
+      motion:"Rotation and extension; ribs become floating below T10.",
+      roots:"T10 — lesser splanchnic nerve.",
+      derm:"Umbilicus.",
+      myo:"Abdominals.",
+      reflex:"—",
+      present:"Thoracolumbar junction syndrome with referral into the flank, groin, and iliac crest.",
+      supplies:"Kidneys.",
+      symptoms:"Kidney conditions, hardening of the arteries, chronic tiredness, nephritis.",
+      extra:[] },
+
+    { id:"T11", name:"T11", sub:"Thoracolumbar junction", region:"thor",
+      motion:"Facet orientation shifts toward sagittal — rotation drops, flexion and extension increase.",
+      roots:"T11 — least splanchnic nerve.",
+      derm:"Between the umbilicus and the inguinal region.",
+      myo:"Lower abdominals.",
+      reflex:"—",
+      present:"Thoracolumbar junction restriction referring to the iliac crest, buttock, and groin — a frequent mimic of hip and low back pain.",
+      supplies:"Kidneys, ureters.",
+      symptoms:"Skin conditions such as acne, pimples, eczema, boils.",
+      extra:["The thoracolumbar junction refers to the iliac crest and groin via the cluneal and iliohypogastric distribution — worth clearing before attributing the pain to the lumbar spine."] },
+
+    { id:"T12", name:"T12", sub:"Thoracolumbar junction", region:"thor",
+      motion:"Transitional segment — high shear load between the rotating thoracic and sagittal lumbar spine.",
+      roots:"T12 — subcostal nerve; sympathetic outflow ends near L2.",
+      derm:"Inguinal region, above the pubis.",
+      myo:"Lower abdominals; quadratus lumborum contribution.",
+      reflex:"—",
+      present:"Junctional restriction with lateral hip and groin referral; quadratus lumborum guarding.",
+      supplies:"Small intestines, lymph circulation.",
+      symptoms:"Rheumatism, gas pains, certain types of sterility.",
+      extra:[] },
+
+    { id:"L1", name:"L1", sub:"Upper lumbar", region:"lumb",
+      motion:"Flexion and extension dominate; rotation is limited by sagittal facet orientation.",
+      roots:"L1 — iliohypogastric and ilioinguinal nerves.",
+      derm:"Inguinal crease and groin.",
+      myo:"Hip flexion (with L2).",
+      reflex:"—",
+      present:"Upper lumbar facet pain referring into the groin and lateral hip; psoas guarding.",
+      supplies:"Large intestines, inguinal rings.",
+      symptoms:"Constipation, colitis, dysentery, diarrhoea, some ruptures or hernias.",
+      extra:[] },
+
+    { id:"L2", name:"L2", sub:"Upper lumbar", region:"lumb",
+      motion:"Flexion and extension; conus medullaris typically ends near L1–L2.",
+      roots:"L2 — genitofemoral, lateral femoral cutaneous contribution.",
+      derm:"Anterior mid-thigh.",
+      myo:"Hip flexion.",
+      reflex:"—",
+      present:"Anterior thigh referral; psoas-related upper lumbar pain; pain on prolonged standing.",
+      supplies:"Appendix, abdomen, upper leg.",
+      symptoms:"Cramps, difficult breathing, acidosis, varicose veins.",
+      extra:[] },
+
+    { id:"L3", name:"L3", sub:"Mid lumbar", region:"lumb",
+      motion:"Flexion, extension, and lateral flexion; frequent apex of a lumbar scoliotic curve.",
+      roots:"L3 — femoral nerve contribution.",
+      derm:"Distal anterior thigh to the medial knee.",
+      myo:"Knee extension.",
+      reflex:"Patellar (L3–L4).",
+      present:"Mid-lumbar facet pain, anterior thigh and knee referral, quadriceps inhibition.",
+      supplies:"Sex organs, uterus, bladder, knees.",
+      symptoms:"Bladder conditions, menstrual conditions, bed-wetting, knee pain.",
+      extra:[] },
+
+    { id:"L4", name:"L4", sub:"Lower lumbar", region:"lumb",
+      motion:"High flexion-extension load; a common level for facet arthrosis and degenerative spondylolisthesis.",
+      roots:"L4 — femoral and sciatic contribution.",
+      derm:"Medial leg to the medial malleolus.",
+      myo:"Knee extension; ankle dorsiflexion.",
+      reflex:"Patellar (L3–L4).",
+      present:"L4 radiculopathy; lower lumbar facet pain referring to the buttock and posterior thigh; antalgic lean.",
+      supplies:"Prostate gland, muscles of the lower back, sciatic nerve.",
+      symptoms:"Sciatica, lumbago, painful or too-frequent urination, backache.",
+      extra:["Facet gapping and foraminal opening at L4–L5 is the mechanical rationale where an L4 or L5 root is irritated — record straight-leg raise, reflex, and key muscle strength before and after."] },
+
+    { id:"L5", name:"L5", sub:"Lumbosacral junction", region:"lumb",
+      motion:"Greatest shear and compressive load in the spine; the L5–S1 junction absorbs the transition to the fixed pelvis.",
+      roots:"L5 — largest contribution to the sciatic nerve.",
+      derm:"Dorsum of the foot and the first web space.",
+      myo:"Great-toe extension (extensor hallucis longus); ankle dorsiflexion.",
+      reflex:"— (medial hamstring).",
+      present:"L5 radiculopathy with foot-drop risk; lumbosacral facet pain; discogenic low back pain; pain on sit-to-stand.",
+      supplies:"Lower legs, ankles, feet.",
+      symptoms:"Poor circulation in the legs, swollen or weak ankles, weak arches, cold feet, leg cramps.",
+      extra:["The lumbosacral junction carries the highest shear load in the spine — restoring symmetrical motion here changes load through both sacroiliac joints."] },
+
+    { id:"SAC", name:"Sacrum", sub:"Sacral base / S1–S4", region:"sacr",
+      motion:"Nutation and counternutation between the ilia; small in range but central to load transfer through the pelvis.",
+      roots:"S1–S4 — sciatic, pudendal, and pelvic splanchnic contributions.",
+      derm:"S1 lateral foot and heel; S2 posterior thigh; S3–S5 perianal.",
+      myo:"S1 ankle plantarflexion; S2 knee flexion.",
+      reflex:"Achilles (S1–S2).",
+      present:"Sacral base restriction, low back pain worse on standing, referred posterior thigh pain, gait asymmetry.",
+      supplies:"Hip bones, buttocks.",
+      symptoms:"Sacroiliac conditions, spinal curvatures.",
+      extra:["Sacral base correction changes the position of the lumbar spine above it — reassess lumbar findings after adjusting the sacrum rather than before."] },
+
+    { id:"SI-L", name:"Left sacroiliac joint", sub:"Left innominate", region:"sacr", blade:"L", fixedSide:"L",
+      motion:"Anterior and posterior innominate rotation, with inflare and outflare; the joint that couples the spine to the leg.",
+      roots:"Innervated segmentally from roughly L4–S3.",
+      derm:"Referral typically buttock, posterior thigh, and groin rather than a clean dermatome.",
+      myo:"Gluteus medius and maximus; piriformis.",
+      reflex:"—",
+      present:"Sacroiliac pain pointed to with one finger just medial to the PSIS; pain rolling in bed, climbing stairs, or standing from sitting; leg-length asymmetry on the table.",
+      supplies:"Hips, pelvis, buttocks, lower limb mechanics.",
+      symptoms:"Sacroiliac conditions, hip and buttock pain, sciatic-type leg pain.",
+      extra:["Correcting innominate rotation typically resolves the functional leg-length difference measured before the adjustment — record both measurements.",
+             "Reduces gluteal and piriformis guarding on the contacted side and restores symmetry of stance and step length."] },
+
+    { id:"SI-R", name:"Right sacroiliac joint", sub:"Right innominate", region:"sacr", blade:"R", fixedSide:"R",
+      motion:"Anterior and posterior innominate rotation, with inflare and outflare; the joint that couples the spine to the leg.",
+      roots:"Innervated segmentally from roughly L4–S3.",
+      derm:"Referral typically buttock, posterior thigh, and groin rather than a clean dermatome.",
+      myo:"Gluteus medius and maximus; piriformis.",
+      reflex:"—",
+      present:"Sacroiliac pain pointed to with one finger just medial to the PSIS; pain rolling in bed, climbing stairs, or standing from sitting; leg-length asymmetry on the table.",
+      supplies:"Hips, pelvis, buttocks, lower limb mechanics.",
+      symptoms:"Sacroiliac conditions, hip and buttock pain, sciatic-type leg pain.",
+      extra:["Correcting innominate rotation typically resolves the functional leg-length difference measured before the adjustment — record both measurements.",
+             "Reduces gluteal and piriformis guarding on the contacted side and restores symmetry of stance and step length."] },
+
+    { id:"COC", name:"Coccyx", sub:"Coccygeal segments", region:"sacr",
+      motion:"Small flexion and extension; loaded directly in sitting.",
+      roots:"Coccygeal plexus (S4–Co1).",
+      derm:"Perianal and coccygeal region.",
+      myo:"Pelvic floor, levator ani.",
+      reflex:"—",
+      present:"Coccydynia — pain on sitting and on rising from sitting, often post-fall or postpartum; pelvic floor hypertonicity.",
+      supplies:"Rectum, anus.",
+      symptoms:"Haemorrhoids, itching, pain at the end of the spine on sitting.",
+      extra:["Coccygeal work is usually paired with pelvic floor tone management; obtain and document explicit consent, particularly for any internal approach."] }
+  ];
+
+  var REGION_META = {
+    cerv: { label: "Cervical",    short: "Cervical", color: "var(--cerv)" },
+    thor: { label: "Thoracic",    short: "Thoracic", color: "var(--thor)" },
+    lumb: { label: "Lumbar",      short: "Lumbar",   color: "var(--lumb)" },
+    sacr: { label: "Sacropelvic", short: "Pelvic",   color: "var(--sacr)" }
+  };
+
+  var LISTINGS = {
+    OCC: ["—", "AS", "PS", "RS (right superior)", "LS (left superior)", "Anterior occiput", "Posterior occiput"],
+    C1:  ["—", "ASRA", "ASRP", "ASLA", "ASLP", "AS", "AI"],
+    cerv:["—", "PR", "PL", "PRS", "PLS", "PRI", "PLI", "PRS-M", "PLS-M", "Anterior body"],
+    thor:["—", "PR", "PL", "PRS", "PLS", "PRI", "PLI", "PRS-T", "PLS-T", "Rib PI (posterior-inferior)", "Rib AS (anterior-superior)"],
+    lumb:["—", "PR", "PL", "PRS", "PLS", "PRI", "PLI", "PRS-SP", "PLS-SP", "Anterior body"],
+    SAC: ["—", "P-L (sacral base posterior left)", "P-R (sacral base posterior right)", "Base posterior", "Sacral apex anterior"],
+    "SI-L": ["—", "PI (posterior-inferior)", "AS (anterior-superior)", "In (inflare)", "Ex (outflare)", "PI-Ex", "AS-In"],
+    "SI-R": ["—", "PI (posterior-inferior)", "AS (anterior-superior)", "In (inflare)", "Ex (outflare)", "PI-Ex", "AS-In"],
+    COC: ["—", "Anterior", "Anterior-left", "Anterior-right"]
+  };
+
+  var TECHNIQUES = [
+    { name: "Diversified (manual HVLA)",
+      effect: "High-velocity, low-amplitude manual thrust taken into the paraphysiological space. Joint gapping is the intended mechanical event and cavitation is expected." },
+    { name: "Gonstead specific",
+      effect: "Specific segmental contact with a line of drive derived from the listing. The intent is a single-segment correction rather than a regional release." },
+    { name: "Toggle recoil (upper cervical)",
+      effect: "Short, shallow, high-speed thrust with immediate recoil. Sets motion at the upper cervical articulation with minimal amplitude and low total force." },
+    { name: "Thompson drop-table",
+      effect: "The drop-piece absorbs the terminal thrust, delivering the impulse at reduced peak manual force. Useful where HVLA amplitude is undesirable." },
+    { name: "Activator / instrument-assisted",
+      effect: "Low-force, high-speed mechanical impulse. No cavitation is expected — the absence of an audible release does not indicate an ineffective adjustment." },
+    { name: "Flexion-distraction (Cox)",
+      effect: "Rhythmic axial distraction with segmental flexion. Reported to lower intradiscal pressure and widen the posterior disc space and intervertebral foramen." },
+    { name: "Mobilisation (grade I–IV)",
+      effect: "Oscillatory, non-thrust joint loading kept within the elastic range. Targets pain modulation and accessory glide without cavitation." },
+    { name: "Muscle energy / post-isometric relaxation",
+      effect: "Patient-generated isometric effort followed by lengthening. Reduces resting muscle tone and increases the available range at the segment." },
+    { name: "SOT pelvic blocking",
+      effect: "Sustained low-force wedging that uses body weight and respiration to restore pelvic and sacral position. No thrust delivered." },
+    { name: "Manual traction / decompression",
+      effect: "Axial unloading of the segment, intended to reduce compressive load on the disc and intervertebral foramen." },
+    { name: "Soft tissue / IASTM / trigger point",
+      effect: "Directed at contractile and fascial tissue rather than the joint. Reduces tone and local tenderness in support of the segmental correction." }
+  ];
+
+  var POSITIONS = ["Prone", "Supine", "Side posture — left down", "Side posture — right down",
+                   "Seated", "Cervical chair", "Knee-chest", "Standing"];
+
+  var PART_ITEMS = [
+    { k: "P", label: "Pain / tenderness on palpation" },
+    { k: "A", label: "Asymmetry of segmental position" },
+    { k: "R", label: "Range of motion abnormality" },
+    { k: "T", label: "Tissue / tone change" }
+  ];
+
+  var RESPONSES = ["Audible cavitation", "No audible release", "Improved segmental motion",
+                   "Reduced tenderness post-adjustment", "Tolerated well", "Post-adjustment soreness noted"];
+
+  /* =========================================================
+     2. STATE
+     ========================================================= */
+
+  var STORE_KEY = "listingBoard.v1";
+
+  var state = {
+    selection: [],            // [{id, side}] — every segment queued to be recorded
+    focus: null,              // last segment touched; drives the single-segment view
+    draft: {},                // per-level form values (single-segment mode)
+    batch: null,              // shared form values (multi-segment mode)
+    entries: [],              // recorded adjustments this visit
+    noteTab: "clinical"
+  };
+
+  function levelById(id) {
+    for (var i = 0; i < LEVELS.length; i++) if (LEVELS[i].id === id) return LEVELS[i];
+    return null;
+  }
+
+  function levelIndex(id) {
+    for (var i = 0; i < LEVELS.length; i++) if (LEVELS[i].id === id) return i;
+    return -1;
+  }
+
+  /* --- selection set --------------------------------------- */
+
+  function selIndex(id) {
+    for (var i = 0; i < state.selection.length; i++) if (state.selection[i].id === id) return i;
+    return -1;
+  }
+  function isSelected(id) { return selIndex(id) > -1; }
+  function selSideOf(id) { var i = selIndex(id); return i > -1 ? state.selection[i].side : null; }
+  function sortSelection() {
+    state.selection.sort(function (a, b) { return levelIndex(a.id) - levelIndex(b.id); });
+  }
+
+  // Listings valid for every segment currently selected.
+  function commonListings() {
+    if (!state.selection.length) return ["—"];
+    var out = listingsFor(levelById(state.selection[0].id)).slice();
+    for (var i = 1; i < state.selection.length; i++) {
+      var set = listingsFor(levelById(state.selection[i].id));
+      out = out.filter(function (v) { return set.indexOf(v) > -1; });
+    }
+    if (out.indexOf("—") === -1) out.unshift("—");
+    return out;
+  }
+
+  function listingsFor(lv) {
+    if (LISTINGS[lv.id]) return LISTINGS[lv.id];
+    return LISTINGS[lv.region] || ["—"];
+  }
+
+  function sideWord(s) { return s === "L" ? "Left" : s === "R" ? "Right" : "Central"; }
+
+  // "C1 (Atlas)" but plain "T4" — avoid printing the name twice when it equals the code
+  function fullName(lv) { return lv.name === lv.id ? lv.id : lv.id + " (" + lv.name + ")"; }
+
+  // The SI joints carry their side in the level itself, so don't append it again.
+  function sideLabel(lv, side) { return lv && lv.fixedSide ? "" : sideWord(side); }
+  function withSide(lv, side, sep) {
+    var w = sideLabel(lv, side);
+    return w ? (sep || " ") + w.toLowerCase() : "";
+  }
+
+  function blankBatch() {
+    return {
+      listing: "—",
+      technique: TECHNIQUES[0].name,
+      position: POSITIONS[0],
+      part: [],
+      response: [],
+      notes: ""
+    };
+  }
+
+  function batchDraft() {
+    if (!state.batch) state.batch = blankBatch();
+    return state.batch;
+  }
+
+  function blankDraft(lv) {
+    return {
+      side: "C",
+      listing: listingsFor(lv)[0],
+      technique: TECHNIQUES[0].name,
+      position: POSITIONS[0],
+      part: [],
+      response: [],   // never pre-checked — response is an observation, not a default
+      notes: ""
+    };
+  }
+
+  function draftFor(lv) {
+    if (!state.draft[lv.id]) state.draft[lv.id] = blankDraft(lv);
+    return state.draft[lv.id];
+  }
+
+  /* =========================================================
+     3. SPINE DIAGRAM
+     ========================================================= */
+
+  var SVG_NS = "http://www.w3.org/2000/svg";
+  var CX = 148;           // spine centre line
+  var geometry = [];      // {id, y, h, bw, tp}
+
+  function el(tag, attrs) {
+    var n = document.createElementNS(SVG_NS, tag);
+    for (var k in attrs) if (Object.prototype.hasOwnProperty.call(attrs, k)) n.setAttribute(k, attrs[k]);
+    return n;
+  }
+
+  function buildGeometry() {
+    geometry = [];
+    var y = 14;
+    for (var i = 0; i < LEVELS.length; i++) {
+      var lv = LEVELS[i], h, bw, tp, gap;
+      if (lv.id === "OCC")      { h = 24; bw = 104; tp = 0;  gap = 8; }
+      else if (lv.id === "SAC") { h = 50; bw = 76;  tp = 30; gap = 4; }
+      // both SI blades flank the sacrum, so they share one row of vertical space
+      else if (lv.id === "SI-L") { h = 44; bw = 0;  tp = 46; gap = 4; y -= 54; }
+      else if (lv.id === "SI-R") { h = 44; bw = 0;  tp = 46; gap = 4; y -= 48; }
+      else if (lv.id === "COC") { h = 16; bw = 22;  tp = 0;  gap = 4; y += 10; }
+      else if (lv.region === "cerv") { h = 13; bw = 40 + i * 1.4; tp = 15; gap = 4; }
+      else if (lv.region === "thor") { h = 15; bw = 52 + (i - 8) * 1.3; tp = 21; gap = 4; }
+      else                           { h = 22; bw = 76 + (i - 20) * 2.2; tp = 23; gap = 5; }
+      geometry.push({ id: lv.id, y: y, h: h, bw: bw, tp: tp });
+      y += h + gap;
+    }
+    return y + 12;
+  }
+
+  function drawSpine() {
+    var svg = document.getElementById("spine");
+    var total = buildGeometry();
+    svg.setAttribute("viewBox", "0 0 256 " + Math.round(total));
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    // region rails
+    var railGroups = {};
+    for (var g = 0; g < geometry.length; g++) {
+      var lvg = levelById(geometry[g].id);
+      if (!railGroups[lvg.region]) railGroups[lvg.region] = { top: geometry[g].y, bot: 0 };
+      railGroups[lvg.region].bot = geometry[g].y + geometry[g].h;
+    }
+    for (var rk in railGroups) {
+      if (!Object.prototype.hasOwnProperty.call(railGroups, rk)) continue;
+      svg.appendChild(el("line", {
+        x1: 8, y1: railGroups[rk].top, x2: 8, y2: railGroups[rk].bot,
+        stroke: REGION_META[rk].color, "stroke-opacity": ".55", class: "rail"
+      }));
+    }
+
+    for (var i = 0; i < LEVELS.length; i++) {
+      var lv = LEVELS[i], gm = geometry[i];
+      var grp = el("g", {
+        class: "seg", "data-id": lv.id, tabindex: "0", role: "button",
+        "aria-label": lv.id + " " + lv.name + " — " + REGION_META[lv.region].label
+      });
+
+      var top = gm.y, h = gm.h, half = gm.bw / 2;
+
+      if (lv.id === "OCC") {
+        grp.appendChild(el("path", { class: "bone",
+          d: "M" + (CX - 52) + "," + (top + h) + " Q" + CX + "," + (top - 16) + " " + (CX + 52) + "," + (top + h) + " Z" }));
+      } else if (lv.id === "SAC") {
+        grp.appendChild(el("path", { class: "bone",
+          d: "M" + (CX - 38) + "," + top + " L" + (CX + 38) + "," + top +
+             " L" + (CX + 13) + "," + (top + h) + " L" + (CX - 13) + "," + (top + h) + " Z" }));
+        for (var s = 1; s <= 3; s++) {
+          grp.appendChild(el("line", { x1: CX - 30 + s * 3, y1: top + s * (h / 4),
+            x2: CX + 30 - s * 3, y2: top + s * (h / 4), stroke: "var(--bone-line)", "stroke-width": ".7", "stroke-opacity": ".65" }));
+        }
+      } else if (lv.blade) {
+        var s = lv.blade === "L" ? -1 : 1;
+        grp.appendChild(el("path", { class: "bone",
+          d: "M" + (CX + s * 42) + "," + top + " Q" + (CX + s * 74) + "," + (top + 14) + " " + (CX + s * 58) + "," + (top + h) +
+             " Q" + (CX + s * 40) + "," + (top + h + 6) + " " + (CX + s * 30) + "," + (top + h - 6) + " Z" }));
+      } else if (lv.id === "COC") {
+        grp.appendChild(el("path", { class: "bone",
+          d: "M" + (CX - 8) + "," + top + " L" + (CX + 8) + "," + top + " L" + (CX + 3) + "," + (top + h) +
+             " Q" + CX + "," + (top + h + 5) + " " + (CX - 3) + "," + (top + h) + " Z" }));
+      } else {
+        // transverse processes
+        grp.appendChild(el("rect", { class: "bone", x: CX - half - gm.tp, y: top + h * 0.24,
+          width: gm.tp + 4, height: h * 0.52, rx: 2.5 }));
+        grp.appendChild(el("rect", { class: "bone", x: CX + half - 4, y: top + h * 0.24,
+          width: gm.tp + 4, height: h * 0.52, rx: 2.5 }));
+        // body
+        grp.appendChild(el("rect", { class: "bone", x: CX - half, y: top, width: gm.bw, height: h, rx: 3.5 }));
+        // spinous process
+        grp.appendChild(el("rect", { class: "spinous", x: CX - 3.2, y: top + h * 0.12,
+          width: 6.4, height: h * 0.76, rx: 2 }));
+      }
+
+      // Level label. The SI blades overlap the sacrum's row, so their labels drop
+      // below it — and the right one anchors to the right edge rather than running off it.
+      var labAttrs = { class: "lvl", x: 18, y: top + h / 2 };
+      if (lv.blade === "L") { labAttrs.y = top + h + 7; }
+      if (lv.blade === "R") { labAttrs.x = 250; labAttrs.y = top + h + 7; labAttrs["text-anchor"] = "end"; }
+      var lab = el("text", labAttrs);
+      lab.textContent = lv.id;
+      grp.appendChild(lab);
+
+      // markers: hollow ring = queued for this record, filled dot = already recorded
+      var mx = { L: CX - half - gm.tp - 9, C: CX, R: CX + half + gm.tp + 9 };
+      ["L", "C", "R"].forEach(function (k) {
+        grp.appendChild(el("circle", { class: "pdot p" + k, cx: mx[k], cy: top + h / 2, r: 5.6, opacity: 0 }));
+        grp.appendChild(el("circle", { class: "dot m" + k, cx: mx[k], cy: top + h / 2, r: 3.4, opacity: 0 }));
+      });
+
+      // hit zones — left wing / body / right wing
+      var hitTop = top - 2, hitH = h + 4;
+      var reach = half + gm.tp + 14;
+      if (lv.id === "OCC") reach = 78;
+      if (lv.id === "SAC") reach = 40;   // tiles against the ilium zones below
+      if (lv.id === "COC") reach = 26;
+
+      if (lv.blade) {
+        // Each SI blade flanks the sacrum, so its hit zone must start outside the
+        // sacrum's own reach or it would cover it. One zone only — the joint is the side.
+        grp.appendChild(el("rect", { class: "hit", "data-side": lv.blade,
+          x: lv.blade === "L" ? CX - 84 : CX + 42, y: hitTop, width: 42, height: hitH }));
+      } else {
+        grp.appendChild(el("rect", { class: "hit", "data-side": "L", x: CX - reach, y: hitTop, width: reach - 8, height: hitH }));
+        grp.appendChild(el("rect", { class: "hit", "data-side": "C", x: CX - 8, y: hitTop, width: 16, height: hitH }));
+        grp.appendChild(el("rect", { class: "hit", "data-side": "R", x: CX + 8, y: hitTop, width: reach - 8, height: hitH }));
+      }
+
+      svg.appendChild(grp);
+    }
+
+    svg.addEventListener("click", function (e) {
+      var hit = e.target.closest(".hit");
+      var grp = e.target.closest(".seg");
+      if (!grp) return;
+      var side = hit ? hit.getAttribute("data-side") : "C";
+      pick(grp.getAttribute("data-id"), side, e.shiftKey);
+      grp.focus();
+    });
+
+    svg.addEventListener("keydown", function (e) {
+      var grp = e.target.closest && e.target.closest(".seg");
+      if (!grp) return;
+      var id = grp.getAttribute("data-id");
+      var idx = LEVELS.findIndex(function (l) { return l.id === id; });
+      var curSide = selSideOf(id) || "C";
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        var next = idx + (e.key === "ArrowDown" ? 1 : -1);
+        if (next < 0 || next >= LEVELS.length) return;
+        var target = document.querySelector('.seg[data-id="' + LEVELS[next].id + '"]');
+        target.focus();
+        // shift-arrow extends the selection, plain arrow just moves the cursor
+        if (e.shiftKey) pick(LEVELS[next].id, curSide, true);
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+        var order = ["L", "C", "R"];
+        var si = order.indexOf(curSide) + (e.key === "ArrowRight" ? 1 : -1);
+        if (si < 0) si = 0; if (si > 2) si = 2;
+        if (isSelected(id)) setSideOf(id, order[si]); else pick(id, order[si], false);
+      } else if (e.key === " ") {
+        e.preventDefault();
+        pick(id, curSide, false);            // space toggles this segment in or out
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        if (isSelected(id)) recordSelection(); else pick(id, curSide, false);
+      }
+    });
+  }
+
+  function paintSpine() {
+    var segs = document.querySelectorAll(".seg");
+    for (var i = 0; i < segs.length; i++) {
+      var id = segs[i].getAttribute("data-id");
+      segs[i].classList.toggle("is-selected", isSelected(id));
+      segs[i].classList.toggle("is-focus", id === state.focus);
+
+      var rec = { L: 0, C: 0, R: 0 };
+      for (var j = 0; j < state.entries.length; j++) {
+        if (state.entries[j].id === id) rec[state.entries[j].side] = 1;
+      }
+      var pend = selSideOf(id);
+      ["L", "C", "R"].forEach(function (k) {
+        segs[i].querySelector(".m" + k).setAttribute("opacity", rec[k] ? 1 : 0);
+        segs[i].querySelector(".p" + k).setAttribute("opacity", pend === k ? 1 : 0);
+      });
+    }
+    var n = state.selection.length;
+    var bar = document.getElementById("sel-bar");
+    document.getElementById("sel-count").textContent =
+      n === 0 ? "Nothing selected" : n + (n === 1 ? " segment selected" : " segments selected");
+    bar.classList.toggle("active", n > 0);
+  }
+
+  /* =========================================================
+     4. DETAIL PANEL
+     ========================================================= */
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  function techEffect(name) {
+    for (var i = 0; i < TECHNIQUES.length; i++) if (TECHNIQUES[i].name === name) return TECHNIQUES[i].effect;
+    return "";
+  }
+
+  /* Click a segment: adds it to the selection. Clicking the same side again
+     removes it; clicking a different side moves the contact to that side.
+     Shift-click selects the whole run between the last segment and this one. */
+  function pick(id, side, extend) {
+    side = levelById(id).fixedSide || side || "C";
+
+    if (extend && state.focus && state.focus !== id) {
+      var a = levelIndex(state.focus), b = levelIndex(id);
+      if (a > b) { var t = a; a = b; b = t; }
+      for (var i = a; i <= b; i++) {
+        if (selIndex(LEVELS[i].id) === -1) state.selection.push({ id: LEVELS[i].id, side: side });
+      }
+      state.focus = id;
+    } else {
+      var at = selIndex(id);
+      if (at === -1) {
+        state.selection.push({ id: id, side: side });
+        state.focus = id;
+      } else if (state.selection[at].side !== side) {
+        state.selection[at].side = side;          // same segment, different contact
+        state.focus = id;
+      } else {
+        state.selection.splice(at, 1);            // same side twice = deselect
+        if (state.focus === id) {
+          state.focus = state.selection.length ? state.selection[state.selection.length - 1].id : null;
+        }
+      }
+    }
+
+    sortSelection();
+    if (state.selection.length === 1) draftFor(levelById(state.selection[0].id)).side = state.selection[0].side;
+    renderDetail();
+    paintSpine();
+  }
+
+  function setSideOf(id, side) {
+    var at = selIndex(id);
+    if (at === -1) return;
+    var lv = levelById(id);
+    if (lv.fixedSide) return;                 // the SI joints are their own side
+    state.selection[at].side = side;
+    if (state.selection.length === 1) draftFor(levelById(id)).side = side;
+    renderDetail();
+    paintSpine();
+  }
+
+  function deselect(id) {
+    var at = selIndex(id);
+    if (at === -1) return;
+    state.selection.splice(at, 1);
+    if (state.focus === id) state.focus = state.selection.length ? state.selection[0].id : null;
+    renderDetail();
+    paintSpine();
+  }
+
+  function clearSelection() {
+    state.selection = [];
+    state.focus = null;
+    renderDetail();
+    paintSpine();
+  }
+
+  /* ---- shared form pieces, used by both the single and multi views ---- */
+
+  function techOptionsHTML(cur) {
+    return TECHNIQUES.map(function (t) {
+      return '<option' + (t.name === cur ? " selected" : "") + ">" + esc(t.name) + "</option>";
+    }).join("");
+  }
+  function posOptionsHTML(cur) {
+    return POSITIONS.map(function (p) {
+      return '<option' + (p === cur ? " selected" : "") + ">" + esc(p) + "</option>";
+    }).join("");
+  }
+  function listingOptionsHTML(list, cur) {
+    return list.map(function (o) {
+      return '<option' + (o === cur ? " selected" : "") + ">" + esc(o) + "</option>";
+    }).join("");
+  }
+  function partBoxesHTML(d) {
+    return PART_ITEMS.map(function (p) {
+      var on = d.part.indexOf(p.k) > -1;
+      return '<label class="check' + (on ? " on" : "") + '">' +
+             '<input type="checkbox" data-part="' + p.k + '"' + (on ? " checked" : "") + ">" +
+             '<span class="k">' + p.k + "</span>" + esc(p.label) + "</label>";
+    }).join("");
+  }
+  function respBoxesHTML(d) {
+    return RESPONSES.map(function (r) {
+      var on = d.response.indexOf(r) > -1;
+      return '<label class="check' + (on ? " on" : "") + '">' +
+             '<input type="checkbox" data-resp="' + esc(r) + '"' + (on ? " checked" : "") + ">" + esc(r) + "</label>";
+    }).join("");
+  }
+
+  // The auto-populated "what this does" body for one level.
+  function effectsHTML(lv, technique) {
+    var mech = REGION_EFFECTS[lv.region].concat(lv.extra || []);
+    return '<div class="eff"><h4>Segmental mechanics</h4>' +
+             '<p style="margin:0 0 8px"><b>Normal motion here:</b> ' + esc(lv.motion) + "</p><ul>" +
+             mech.map(function (m) { return "<li>" + esc(m) + "</li>"; }).join("") + "</ul></div>" +
+
+           '<div class="eff"><h4>Technique delivered</h4><p style="margin:0">' + esc(techEffect(technique)) + "</p></div>" +
+
+           '<div class="eff"><h4>Neurological territory of this level</h4><dl>' +
+             "<dt>Root</dt><dd>" + esc(lv.roots) + "</dd>" +
+             "<dt>Dermatome</dt><dd>" + esc(lv.derm) + "</dd>" +
+             "<dt>Myotome</dt><dd>" + esc(lv.myo) + "</dd>" +
+             "<dt>Reflex</dt><dd>" + esc(lv.reflex) + "</dd></dl></div>" +
+
+           '<div class="eff"><h4>Commonly presents as</h4><p style="margin:0">' + esc(lv.present) + "</p></div>" +
+
+           '<div class="eff traditional"><h4>Traditional chart association</h4>' +
+             "<dl><dt>Areas</dt><dd>" + esc(lv.supplies) + "</dd>" +
+             "<dt>Chart lists</dt><dd>" + esc(lv.symptoms) + "</dd></dl>" +
+             '<div class="note-inline">From the historical meric / spinal nerve chart. Long-standing chiropractic teaching, ' +
+             "not established physiological causation — carried into the patient handout with the same wording.</div></div>";
+  }
+
+  function cautionHTML(regions) {
+    var seen = [], html = "";
+    regions.forEach(function (r) {
+      if (seen.indexOf(r) > -1) return;
+      seen.push(r);
+      html += (regions.length > 1 || seen.length > 1 ? "<p style=\"margin:8px 0 4px\"><b>" + esc(REGION_META[r].label) + "</b></p>" : "") +
+              "<ul>" + REGION_FLAGS[r].map(function (f) { return "<li>" + esc(f) + "</li>"; }).join("") + "</ul>";
+    });
+    return '<div class="eff caution"><h4>Before you thrust here</h4>' + html + "</div>";
+  }
+
+  function selChipsHTML() {
+    return state.selection.map(function (s) {
+      var lv = levelById(s.id);
+      return '<span class="sel-chip" data-chip="' + esc(s.id) + '">' +
+               '<span class="code">' + esc(s.id) + "</span>" +
+               '<button type="button" class="sd" data-cycle="' + esc(s.id) + '" title="Change side of contact">' +
+                 esc(s.side) + "</button>" +
+               '<button type="button" class="x" data-drop="' + esc(s.id) + '" ' +
+                 'aria-label="Remove ' + esc(lv.name) + ' from selection">&times;</button>' +
+             "</span>";
+    }).join("");
+  }
+
+  /* ---- render ------------------------------------------------------- */
+
+  function renderDetail() {
+    var host = document.getElementById("detail");
+    var n = state.selection.length;
+
+    if (n === 0) {
+      host.innerHTML =
+        '<div class="empty"><h2>Select what you adjusted</h2>' +
+        "<p>Click any segment on the spine to add it. Keep clicking to build up everything you adjusted " +
+        "today — shift-click to take a whole run of levels at once. The segmental effect, neurological " +
+        "territory, and screening populate automatically for every segment you pick.</p></div>";
+      return;
+    }
+
+    if (n === 1) renderSingle(levelById(state.selection[0].id));
+    else renderBatch();
+  }
+
+  function renderSingle(lv) {
+    var host = document.getElementById("detail");
+    var d = draftFor(lv);
+    d.side = selSideOf(lv.id) || d.side;
+    var rm = REGION_META[lv.region];
+
+    host.innerHTML =
+      '<div class="seg-head">' +
+        '<div class="seg-code">' + esc(lv.id) + "</div>" +
+        '<div class="seg-titles">' +
+          "<h2>" + esc(lv.name) + "</h2>" +
+          "<p>" + esc(lv.sub) + "</p>" +
+          '<div class="chips">' +
+            '<span class="chip region" style="background:' + rm.color + '">' + esc(rm.label) + "</span>" +
+            (lv.fixedSide ? "" : '<span class="chip">Contact: ' + esc(sideWord(d.side)) + "</span>") +
+            '<span class="chip">Root ' + esc(lv.roots.split("—")[0].trim().replace(/\.$/, "").slice(0, 22)) + "</span>" +
+          "</div>" +
+        "</div>" +
+      "</div>" +
+
+      '<div class="card">' +
+        "<h3>Record the adjustment</h3>" +
+        '<div class="form-row">' +
+          '<div class="field"><label>Side of contact</label>' +
+            '<div class="segmented" id="side-seg">' +
+              '<button type="button" data-side="L" aria-pressed="' + (d.side === "L") + '">Left</button>' +
+              '<button type="button" data-side="C" aria-pressed="' + (d.side === "C") + '">Central</button>' +
+              '<button type="button" data-side="R" aria-pressed="' + (d.side === "R") + '">Right</button>' +
+            "</div></div>" +
+          '<div class="field"><label for="f-listing">Listing</label><select id="f-listing">' +
+            listingOptionsHTML(listingsFor(lv), d.listing) + "</select></div>" +
+        "</div>" +
+        '<div class="form-row">' +
+          '<div class="field grow"><label for="f-tech">Technique</label><select id="f-tech">' +
+            techOptionsHTML(d.technique) + "</select></div>" +
+          '<div class="field"><label for="f-pos">Patient position</label><select id="f-pos">' +
+            posOptionsHTML(d.position) + "</select></div>" +
+        "</div>" +
+        '<div class="field" style="margin-bottom:12px"><label>PART findings (CMS)</label>' +
+          '<div class="checks">' + partBoxesHTML(d) + "</div></div>" +
+        '<div class="field" style="margin-bottom:12px"><label>Response to adjustment</label>' +
+          '<div class="checks">' + respBoxesHTML(d) + "</div></div>" +
+        '<div class="field"><label for="f-notes">Additional note for this segment</label>' +
+          '<input id="f-notes" type="text" placeholder="Contact point, line of drive, patient comment…" value="' +
+          esc(d.notes) + '"></div>' +
+        '<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">' +
+          '<button class="btn primary" id="btn-record">Record ' + esc(lv.id) + " " +
+            esc(sideLabel(lv, d.side).toLowerCase()) + "</button>" +
+          '<button class="btn" id="btn-clear-seg">Reset fields</button>' +
+        "</div>" +
+      "</div>" +
+
+      '<div class="card"><h3>What this adjustment does</h3>' +
+        '<div class="effects">' + effectsHTML(lv, d.technique) + cautionHTML([lv.region]) + "</div></div>";
+
+    wireSingle(lv, d);
+  }
+
+  function renderBatch() {
+    var host = document.getElementById("detail");
+    var b = batchDraft();
+    var n = state.selection.length;
+    var regions = state.selection.map(function (s) { return levelById(s.id).region; });
+    var labels = [];
+    regions.forEach(function (r) {
+      if (labels.indexOf(REGION_META[r].label) === -1) labels.push(REGION_META[r].label);
+    });
+
+    var common = commonListings();
+    if (common.indexOf(b.listing) === -1) b.listing = "—";
+    var mixedListings = common.length <= 1;
+
+    var perSegment = state.selection.map(function (s, i) {
+      var lv = levelById(s.id);
+      return '<details class="seg-eff"' + (i === 0 ? " open" : "") + ">" +
+               "<summary><span class=\"code\">" + esc(lv.id) + "</span> " + esc(lv.name) +
+                 ' <span class="sm">' + esc(sideLabel(lv, s.side).toLowerCase()) + "</span></summary>" +
+               '<div class="body"><div class="effects" style="margin-top:12px">' +
+                 effectsHTML(lv, b.technique) + "</div></div></details>";
+    }).join("");
+
+    host.innerHTML =
+      '<div class="seg-head">' +
+        '<div class="seg-code">' + n + "</div>" +
+        '<div class="seg-titles">' +
+          "<h2>" + n + " segments selected</h2>" +
+          "<p>" + esc(labels.join(", ")) + " — the settings below apply to all of them.</p>" +
+          '<div class="chips" id="sel-chips">' + selChipsHTML() + "</div>" +
+        "</div>" +
+      "</div>" +
+
+      '<div class="card">' +
+        "<h3>Record all " + n + " adjustments</h3>" +
+        '<div class="form-row">' +
+          '<div class="field grow"><label for="f-tech">Technique</label><select id="f-tech">' +
+            techOptionsHTML(b.technique) + "</select></div>" +
+          '<div class="field"><label for="f-pos">Patient position</label><select id="f-pos">' +
+            posOptionsHTML(b.position) + "</select></div>" +
+          '<div class="field"><label for="f-listing">Listing</label><select id="f-listing"' +
+            (mixedListings ? " disabled" : "") + ">" +
+            listingOptionsHTML(common, b.listing) + "</select></div>" +
+        "</div>" +
+        (mixedListings
+          ? '<p class="hint-line">These segments do not share a listing system, so listings stay blank. ' +
+            "Record them now, then click a single segment to set its listing individually.</p>"
+          : "") +
+        '<div class="field" style="margin-bottom:12px"><label>PART findings (CMS) — applied to every selected segment</label>' +
+          '<div class="checks">' + partBoxesHTML(b) + "</div></div>" +
+        '<div class="field" style="margin-bottom:12px"><label>Response to adjustment</label>' +
+          '<div class="checks">' + respBoxesHTML(b) + "</div></div>" +
+        '<div class="field"><label for="f-notes">Note applied to each segment</label>' +
+          '<input id="f-notes" type="text" placeholder="Optional — applies to all selected" value="' +
+          esc(b.notes) + '"></div>' +
+        '<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">' +
+          '<button class="btn primary" id="btn-record">Record all ' + n + "</button>" +
+          '<button class="btn" id="btn-clear-seg">Reset fields</button>' +
+          '<button class="btn ghost" id="btn-drop-all">Clear selection</button>' +
+        "</div>" +
+      "</div>" +
+
+      '<div class="card"><h3>What these adjustments do</h3>' +
+        '<p class="hint-line" style="margin-top:-4px">Open any segment to see its mechanics, neurology, and chart association. ' +
+        "All of it goes into the note whether or not you open it here.</p>" +
+        perSegment +
+        '<div class="effects" style="margin-top:12px">' + cautionHTML(regions) + "</div></div>";
+
+    wireBatch(b);
+  }
+
+  /* ---- wiring ------------------------------------------------------- */
+
+  function wireChecks(d) {
+    var boxes = document.querySelectorAll("#detail input[type=checkbox]");
+    for (var i = 0; i < boxes.length; i++) {
+      boxes[i].addEventListener("change", function () {
+        var key = this.getAttribute("data-part") ? "part" : "response";
+        var val = this.getAttribute("data-part") || this.getAttribute("data-resp");
+        var arr = d[key];
+        var at = arr.indexOf(val);
+        if (this.checked && at === -1) arr.push(val);
+        if (!this.checked && at > -1) arr.splice(at, 1);
+        this.parentNode.classList.toggle("on", this.checked);
+      });
+    }
+  }
+
+  function wireSingle(lv, d) {
+    document.getElementById("side-seg").addEventListener("click", function (e) {
+      var btn = e.target.closest("button[data-side]");
+      if (btn) setSideOf(lv.id, btn.getAttribute("data-side"));
+    });
+    document.getElementById("f-listing").addEventListener("change", function () { d.listing = this.value; });
+    document.getElementById("f-pos").addEventListener("change", function () { d.position = this.value; });
+    document.getElementById("f-notes").addEventListener("input", function () { d.notes = this.value; });
+    document.getElementById("f-tech").addEventListener("change", function () {
+      d.technique = this.value;
+      renderDetail();                       // technique changes the auto-populated effect text
+    });
+    wireChecks(d);
+    document.getElementById("btn-record").addEventListener("click", recordSelection);
+    document.getElementById("btn-clear-seg").addEventListener("click", function () {
+      state.draft[lv.id] = blankDraft(lv);
+      state.draft[lv.id].side = selSideOf(lv.id) || "C";
+      renderDetail();
+    });
+  }
+
+  function wireBatch(b) {
+    var chips = document.getElementById("sel-chips");
+    chips.addEventListener("click", function (e) {
+      var cyc = e.target.closest("[data-cycle]");
+      if (cyc) {
+        var id = cyc.getAttribute("data-cycle");
+        var order = ["L", "C", "R"];
+        var next = order[(order.indexOf(selSideOf(id)) + 1) % 3];
+        setSideOf(id, next);
+        return;
+      }
+      var drop = e.target.closest("[data-drop]");
+      if (drop) deselect(drop.getAttribute("data-drop"));
+    });
+
+    var listing = document.getElementById("f-listing");
+    if (!listing.disabled) listing.addEventListener("change", function () { b.listing = this.value; });
+    document.getElementById("f-pos").addEventListener("change", function () { b.position = this.value; });
+    document.getElementById("f-notes").addEventListener("input", function () { b.notes = this.value; });
+    document.getElementById("f-tech").addEventListener("change", function () {
+      b.technique = this.value;
+      renderDetail();
+    });
+    wireChecks(b);
+    document.getElementById("btn-record").addEventListener("click", recordSelection);
+    document.getElementById("btn-clear-seg").addEventListener("click", function () {
+      state.batch = blankBatch();
+      renderDetail();
+    });
+    document.getElementById("btn-drop-all").addEventListener("click", clearSelection);
+  }
+
+  /* =========================================================
+     5. ENTRIES + NOTE
+     ========================================================= */
+
+  // Build one entry from a selected segment. `shared` is the batch form when
+  // several segments are being recorded together.
+  function entryFor(sel, shared) {
+    var lv = levelById(sel.id);
+    var d = shared || draftFor(lv);
+    var listing = d.listing;
+    // a shared listing only carries to segments where it is actually valid
+    if (shared && listing !== "—" && listingsFor(lv).indexOf(listing) === -1) listing = "—";
+    return {
+      id: lv.id, name: lv.name, region: lv.region, side: sel.side,
+      listing: listing, technique: d.technique, position: d.position,
+      part: d.part.slice(), response: d.response.slice(), notes: d.notes
+    };
+  }
+
+  // Replace an existing entry for the same level+side rather than duplicating it.
+  function upsertEntry(entry) {
+    for (var i = 0; i < state.entries.length; i++) {
+      if (state.entries[i].id === entry.id && state.entries[i].side === entry.side) {
+        state.entries[i] = entry;
+        return true;
+      }
+    }
+    state.entries.push(entry);
+    return false;
+  }
+
+  function recordSelection() {
+    if (!state.selection.length) return;
+    var shared = state.selection.length > 1 ? batchDraft() : null;
+    var added = 0, updated = 0;
+
+    state.selection.forEach(function (sel) {
+      if (upsertEntry(entryFor(sel, shared))) updated++; else added++;
+    });
+
+    state.entries.sort(function (a, b) { return levelIndex(a.id) - levelIndex(b.id); });
+
+    renderLog();
+    paintSpine();
+
+    if (state.selection.length === 1) {
+      var one = state.selection[0];
+      toast(one.id + withSide(levelById(one.id), one.side) + (updated ? " updated" : " recorded"));
+    } else {
+      var bits = [];
+      if (added) bits.push(added + " recorded");
+      if (updated) bits.push(updated + " updated");
+      toast(bits.join(", "));
+    }
+  }
+
+  function renderLog() {
+    var list = document.getElementById("log-list");
+    var count = document.getElementById("log-count");
+    var stats = document.getElementById("stats");
+
+    if (!state.entries.length) {
+      list.innerHTML = '<p style="color:var(--ink-3);font-size:12.5px;margin:0">Nothing recorded yet.</p>';
+      count.textContent = "No adjustments recorded";
+      stats.innerHTML = "";
+    } else {
+      count.textContent = state.entries.length + (state.entries.length === 1 ? " adjustment" : " adjustments");
+
+      var byRegion = { cerv: 0, thor: 0, lumb: 0, sacr: 0 };
+      state.entries.forEach(function (e) { byRegion[e.region]++; });
+      stats.innerHTML = Object.keys(byRegion).map(function (r) {
+        return '<div class="stat ' + r + '"><div class="n">' + byRegion[r] + '</div><div class="l">' +
+               REGION_META[r].short + "</div></div>";
+      }).join("");
+
+      list.innerHTML = state.entries.map(function (e, i) {
+        var bits = [];
+        if (e.listing && e.listing !== "—") bits.push("Listing " + e.listing);
+        bits.push(e.technique);
+        bits.push(e.position.toLowerCase());
+        return '<div class="log-item">' +
+          '<span class="lcode">' + esc(e.id) + "</span>" +
+          '<span class="lbody"><b>' + esc(e.name) + "</b>" + esc(withSide(levelById(e.id), e.side, " — ")) +
+          '<br><span class="lmeta">' + esc(bits.join(" · ")) + "</span></span>" +
+          '<button class="lx" data-rm="' + i + '" title="Remove" aria-label="Remove ' + esc(e.id) + '">&times;</button>' +
+          "</div>";
+      }).join("");
+
+      list.querySelectorAll("[data-rm]").forEach(function (b) {
+        b.addEventListener("click", function () {
+          state.entries.splice(parseInt(this.getAttribute("data-rm"), 10), 1);
+          renderLog(); paintSpine();
+        });
+      });
+    }
+    renderNote();
+  }
+
+  function meta() {
+    return {
+      patient: document.getElementById("f-patient").value.trim() || "____________________",
+      dob: document.getElementById("f-dob").value || "__________",
+      date: document.getElementById("f-date").value || "__________",
+      provider: document.getElementById("f-provider").value.trim() || "____________________"
+    };
+  }
+
+  function regionsTouched() {
+    var seen = [], out = [];
+    state.entries.forEach(function (e) {
+      if (seen.indexOf(e.region) === -1) { seen.push(e.region); out.push(REGION_META[e.region].label); }
+    });
+    return out;
+  }
+
+  function clinicalNote() {
+    var m = meta();
+    var L = [];
+    L.push("CHIROPRACTIC ADJUSTMENT RECORD");
+    L.push("Patient: " + m.patient + "    DOB: " + m.dob);
+    L.push("Date of service: " + m.date + "    Provider: " + m.provider);
+    L.push("");
+
+    if (!state.entries.length) return "Record an adjustment to generate the note.";
+
+    L.push("OBJECTIVE — SEGMENTAL FINDINGS (PART)");
+    state.entries.forEach(function (e) {
+      var found = PART_ITEMS.filter(function (p) { return e.part.indexOf(p.k) > -1; })
+                            .map(function (p) { return p.k + " — " + p.label.toLowerCase(); });
+      L.push("  " + fullName(levelById(e.id)) + withSide(levelById(e.id), e.side, ", ") + ": " +
+             (found.length ? found.join("; ") : "no PART elements documented"));
+    });
+    L.push("");
+
+    L.push("TREATMENT — SPINAL MANIPULATIVE THERAPY");
+    L.push("  Regions adjusted: " + regionsTouched().join(", ") +
+           "  (" + state.entries.length + " segment" + (state.entries.length === 1 ? "" : "s") + ")");
+    state.entries.forEach(function (e, i) {
+      var line = "  " + (i + 1) + ". " + e.id + withSide(levelById(e.id), e.side);
+      if (e.listing && e.listing !== "—") line += " — listing " + e.listing;
+      line += " — " + e.technique + ", " + e.position.toLowerCase() + ".";
+      L.push(line);
+      L.push("     Response: " + (e.response.length ? e.response.join("; ") + "." : "not documented."));
+      if (e.notes) L.push("     Note: " + e.notes);
+    });
+    L.push("");
+
+    L.push("EFFECT OF TREATMENT — BY SEGMENT");
+    state.entries.forEach(function (e) {
+      var lv = levelById(e.id);
+      L.push("  " + fullName(lv));
+      L.push("     Motion addressed: " + lv.motion);
+      REGION_EFFECTS[lv.region].concat(lv.extra || []).forEach(function (x) {
+        L.push("     - " + x);
+      });
+      L.push("     Technique: " + techEffect(e.technique));
+      L.push("     Segmental neurology: root " + lv.roots +
+             " | dermatome " + lv.derm + " | myotome " + lv.myo + " | reflex " + lv.reflex);
+    });
+    L.push("");
+
+    L.push("SAFETY SCREENING APPLIED");
+    var seenR = [];
+    state.entries.forEach(function (e) {
+      if (seenR.indexOf(e.region) > -1) return;
+      seenR.push(e.region);
+      L.push("  " + REGION_META[e.region].label + ":");
+      REGION_FLAGS[e.region].forEach(function (f) { L.push("     - " + f); });
+    });
+    L.push("");
+    L.push("Provider signature: ______________________________   Date: ____________");
+    L.push("");
+    L.push("Draft generated by Listing Board for clinician review, correction, and signature.");
+    return L.join("\n");
+  }
+
+  function patientNote() {
+    var m = meta();
+    var L = [];
+    L.push("YOUR ADJUSTMENT TODAY");
+    L.push(m.patient + "  |  " + m.date + "  |  " + m.provider);
+    L.push("");
+
+    if (!state.entries.length) return "Record an adjustment to generate the handout.";
+
+    L.push("We adjusted " + state.entries.length + " area" + (state.entries.length === 1 ? "" : "s") +
+           " of your spine: " + regionsTouched().join(", ").toLowerCase() + ".");
+    L.push("");
+
+    state.entries.forEach(function (e) {
+      var lv = levelById(e.id);
+      L.push("-------------------------------------------------------------");
+      L.push(fullName(lv) + (lv.fixedSide ? "" : "  —  " + sideWord(e.side).toLowerCase() + " side"));
+      L.push("");
+      L.push("Where it is:  " + lv.sub);
+      L.push("What it does: " + lv.motion);
+      L.push("");
+      L.push("What the adjustment was for:");
+      L.push("  " + techEffect(e.technique));
+      L.push("");
+      L.push("What you may notice:");
+      L.push("  - Easier, less restricted movement in this part of your spine.");
+      L.push("  - Less muscle tightness around the area for a period after treatment.");
+      L.push("  - Short-term soreness is common and usually settles within a day or two.");
+      L.push("");
+      L.push("This level's nerve supply reaches: " + lv.derm);
+      L.push("Muscles tested at this level: " + lv.myo);
+      L.push("");
+      L.push("On the traditional chiropractic chart, this level is listed with:");
+      L.push("  " + lv.supplies);
+      L.push("  " + lv.symptoms);
+      L.push("  (These associations come from the historical chiropractic nerve chart. They are");
+      L.push("   traditional teaching rather than proven cause and effect — ask your chiropractor");
+      L.push("   how they apply to you.)");
+      L.push("");
+    });
+
+    L.push("-------------------------------------------------------------");
+    L.push("Contact the clinic if you develop severe or worsening pain, new numbness or");
+    L.push("weakness, changes to your bladder or bowel, or any sudden dizziness, visual");
+    L.push("change or difficulty speaking.");
+    return L.join("\n");
+  }
+
+  function renderNote() {
+    document.getElementById("note").textContent =
+      state.noteTab === "clinical" ? clinicalNote() : patientNote();
+  }
+
+  /* =========================================================
+     6. PERSISTENCE + ACTIONS
+     ========================================================= */
+
+  function loadStore() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || { visits: [] }; }
+    catch (err) { return { visits: [] }; }
+  }
+  function saveStore(s) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(s)); return true; }
+    catch (err) { return false; }
+  }
+
+  function saveVisit() {
+    if (!state.entries.length) { toast("Nothing to save yet"); return; }
+    var m = meta();
+    var store = loadStore();
+    var visit = {
+      savedAt: new Date().toISOString(),
+      patient: document.getElementById("f-patient").value.trim(),
+      dob: document.getElementById("f-dob").value,
+      date: document.getElementById("f-date").value,
+      provider: document.getElementById("f-provider").value.trim(),
+      entries: state.entries
+    };
+    store.visits.unshift(visit);
+    store.visits = store.visits.slice(0, 300);
+    toast(saveStore(store) ? "Visit saved for " + (visit.patient || "this patient") : "Could not save — storage unavailable");
+  }
+
+  function repeatLast() {
+    var name = document.getElementById("f-patient").value.trim().toLowerCase();
+    var store = loadStore();
+    var match = null;
+    for (var i = 0; i < store.visits.length; i++) {
+      var v = store.visits[i];
+      if (!name || (v.patient || "").toLowerCase() === name) { match = v; break; }
+    }
+    if (!match) { toast("No previous visit found"); return; }
+    state.entries = JSON.parse(JSON.stringify(match.entries));
+    // bring the same segments forward as a live selection, ready to re-record or amend
+    state.selection = match.entries.map(function (e) { return { id: e.id, side: e.side }; });
+    sortSelection();
+    state.focus = state.selection.length ? state.selection[0].id : null;
+    renderLog(); paintSpine(); renderDetail();
+    toast("Loaded " + match.entries.length + " adjustments from " + (match.date || "the last visit"));
+  }
+
+  function showHistory() {
+    var store = loadStore();
+    if (!store.visits.length) { toast("No saved visits yet"); return; }
+    var lines = store.visits.slice(0, 12).map(function (v, i) {
+      return (i + 1) + ". " + (v.date || "—") + "  " + (v.patient || "unnamed") +
+             "  (" + v.entries.length + " segments: " +
+             v.entries.map(function (e) { return e.id; }).join(", ") + ")";
+    });
+    var pick = window.prompt("Saved visits — enter a number to load it:\n\n" + lines.join("\n"), "1");
+    if (!pick) return;
+    var n = parseInt(pick, 10);
+    if (isNaN(n) || n < 1 || n > store.visits.length) { toast("No visit at that number"); return; }
+    var v = store.visits[n - 1];
+    document.getElementById("f-patient").value = v.patient || "";
+    document.getElementById("f-dob").value = v.dob || "";
+    document.getElementById("f-date").value = v.date || "";
+    document.getElementById("f-provider").value = v.provider || "";
+    state.entries = JSON.parse(JSON.stringify(v.entries));
+    state.selection = [];
+    state.focus = null;
+    renderLog(); paintSpine(); renderDetail();
+    toast("Loaded visit from " + (v.date || "storage"));
+  }
+
+  function newVisit() {
+    if (state.entries.length && !window.confirm("Clear " + state.entries.length + " recorded adjustments and start a new visit?")) return;
+    state.entries = [];
+    state.draft = {};
+    state.batch = null;
+    state.selection = [];
+    state.focus = null;
+    document.getElementById("f-date").value = new Date().toISOString().slice(0, 10);
+    renderLog(); paintSpine(); renderDetail();
+    toast("New visit started");
+  }
+
+  function exportJSON() {
+    var payload = {
+      exportedAt: new Date().toISOString(),
+      patient: document.getElementById("f-patient").value.trim(),
+      dob: document.getElementById("f-dob").value,
+      date: document.getElementById("f-date").value,
+      provider: document.getElementById("f-provider").value.trim(),
+      entries: state.entries,
+      clinicalNote: clinicalNote(),
+      patientHandout: patientNote()
+    };
+    copyText(JSON.stringify(payload, null, 2), "Visit JSON copied to the clipboard");
+  }
+
+  function copyText(text, msg) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { toast(msg); },
+        function () { fallbackCopy(text, msg); });
+    } else { fallbackCopy(text, msg); }
+  }
+
+  function fallbackCopy(text, msg) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
+    document.body.removeChild(ta);
+    toast(ok ? msg : "Copy blocked — select the note text and copy manually");
+  }
+
+  var toastTimer = null;
+  function toast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2200);
+  }
+
+  /* =========================================================
+     7. BOOT
+     ========================================================= */
+
+  drawSpine();
+  renderLog();
+  renderDetail();
+  paintSpine();
+  document.getElementById("f-date").value = new Date().toISOString().slice(0, 10);
+  document.getElementById("btn-clear-sel").addEventListener("click", clearSelection);
+
+  document.getElementById("tab-clinical").addEventListener("click", function () {
+    state.noteTab = "clinical";
+    this.setAttribute("aria-selected", "true");
+    document.getElementById("tab-patient").setAttribute("aria-selected", "false");
+    renderNote();
+  });
+  document.getElementById("tab-patient").addEventListener("click", function () {
+    state.noteTab = "patient";
+    this.setAttribute("aria-selected", "true");
+    document.getElementById("tab-clinical").setAttribute("aria-selected", "false");
+    renderNote();
+  });
+
+  ["f-patient", "f-dob", "f-date", "f-provider"].forEach(function (id) {
+    document.getElementById(id).addEventListener("input", renderNote);
+  });
+
+  document.getElementById("btn-save").addEventListener("click", saveVisit);
+  document.getElementById("btn-new").addEventListener("click", newVisit);
+  document.getElementById("btn-repeat").addEventListener("click", repeatLast);
+  document.getElementById("btn-history").addEventListener("click", showHistory);
+  document.getElementById("btn-copy").addEventListener("click", function () {
+    copyText(document.getElementById("note").textContent,
+      state.noteTab === "clinical" ? "Clinical note copied" : "Patient handout copied");
+  });
+  document.getElementById("btn-print").addEventListener("click", function () { window.print(); });
+  document.getElementById("btn-export").addEventListener("click", exportJSON);
+  document.getElementById("btn-theme").addEventListener("click", function () {
+    var cur = document.documentElement.getAttribute("data-theme");
+    var next;
+    if (cur === "dark") next = "light";
+    else if (cur === "light") next = "dark";
+    else next = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    toast(next === "dark" ? "Dark theme" : "Light theme");
+  });
+})();
+</script>
