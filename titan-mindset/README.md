@@ -1,4 +1,4 @@
-# Mat Mindset
+# Titan Mindset
 
 Daily motivation for wrestlers. Every morning and every night the app pushes a quote from one of the world's top wrestling coaches and champions, and the full library lets you tap any coach or wrestler and read everything they've said.
 
@@ -24,7 +24,7 @@ Tapping a notification opens the app on that quote's author.
 ### Running the push server
 
 ```bash
-cd mat-mindset/server
+cd titan-mindset/server
 npm install
 npm run keys          # prints a VAPID key pair
 cp .env.example .env  # paste the keys in, set VAPID_SUBJECT to your email

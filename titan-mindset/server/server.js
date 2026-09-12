@@ -1,4 +1,4 @@
-/* Mat Mindset push server.
+/* Titan Mindset push server.
  *
  * Stores Web Push subscriptions with each user's IANA time zone and preferred
  * morning/evening times, then once a minute pushes the day's quote to everyone
@@ -63,7 +63,7 @@ async function sendSlot(entry, slot, dateKey, isTest) {
   const payload = JSON.stringify({
     title: isTest ? 'Test: ' + n.title : n.title,
     body: n.body,
-    tag: isTest ? 'mat-mindset-test' : n.tag,
+    tag: isTest ? 'titan-mindset-test' : n.tag,
     slot, dateKey, data: n.data,
   });
   try {
@@ -166,7 +166,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log('Mat Mindset push server on http://localhost:' + PORT + ' with ' + Object.keys(subs).length + ' subscriber(s)');
+  console.log('Titan Mindset push server on http://localhost:' + PORT + ' with ' + Object.keys(subs).length + ' subscriber(s)');
 });
 
 // Minimal .env loader so there is no dotenv dependency.

@@ -1,7 +1,7 @@
-/* Mat Mindset service worker: offline cache, scheduled reminders, and Web Push. */
+/* Titan Mindset service worker: offline cache, scheduled reminders, and Web Push. */
 importScripts('./quotes.js', './shared.js');
 
-const CACHE = 'mat-mindset-v1';
+const CACHE = 'titan-mindset-v1';
 const ASSETS = [
   './', './index.html', './quotes.js', './shared.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',
@@ -10,7 +10,7 @@ const ASSETS = [
 // ---- tiny IndexedDB key/value store (localStorage is not available in workers) ----
 function idb() {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open('mat-mindset', 1);
+    const req = indexedDB.open('titan-mindset', 1);
     req.onupgradeneeded = () => req.result.createObjectStore('kv');
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
@@ -63,7 +63,7 @@ self.addEventListener('fetch', (event) => {
 
 // ---- showing a reminder ----
 async function showSlot(slot, dateKey) {
-  const n = MatMindset.notificationFor(dateKey, slot);
+  const n = TitanMindset.notificationFor(dateKey, slot);
   if (!n) return;
   await self.registration.showNotification(n.title, {
     body: n.body,
@@ -81,10 +81,10 @@ async function showSlot(slot, dateKey) {
 // Check whether a reminder is due and fire it. Used by the page (via message),
 // by periodic background sync, and after a push arrives.
 async function checkDue(graceMinutes) {
-  const settings = (await kvGet('settings')) || MatMindset.DEFAULTS;
+  const settings = (await kvGet('settings')) || TitanMindset.DEFAULTS;
   if (!settings.enabled) return;
   const sent = (await kvGet('sent')) || {};
-  const due = MatMindset.dueSlots(settings, sent, new Date(), undefined, graceMinutes);
+  const due = TitanMindset.dueSlots(settings, sent, new Date(), undefined, graceMinutes);
   for (const slot of due.slots) await showSlot(slot, due.dateKey);
 }
 
@@ -95,11 +95,11 @@ self.addEventListener('message', (event) => {
   } else if (msg.type === 'check') {
     event.waitUntil(checkDue());
   } else if (msg.type === 'test') {
-    const local = MatMindset.localParts(new Date());
+    const local = TitanMindset.localParts(new Date());
     const slot = local.minutes < 12 * 60 ? 'morning' : 'evening';
-    const n = MatMindset.notificationFor(local.dateKey, slot);
+    const n = TitanMindset.notificationFor(local.dateKey, slot);
     event.waitUntil(self.registration.showNotification('Test: ' + n.title, {
-      body: n.body, icon: './icons/icon-192.png', badge: './icons/icon-192.png', data: n.data, tag: 'mat-mindset-test',
+      body: n.body, icon: './icons/icon-192.png', badge: './icons/icon-192.png', data: n.data, tag: 'titan-mindset-test',
     }));
   }
 });
@@ -107,7 +107,7 @@ self.addEventListener('message', (event) => {
 // Periodic Background Sync (installed PWA on Chromium/Android): wake up and deliver anything due.
 self.addEventListener('periodicsync', (event) => {
   // The browser decides when this actually runs, so accept a reminder up to three hours late.
-  if (event.tag === 'mat-mindset-check') event.waitUntil(checkDue(180));
+  if (event.tag === 'titan-mindset-check') event.waitUntil(checkDue(180));
 });
 
 // Web Push from the optional server. The payload carries the quote so it works even
@@ -116,8 +116,8 @@ self.addEventListener('push', (event) => {
   let payload = {};
   try { payload = event.data ? event.data.json() : {}; } catch (e) { payload = { body: event.data && event.data.text() }; }
   const slot = payload.slot || 'morning';
-  const dateKey = payload.dateKey || MatMindset.localParts(new Date()).dateKey;
-  const fallback = MatMindset.notificationFor(dateKey, slot) || { title: 'Mat Mindset', body: '' };
+  const dateKey = payload.dateKey || TitanMindset.localParts(new Date()).dateKey;
+  const fallback = TitanMindset.notificationFor(dateKey, slot) || { title: 'Titan Mindset', body: '' };
   event.waitUntil((async () => {
     await self.registration.showNotification(payload.title || fallback.title, {
       body: payload.body || fallback.body,

@@ -1,9 +1,9 @@
-/* Mat Mindset quote library.
+/* Titan Mindset quote library.
    Each person: { id, name, role: "coach" | "wrestler", affiliation, bio, quotes: [{ text, source }] }.
    Quotes come from published interviews, articles, talks, and well-known quote collections; the
    source field says where each one was found. To add a quote, append to the person's quotes array
    (or add a new person with a unique id). Both the app and the push server read this file. */
-const MAT_MINDSET_QUOTES = [
+const TITAN_MINDSET_QUOTES = [
   {
     "id": "dan-gable",
     "name": "Dan Gable",
@@ -1223,5 +1223,5 @@ const MAT_MINDSET_QUOTES = [
   }
 ];
 
-if (typeof module === "object" && module.exports) { module.exports = MAT_MINDSET_QUOTES; }
-if (typeof self !== "undefined") { self.MAT_MINDSET_QUOTES = MAT_MINDSET_QUOTES; }
+if (typeof module === "object" && module.exports) { module.exports = TITAN_MINDSET_QUOTES; }
+if (typeof self !== "undefined") { self.TITAN_MINDSET_QUOTES = TITAN_MINDSET_QUOTES; }

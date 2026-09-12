@@ -38,7 +38,7 @@ assert.deepStrictEqual(due.slots, ['evening'], 'custom grace window');
 
 // Notification payload is well-formed.
 const n = MM.notificationFor('2026-09-12', 'evening');
-assert(n.title && n.body.includes(n.body.split(' — ').pop()) && n.tag.startsWith('mat-mindset-evening-'));
+assert(n.title && n.body.includes(n.body.split(' — ').pop()) && n.tag.startsWith('titan-mindset-evening-'));
 assert.strictEqual(MM.formatTime12('07:30'), '7:30 AM');
 assert.strictEqual(MM.formatTime12('20:30'), '8:30 PM');
 assert.strictEqual(MM.formatTime12('00:05'), '12:05 AM');

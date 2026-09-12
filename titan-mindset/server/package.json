@@ -1,7 +1,7 @@
 {
-  "name": "mat-mindset-push-server",
+  "name": "titan-mindset-push-server",
   "version": "1.0.0",
-  "description": "Web Push scheduler for Mat Mindset: sends each subscriber a morning and evening wrestling quote at their chosen local times.",
+  "description": "Web Push scheduler for Titan Mindset: sends each subscriber a morning and evening wrestling quote at their chosen local times.",
   "private": true,
   "main": "server.js",
   "scripts": {

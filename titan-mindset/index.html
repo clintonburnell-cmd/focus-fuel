@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Mat Mindset</title>
+<title>Titan Mindset</title>
 <meta name="description" content="Daily motivation for wrestlers from the world's top coaches and champions, every morning and night." />
 <meta name="theme-color" content="#0f1216" />
 <link rel="manifest" href="manifest.webmanifest" />
@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Mat Mindset" />
+<meta name="apple-mobile-web-app-title" content="Titan Mindset" />
 <style>
   :root{
     --bg:#f4f1ec;
@@ -195,7 +195,7 @@
   <header class="top">
     <div class="brand">
       <svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#0f1216"/><circle cx="256" cy="256" r="176" fill="none" stroke="#e8462f" stroke-width="26"/><circle cx="256" cy="256" r="88" fill="none" stroke="#e8462f" stroke-width="18" opacity=".85"/><path d="M176 296a80 80 0 0 1 160 0z" fill="#f5c542"/><rect x="164" y="296" width="184" height="14" rx="7" fill="#f5c542"/></svg>
-      Mat Mindset
+      Titan Mindset
     </div>
     <span class="pill" id="datePill"></span>
   </header>
@@ -203,7 +203,7 @@
   <!-- TODAY -->
   <section class="view" id="view-today">
     <h1 id="greeting">Good morning.</h1>
-    <p class="sub" id="tagline">Get after it.</p>
+    <p class="sub" id="tagline">Rise like a Titan.</p>
     <div id="todayCards"></div>
     <p class="next"><span class="dot"></span><span id="nextText"></span></p>
     <h2>More fuel</h2>
@@ -286,7 +286,7 @@
     <div class="card">
       <div class="label" style="font-weight:700">Push server (optional)</div>
       <div class="hint" style="color:var(--muted);font-size:13px;margin-top:4px;line-height:1.4">
-        Point at a running Mat Mindset push server to get true background pushes on every device, even iPhone. Leave blank to use on-device reminders.
+        Point at a running Titan Mindset push server to get true background pushes on every device, even iPhone. Leave blank to use on-device reminders.
       </div>
       <input type="url" id="pushServer" placeholder="https://your-server.example.com" />
       <div class="status" id="pushStatus"></div>
@@ -325,14 +325,14 @@
 <script>
 (function(){
   'use strict';
-  const MM = window.MatMindset;
+  const MM = window.TitanMindset;
   const PEOPLE = MM.QUOTES.slice().sort((a, b) => a.name.localeCompare(b.name));
   const byId = Object.fromEntries(PEOPLE.map(p => [p.id, p]));
   const $ = (s) => document.querySelector(s);
 
   // ---------- settings ----------
-  const KEY = 'mat-mindset:settings';
-  const SENT_KEY = 'mat-mindset:sent';
+  const KEY = 'titan-mindset:settings';
+  const SENT_KEY = 'titan-mindset:sent';
   let settings = Object.assign({ pushServer: '' }, MM.DEFAULTS);
   try { settings = Object.assign(settings, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
   function saveSettings() {
@@ -570,7 +570,7 @@
     const n = MM.notificationFor(dateKey || local.dateKey, slot === 'test' ? (local.minutes < 720 ? 'morning' : 'evening') : slot);
     if (!n) return;
     try {
-      const note = new Notification(slot === 'test' ? 'Test: ' + n.title : n.title, { body: n.body, icon: 'icons/icon-192.png', tag: slot === 'test' ? 'mat-mindset-test' : n.tag, data: n.data });
+      const note = new Notification(slot === 'test' ? 'Test: ' + n.title : n.title, { body: n.body, icon: 'icons/icon-192.png', tag: slot === 'test' ? 'titan-mindset-test' : n.tag, data: n.data });
       note.onclick = () => { window.focus(); location.hash = '#person/' + n.data.authorId; note.close(); };
     } catch (e) {}
   }
@@ -599,9 +599,9 @@
     try {
       const status = navigator.permissions ? await navigator.permissions.query({ name: 'periodic-background-sync' }) : { state: 'granted' };
       if (status.state !== 'granted') return;
-      await swReg.periodicSync.register('mat-mindset-check', { minInterval: 15 * 60 * 1000 });
+      await swReg.periodicSync.register('titan-mindset-check', { minInterval: 15 * 60 * 1000 });
       const tags = await swReg.periodicSync.getTags();
-      periodicSyncOn = tags.includes('mat-mindset-check');
+      periodicSyncOn = tags.includes('titan-mindset-check');
     } catch (e) { /* not supported, or the app is not installed */ }
   }
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {

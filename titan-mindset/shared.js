@@ -1,10 +1,10 @@
-/* Mat Mindset — shared logic used by the page, the service worker, and the push server.
+/* Titan Mindset — shared logic used by the page, the service worker, and the push server.
    Loaded via <script> in the browser, importScripts() in the service worker, and require() in Node. */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
     module.exports = factory(require('./quotes.js'));
   } else {
-    root.MatMindset = factory(root.MAT_MINDSET_QUOTES);
+    root.TitanMindset = factory(root.TITAN_MINDSET_QUOTES);
   }
 })(typeof self !== 'undefined' ? self : this, function (QUOTES) {
   'use strict';
@@ -118,9 +118,9 @@
     const q = quoteFor(dateKey, slot);
     if (!q) return null;
     return {
-      title: slot === 'morning' ? 'Morning mat mindset' : 'Evening mat mindset',
+      title: slot === 'morning' ? 'Titan Mindset · Morning' : 'Titan Mindset · Evening',
       body: '“' + q.text + '” — ' + q.author,
-      tag: 'mat-mindset-' + slot + '-' + dateKey,
+      tag: 'titan-mindset-' + slot + '-' + dateKey,
       data: { slot: slot, dateKey: dateKey, quoteId: q.id, authorId: q.authorId },
     };
   }
