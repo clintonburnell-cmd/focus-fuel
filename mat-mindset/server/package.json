@@ -1,0 +1,16 @@
+{
+  "name": "mat-mindset-push-server",
+  "version": "1.0.0",
+  "description": "Web Push scheduler for Mat Mindset: sends each subscriber a morning and evening wrestling quote at their chosen local times.",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "keys": "node server.js --generate-keys",
+    "test": "node test.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "web-push": "^3.6.7"
+  }
+}
