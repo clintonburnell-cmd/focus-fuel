@@ -7,7 +7,7 @@ Open [`index.html`](index.html) over HTTP (any static host works: GitHub Pages, 
 ## What it does
 
 - **Today** shows the morning and evening quote for the day. Every device and the push server agree on the same quote for the same date, and the list cycles through all 190+ quotes before repeating.
-- **Quotes** lists every coach and wrestler with a search box and Coach / Wrestler filters. Tap a name for their bio, all their quotes, the source each one came from, and Share / Copy buttons.
+- **Quotes** lists every coach and wrestler with a search box and Coach / Wrestler filters. Tap a name for their bio, all their quotes, the source each one came from, and Share / Copy buttons. Every quote is tagged by theme (grit, grace, effort, attitude, gratitude, resilience, belief, discipline); tap a theme chip to see all matching quotes at once.
 - **Reminders** turns on two daily notifications, defaulting to **7:30 AM** and **8:30 PM** in the device's own time zone. Both times are editable.
 
 ## How the notifications work
@@ -58,9 +58,11 @@ Edit `quotes.js`. Each person looks like:
   affiliation: "University of Iowa · 1972 Olympic champion",
   bio: "One sentence.",
   quotes: [
-    { text: "If it's important, do it every day. If it isn't, don't do it at all.", source: "Where it was found" }
+    { text: "If it's important, do it every day. If it isn't, don't do it at all.", source: "Where it was found", themes: ["discipline"] }
   ]
 }
 ```
+
+Themes are: `grit`, `grace`, `effort`, `attitude`, `gratitude`, `resilience`, `belief`, `discipline`.
 
 Quotes were gathered from published interviews, articles, talks, and quote collections; the `source` field records where each one was found so anyone can check or improve the attribution.

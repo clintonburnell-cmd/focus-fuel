@@ -116,6 +116,14 @@
     border:1px solid var(--line); background:var(--card); border-radius:999px; padding:7px 13px; font-size:13px; font-weight:600;
   }
   .chip.on{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
+  .chips.themes .chip.on{ background:var(--accent); color:#fff; border-color:var(--accent); }
+  .chips-label{ font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); font-weight:700; margin:14px 0 6px; }
+  .tags{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .tag{ font-size:11px; font-weight:700; letter-spacing:0.04em; text-transform:capitalize; color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent); padding:3px 8px; border-radius:999px; }
+  .qitem .by{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .qitem .by button{ background:none; border:0; padding:0; text-align:left; }
+  .qitem .by .name{ font-weight:800; font-size:14px; }
+  .qitem .by .aff{ color:var(--muted); font-size:12px; }
   .people{ list-style:none; margin:0; padding:0; display:grid; gap:10px; }
   .people li{ min-width:0; }
   .person{
@@ -220,13 +228,25 @@
   <section class="view" id="view-library">
     <h1>Coaches &amp; Wrestlers</h1>
     <p class="sub" id="libraryCount"></p>
-    <input class="search" id="search" type="search" placeholder="Search names, teams, or quotes" autocomplete="off" />
+    <input class="search" id="search" type="search" placeholder="Search names, teams, quotes, or themes" autocomplete="off" />
     <div class="chips" role="tablist">
       <button class="chip on" data-filter="all">All</button>
       <button class="chip" data-filter="coach">Coaches</button>
       <button class="chip" data-filter="wrestler">Wrestlers</button>
     </div>
+    <div class="chips-label">By theme</div>
+    <div class="chips themes" role="tablist">
+      <button class="chip" data-theme="grit">Grit</button>
+      <button class="chip" data-theme="grace">Grace</button>
+      <button class="chip" data-theme="effort">Effort</button>
+      <button class="chip" data-theme="attitude">Attitude</button>
+      <button class="chip" data-theme="gratitude">Gratitude</button>
+      <button class="chip" data-theme="resilience">Resilience</button>
+      <button class="chip" data-theme="belief">Belief</button>
+      <button class="chip" data-theme="discipline">Discipline</button>
+    </div>
     <ul class="people" id="people"></ul>
+    <ul class="qlist" id="themeQuotes" hidden></ul>
   </section>
 
   <!-- PERSON -->
@@ -389,6 +409,7 @@
       <div class="card quote ${isNow ? 'now' : ''}" data-id="${esc(q.id)}">
         <div class="slot">${label}${isNow && slot !== 'random' ? ' · up now' : ''}</div>
         <p class="text">${esc(q.text)}</p>
+        ${tagsHTML(q.themes)}
         <div class="who">
           <button class="link" data-person="${esc(q.authorId)}">
             <div class="name">${esc(q.author)}</div>
@@ -454,12 +475,34 @@
   });
 
   // ---------- library ----------
-  let filter = 'all', query = '';
+  let filter = 'all', query = '', theme = '';
+  function tagsHTML(themes) { return themes && themes.length ? `<div class="tags">${themes.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''; }
   function renderLibrary() {
     const q = query.trim().toLowerCase();
+    const ul = $('#people'), tq = $('#themeQuotes');
+    if (theme) {
+      // A theme is selected: show matching quotes directly, from everyone in the current role filter.
+      ul.hidden = true; tq.hidden = false;
+      const hits = ALL.filter(x => x.themes.includes(theme) && (filter === 'all' || x.role === filter))
+        .filter(x => !q || x.text.toLowerCase().includes(q) || x.author.toLowerCase().includes(q) || x.affiliation.toLowerCase().includes(q));
+      $('#libraryCount').textContent = `${hits.length} ${theme} quote${hits.length === 1 ? '' : 's'}.`;
+      if (!hits.length) { tq.innerHTML = '<li class="empty">No matches.</li>'; return; }
+      tq.innerHTML = hits.map(x => `
+        <li class="qitem" data-id="${esc(x.id)}">
+          <p>${esc(x.text)}</p>
+          <div class="by">
+            <button data-person="${esc(x.authorId)}"><div class="name">${esc(x.author)}</div><div class="aff">${esc(x.affiliation)}</div></button>
+            <div class="actions"><button class="btn small" data-act="share">Share</button></div>
+          </div>
+        </li>`).join('');
+      tq.querySelectorAll('[data-person]').forEach(b => b.addEventListener('click', () => { location.hash = '#person/' + b.dataset.person; }));
+      tq.querySelectorAll('[data-act="share"]').forEach(b => b.addEventListener('click', () => shareOrCopy(quoteById[b.closest('[data-id]').dataset.id])));
+      return;
+    }
+    ul.hidden = false; tq.hidden = true;
+    $('#libraryCount').textContent = LIBRARY_SUMMARY;
     const list = PEOPLE.filter(p => (filter === 'all' || p.role === filter))
-      .filter(p => !q || p.name.toLowerCase().includes(q) || (p.affiliation || '').toLowerCase().includes(q) || p.quotes.some(x => x.text.toLowerCase().includes(q)));
-    const ul = $('#people');
+      .filter(p => !q || p.name.toLowerCase().includes(q) || (p.affiliation || '').toLowerCase().includes(q) || p.quotes.some(x => x.text.toLowerCase().includes(q) || (x.themes || []).includes(q)));
     if (!list.length) { ul.innerHTML = '<li class="empty">No matches.</li>'; return; }
     ul.innerHTML = list.map(p => `
       <li><button class="person" data-person="${esc(p.id)}">
@@ -474,11 +517,16 @@
     ul.querySelectorAll('[data-person]').forEach(b => b.addEventListener('click', () => { location.hash = '#person/' + b.dataset.person; }));
   }
   const coaches = PEOPLE.filter(p => p.role === 'coach').length;
-  $('#libraryCount').textContent = `${ALL.length} quotes from ${coaches} coaches and ${PEOPLE.length - coaches} wrestlers.`;
+  const LIBRARY_SUMMARY = `${ALL.length} quotes from ${coaches} coaches and ${PEOPLE.length - coaches} wrestlers.`;
   $('#search').addEventListener('input', (e) => { query = e.target.value; renderLibrary(); });
-  document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+  document.querySelectorAll('.chip[data-filter]').forEach(c => c.addEventListener('click', () => {
     filter = c.dataset.filter;
-    document.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === c));
+    document.querySelectorAll('.chip[data-filter]').forEach(x => x.classList.toggle('on', x === c));
+    renderLibrary();
+  }));
+  document.querySelectorAll('.chip[data-theme]').forEach(c => c.addEventListener('click', () => {
+    theme = theme === c.dataset.theme ? '' : c.dataset.theme; // tap again to clear
+    document.querySelectorAll('.chip[data-theme]').forEach(x => x.classList.toggle('on', x.dataset.theme === theme));
     renderLibrary();
   }));
   renderLibrary();
@@ -500,6 +548,7 @@
     ul.innerHTML = p.quotes.map((q, i) => `
       <li class="qitem" data-id="${esc(p.id + ':' + i)}">
         <p>${esc(q.text)}</p>
+        ${tagsHTML(q.themes)}
         ${q.source ? `<div class="src">Source: ${esc(q.source)}</div>` : ''}
         <div class="actions">
           <button class="btn small" data-act="share">Share</button>

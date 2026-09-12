@@ -24,6 +24,7 @@
           id: p.id + ':' + i,
           text: q.text,
           source: q.source || '',
+          themes: q.themes || [],
           author: p.name,
           authorId: p.id,
           role: p.role,
