@@ -1,12 +1,12 @@
 # Titan Mindset
 
-Daily motivation for wrestlers. Every morning and every night the app pushes a quote from one of the world's top wrestling coaches and champions, and the full library lets you tap any coach or wrestler and read everything they've said.
+Daily motivation for wrestlers. Every morning and every night the app pushes a quote from one of the world's top wrestling coaches and champions, and the full library lets you tap any coach or wrestler and read everything they've said. Alongside the wrestling world, the library also carries legendary coaches and athletes from other sports (Nick Saban, John Wooden, Kobe Bryant, Michael Jordan, and more) and lines from the book Chop Wood Carry Water.
 
 Open [`index.html`](index.html) over HTTP (any static host works: GitHub Pages, Netlify, `npx serve`), then add it to your home screen. No build step.
 
 ## What it does
 
-- **Today** shows the morning and evening quote for the day. Every device and the push server agree on the same quote for the same date, and the list cycles through all 190+ quotes before repeating.
+- **Today** shows the morning and evening quote for the day. Every device and the push server agree on the same quote for the same date, and the list cycles through all 380+ quotes before repeating.
 - **Quotes** lists every coach and wrestler with a search box and Coach / Wrestler filters. Tap a name for their bio, all their quotes, the source each one came from, and Share / Copy buttons. Every quote is tagged by theme (grit, grace, effort, attitude, gratitude, resilience, belief, discipline); tap a theme chip to see all matching quotes at once.
 - **Reminders** turns on two daily notifications, defaulting to **7:30 AM** and **8:30 PM** in the device's own time zone. Both times are editable.
 
@@ -54,7 +54,7 @@ Edit `quotes.js`. Each person looks like:
 {
   id: "dan-gable",
   name: "Dan Gable",
-  role: "coach",            // or "wrestler"
+  role: "coach",            // "coach", "wrestler", "athlete", or "author"
   affiliation: "University of Iowa · 1972 Olympic champion",
   bio: "One sentence.",
   quotes: [
