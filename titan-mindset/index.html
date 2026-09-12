@@ -137,12 +137,14 @@
     background:linear-gradient(135deg, var(--accent), #ff8a5c); color:#fff; letter-spacing:0.02em;
   }
   .avatar.wrestler{ background:linear-gradient(135deg, #2f6fd6, #5dc1ff); }
+  .avatar.athlete, .avatar.author{ background:linear-gradient(135deg, #b8860b, #f5c542); }
   .person .meta{ flex:1; min-width:0; }
   .person .name{ font-weight:800; font-size:16px; }
   .person .aff{ color:var(--muted); font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .person .count{ color:var(--muted); font-size:12px; font-weight:700; white-space:nowrap; }
   .role-tag{ font-size:11px; text-transform:uppercase; letter-spacing:0.08em; font-weight:800; color:var(--accent); }
   .role-tag.wrestler{ color:#3b86f0; }
+  .role-tag.athlete, .role-tag.author{ color:var(--gold); }
   .empty{ color:var(--muted); text-align:center; padding:30px 0; }
 
   /* Person */
@@ -234,6 +236,7 @@
       <button class="chip on" data-filter="all">All</button>
       <button class="chip" data-filter="coach">Coaches</button>
       <button class="chip" data-filter="wrestler">Wrestlers</button>
+      <button class="chip" data-filter="legend">Other legends</button>
     </div>
     <div class="chips-label">By theme</div>
     <div class="chips themes" role="tablist">
@@ -477,6 +480,8 @@
 
   // ---------- library ----------
   let filter = 'all', query = '', theme = '';
+  const ROLE_LABEL = { coach: 'coach', wrestler: 'wrestler', athlete: 'athlete', author: 'author' };
+  function roleMatch(role) { return filter === 'all' || (filter === 'legend' ? (role !== 'coach' && role !== 'wrestler') : role === filter); }
   function tagsHTML(themes) { return themes && themes.length ? `<div class="tags">${themes.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''; }
   function renderLibrary() {
     const q = query.trim().toLowerCase();
@@ -484,7 +489,7 @@
     if (theme) {
       // A theme is selected: show matching quotes directly, from everyone in the current role filter.
       ul.hidden = true; tq.hidden = false;
-      const hits = ALL.filter(x => x.themes.includes(theme) && (filter === 'all' || x.role === filter))
+      const hits = ALL.filter(x => x.themes.includes(theme) && roleMatch(x.role))
         .filter(x => !q || x.text.toLowerCase().includes(q) || x.author.toLowerCase().includes(q) || x.affiliation.toLowerCase().includes(q));
       $('#libraryCount').textContent = `${hits.length} ${theme} quote${hits.length === 1 ? '' : 's'}.`;
       if (!hits.length) { tq.innerHTML = '<li class="empty">No matches.</li>'; return; }
@@ -502,14 +507,14 @@
     }
     ul.hidden = false; tq.hidden = true;
     $('#libraryCount').textContent = LIBRARY_SUMMARY;
-    const list = PEOPLE.filter(p => (filter === 'all' || p.role === filter))
+    const list = PEOPLE.filter(p => roleMatch(p.role))
       .filter(p => !q || p.name.toLowerCase().includes(q) || (p.affiliation || '').toLowerCase().includes(q) || p.quotes.some(x => x.text.toLowerCase().includes(q) || (x.themes || []).includes(q)));
     if (!list.length) { ul.innerHTML = '<li class="empty">No matches.</li>'; return; }
     ul.innerHTML = list.map(p => `
       <li><button class="person" data-person="${esc(p.id)}">
         <div class="avatar ${p.role}">${initials(p.name)}</div>
         <div class="meta">
-          <div class="role-tag ${p.role}">${p.role}</div>
+          <div class="role-tag ${p.role}">${ROLE_LABEL[p.role] || p.role}</div>
           <div class="name">${esc(p.name)}</div>
           <div class="aff">${esc(p.affiliation || '')}</div>
         </div>
@@ -517,8 +522,9 @@
       </button></li>`).join('');
     ul.querySelectorAll('[data-person]').forEach(b => b.addEventListener('click', () => { location.hash = '#person/' + b.dataset.person; }));
   }
-  const coaches = PEOPLE.filter(p => p.role === 'coach').length;
-  const LIBRARY_SUMMARY = `${ALL.length} quotes from ${coaches} coaches and ${PEOPLE.length - coaches} wrestlers.`;
+  const coaches = PEOPLE.filter(p => p.role === 'coach').length, wrestlers = PEOPLE.filter(p => p.role === 'wrestler').length;
+  const others = PEOPLE.length - coaches - wrestlers;
+  const LIBRARY_SUMMARY = `${ALL.length} quotes from ${coaches} coaches, ${wrestlers} wrestlers${others ? ', and ' + others + ' other legends' : ''}.`;
   $('#search').addEventListener('input', (e) => { query = e.target.value; renderLibrary(); });
   document.querySelectorAll('.chip[data-filter]').forEach(c => c.addEventListener('click', () => {
     filter = c.dataset.filter;
@@ -538,7 +544,7 @@
       <div class="profile">
         <div class="avatar ${p.role}">${initials(p.name)}</div>
         <div>
-          <div class="role-tag ${p.role}">${p.role}</div>
+          <div class="role-tag ${p.role}">${ROLE_LABEL[p.role] || p.role}</div>
           <h1>${esc(p.name)}</h1>
           <div class="sub" style="margin:0">${esc(p.affiliation || '')}</div>
         </div>
