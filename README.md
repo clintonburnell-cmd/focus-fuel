@@ -11,7 +11,7 @@ dependencies, no framework. Open `index.html` in a browser and it works.
 | --- | --- | --- |
 | `index.html` | Home | Intro, quick links, next few events, how to join |
 | `schedule.html` | Schedule | Full season calendar, filters, `.ics` calendar download |
-| `nutrition.html` | Nutrition | Fueling, hydration, competition day, safe weight management |
+| `nutrition.html` | Nutrition | Macro targets, fuel calculator, competition day, weight management |
 | `seasons.html` | Pre & Post Season | Summer/fall prep, offseason lifting, freestyle, camps |
 | `accomplishments.html` | Accomplishments | Year-by-year state results, region results, milestones |
 | `faq.html` | FAQ | Joining, gear, weight classes, safety, travel, meet days |
@@ -67,6 +67,22 @@ Past events drop off the "Upcoming" views automatically — no need to delete th
    `accomplishments.html` is still empty.
 5. **Contact info.** Add coach names/emails in the footer if the staff wants them
    public.
+
+## Nutrition page
+
+The nutrition content is adapted from the coaching staff's own handouts — the
+*Nutrition Basics* presentation from the UVU wrestling retreat and the *Basic
+Nutrition Guidelines* sheet — plus NFHS/UHSAA weight management rules. The page
+credits both at the bottom. The per-kilogram targets that drive the daily fuel
+calculator live in the `FUEL` object near the bottom of `assets/js/main.js`:
+
+```js
+var FUEL = {
+  training:    { carbs: [7, 10] },   // g per kg bodyweight
+  competition: { carbs: [6, 8] },
+  protein:     [1.5, 2]
+};
+```
 
 ## Colors
 
