@@ -41,14 +41,10 @@ Past events drop off the "Upcoming" views automatically — no need to delete th
 
 ## Things to replace before going live
 
-1. **Logo.** `assets/img/logo.svg` is a hand-traced stand-in of the Mustang mark
-   drawn as vector art with a **transparent background**, so it blends into whatever
-   is behind it. To use the official school artwork instead, drop the file in as
-   `assets/img/logo.png` and change the two `<img src="assets/img/logo.svg">` lines
-   in each page (header and hero) — `grep -rn "logo.svg" *.html` finds them. If the
-   official file has the solid navy square behind the horse, it will still blend:
-   the site's `--navy` is set to that same navy (`#0b0f2f`). Check with the school
-   before publishing district logos.
+1. ~~**Logo.**~~ Done — `assets/img/logo.png` is the official running-mustang mark
+   from the athletic director, with the navy background keyed out to transparency
+   so it sits on any section, and recolored to the school's PMS 172 orange.
+   `assets/img/favicon.png` is the same mustang on PMS 289 navy.
 2. **sportsYou link.** Every `https://sportsyou.com` link should point at the team's
    actual join/team URL. They are in the nav and footer of all six pages —
    `grep -rl "sportsyou.com" *.html` finds them.
@@ -86,16 +82,16 @@ var FUEL = {
 
 ## Colors
 
-Mountain Crest orange and blue, set once as CSS variables at the top of
-`assets/css/styles.css`:
+The school's official colors, per the athletic director: **Orange PMS 172**,
+**Blue PMS 289**. Their standard hex conversions are set once as CSS variables at
+the top of `assets/css/styles.css`, and everything else derives from them:
 
 ```css
---navy: #00376e;   /* blue */
---orange: #f26a21; /* orange */
+--navy: #0c2340;   /* PMS 289 */
+--orange: #fa4616; /* PMS 172 */
 ```
 
-Adjust those two values to match the official district colors exactly and the whole
-site follows.
+Give printers and apparel vendors the PMS numbers, not the hex.
 
 ## Hosting
 
