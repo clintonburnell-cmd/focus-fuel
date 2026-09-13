@@ -60,7 +60,11 @@ Past events drop off the "Upcoming" views automatically — no need to delete th
    Daily. The individual lists are the champions those articles named, **not** full
    top-six placer lists, and 2024 and 2025 individual results are still missing.
    Verify against the official UHSAA/Trackwrestling brackets and fill in the gaps.
-   The region-results table in `accomplishments.html` is still empty.
+   Placers are supported alongside champions: give each wrestler a `place` from 1 to
+   8 (1 renders as a highlighted champion row), or omit `place` and pass a short
+   `result` string when the exact finish isn't confirmed. A season's `medalists`
+   count shows how many podium names are still missing. The region-results table in
+   `accomplishments.html` is still empty.
 5. **Contact info.** Add coach names/emails in the footer if the staff wants them
    public.
 

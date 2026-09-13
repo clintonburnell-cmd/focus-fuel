@@ -534,25 +534,10 @@ tbody tr:nth-child(even) { background: var(--silver-light); }
 .season-body table { min-width: 420px; }
 .season-body .table-scroll { margin-bottom: 0; }
 
-.champ-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 16px 0 4px;
-  padding: 0;
-  list-style: none;
-}
-.champ-list li {
-  background: var(--orange);
-  color: var(--navy-deep);
-  font-weight: 700;
-  border-radius: 999px;
-  padding: 7px 16px;
-  font-size: .9rem;
-}
-.champ-list li span { font-weight: 400; }
+tr.is-champion td { background: #fff2e6; font-weight: 700; }
+tr.is-champion td:first-child { box-shadow: inset 4px 0 0 var(--orange); }
+tr.is-champion .place-medal { color: var(--orange-dark); }
 
-.place-1 td:first-child { border-left: 4px solid var(--orange); }
 .place-medal { font-weight: 700; color: var(--navy); white-space: nowrap; }
 
 .season-empty {
