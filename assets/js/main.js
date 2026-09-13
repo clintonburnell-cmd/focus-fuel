@@ -291,34 +291,42 @@
 
   function initResultsPage() {
     var host = document.getElementById("results-list");
-    if (!host) return;
+    var stats = document.getElementById("results-stats");
+    if (!host && !stats) return;
 
     var seasons = (window.MCW_RESULTS || []).slice();
     var totalChamps = 0;
-    var totalPlacers = 0;
-    var seasonsWithPlacers = 0;
+    var teamTitles = 0;
+    var streak = 0;
+    var bestStreak = 0;
 
     seasons.forEach(function (season) {
       var placers = (season.placers || []).slice().sort(function (a, b) {
         return (a.place || 99) - (b.place || 99);
       });
-      totalPlacers += placers.length;
       totalChamps += placers.filter(function (p) { return p.place === 1; }).length;
-      if (placers.length) seasonsWithPlacers++;
+
+      if (season.teamTitle) {
+        teamTitles++;
+        streak++;
+        if (streak > bestStreak) bestStreak = streak;
+      } else {
+        streak = 0;
+      }
 
       var block = document.createElement("section");
-      block.className = "season-block";
+      block.className = "season-block" + (season.teamTitle ? " is-champ" : "");
 
       var metaBits = [];
       if (season.classification) metaBits.push(escapeHtml(season.classification));
-      if (season.teamFinish) metaBits.push("Team: <strong>" + escapeHtml(season.teamFinish) + "</strong>");
-      if (season.qualifiers) metaBits.push(escapeHtml(season.qualifiers) + " state qualifiers");
-      if (placers.length) metaBits.push("<strong>" + placers.length + "</strong> placer" + (placers.length === 1 ? "" : "s"));
+      if (season.teamFinish) metaBits.push("<strong>" + escapeHtml(season.teamFinish) + "</strong>");
+      if (season.teamScore) metaBits.push(escapeHtml(season.teamScore) + " pts");
 
       var head = document.createElement("div");
       head.className = "season-head";
       head.innerHTML = "<h3>" + escapeHtml(season.season) + "</h3>" +
-        (metaBits.length ? '<p class="season-meta">' + metaBits.join(" &middot; ") + "</p>" : "");
+        (metaBits.length ? '<p class="season-meta">' + metaBits.join(" &middot; ") + "</p>" : "") +
+        (season.teamTitle ? '<span class="title-badge">&#127942; Team State Title</span>' : "");
       block.appendChild(head);
 
       var body = document.createElement("div");
@@ -326,15 +334,17 @@
 
       var champs = placers.filter(function (p) { return p.place === 1; });
       if (champs.length) {
-        body.innerHTML += '<ul class="champ-list">' + champs.map(function (p) {
-          return "<li>&#127942; " + escapeHtml(p.name) +
-            (p.weight ? ' <span>&middot; ' + escapeHtml(p.weight) + " lbs</span>" : "") + "</li>";
-        }).join("") + "</ul>";
+        body.innerHTML += '<p class="champ-heading">Individual state champions</p>' +
+          '<ul class="champ-list">' + champs.map(function (p) {
+            return "<li>" + escapeHtml(p.name) +
+              (p.weight ? ' <span>&middot; ' + escapeHtml(p.weight) + "</span>" : "") + "</li>";
+          }).join("") + "</ul>";
       }
 
-      if (placers.length) {
-        var rows = placers.map(function (p) {
-          return '<tr class="place-' + (p.place || "") + '">' +
+      var others = placers.filter(function (p) { return p.place !== 1; });
+      if (others.length) {
+        var rows = others.map(function (p) {
+          return "<tr>" +
             "<td>" + escapeHtml(p.name) + "</td>" +
             "<td>" + escapeHtml(p.weight || "&mdash;") + "</td>" +
             '<td class="place-medal">' + escapeHtml(placeLabel(p.place)) + "</td>" +
@@ -344,9 +354,11 @@
           '<div class="table-scroll"><table><thead><tr>' +
           "<th>Wrestler</th><th>Weight</th><th>State Finish</th><th>Record</th>" +
           "</tr></thead><tbody>" + rows + "</tbody></table></div>";
-      } else {
-        body.innerHTML += '<p class="season-empty">Results for this season have not been ' +
-          "entered yet. Send them to the coaching staff and they will be added.</p>";
+      }
+
+      if (!placers.length) {
+        body.innerHTML += '<p class="season-empty">Individual results for this season have not ' +
+          "been compiled yet. Send them to the coaching staff and they will be added.</p>";
       }
 
       if (season.notes) {
@@ -354,16 +366,15 @@
       }
 
       block.appendChild(body);
-      host.appendChild(block);
+      if (host) host.appendChild(block);
     });
 
-    var stats = document.getElementById("results-stats");
     if (stats) {
       stats.innerHTML =
-        statCard(totalChamps, "State Champions") +
-        statCard(totalPlacers, "State Placers") +
-        statCard(seasons.length, "Seasons") +
-        statCard(seasonsWithPlacers, "Seasons with a Placer");
+        statCard(teamTitles, "Team State Titles") +
+        statCard(totalChamps, "Individual State Champions") +
+        statCard(bestStreak, "Straight Team Titles") +
+        statCard(seasons.length, "Seasons of Girls Wrestling");
     }
   }
 

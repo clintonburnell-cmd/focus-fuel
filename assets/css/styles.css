@@ -560,3 +560,28 @@ tbody tr:nth-child(even) { background: var(--silver-light); }
   font-style: italic;
   margin: 14px 0 4px;
 }
+
+.season-block.is-champ { border-color: var(--orange); }
+.season-block.is-champ .season-head { background: linear-gradient(100deg, var(--navy), var(--navy-soft)); }
+
+.title-badge {
+  margin-left: auto;
+  background: var(--orange);
+  color: var(--navy-deep);
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  padding: 5px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.champ-heading {
+  margin: 16px 0 0;
+  font-size: .74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--ink-soft);
+}

@@ -13,7 +13,7 @@ dependencies, no framework. Open `index.html` in a browser and it works.
 | `schedule.html` | Schedule | Full season calendar, filters, `.ics` calendar download |
 | `nutrition.html` | Nutrition | Fueling, hydration, competition day, safe weight management |
 | `seasons.html` | Pre & Post Season | Summer/fall prep, offseason lifting, freestyle, camps |
-| `accomplishments.html` | Accomplishments | State placers, region results, program milestones |
+| `accomplishments.html` | Accomplishments | Year-by-year state results, region results, milestones |
 | `faq.html` | FAQ | Joining, gear, weight classes, safety, travel, meet days |
 
 The sportsYou app is linked from the main nav, the footer and several pages.
@@ -54,8 +54,13 @@ Past events drop off the "Upcoming" views automatically — no need to delete th
    `grep -rl "sportsyou.com" *.html` finds them.
 3. **Schedule.** The events in `data/schedule.js` are placeholders for the 2026-27
    season. Replace with the real schedule from the athletic office.
-4. **Accomplishments.** The tables in `accomplishments.html` contain example rows and
-   a note to coaches. Fill in real results and delete the note.
+4. **Accomplishments.** `data/results.js` holds the year-by-year state results. Team
+   titles and scores (5 4A championships: 2021, 2022, 2023, 2024, 2026) were compiled
+   from published coverage — Deseret News, KSL, The Herald Journal and Cache Valley
+   Daily. The individual lists are the champions those articles named, **not** full
+   top-six placer lists, and 2024 and 2025 individual results are still missing.
+   Verify against the official UHSAA/Trackwrestling brackets and fill in the gaps.
+   The region-results table in `accomplishments.html` is still empty.
 5. **Contact info.** Add coach names/emails in the footer if the staff wants them
    public.
 
