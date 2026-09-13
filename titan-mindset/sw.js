@@ -1,7 +1,7 @@
 /* Titan Mindset service worker: offline cache, scheduled reminders, and Web Push. */
 importScripts('./quotes.js', './shared.js');
 
-const CACHE = 'titan-mindset-v1';
+const CACHE = 'titan-mindset-v2';
 const ASSETS = [
   './', './index.html', './quotes.js', './shared.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',

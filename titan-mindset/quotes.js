@@ -13,24 +13,6 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "Undefeated 1972 Olympic gold medalist who coached Iowa to 15 NCAA team titles and is widely regarded as the most influential figure in American wrestling.",
     "quotes": [
       {
-        "text": "Gold medals aren't really made of gold. They're made of sweat, determination, and a hard-to-find alloy called guts.",
-        "source": "Widely attributed (BrainyQuote, AZQuotes)",
-        "themes": [
-          "effort",
-          "resilience",
-          "grit"
-        ]
-      },
-      {
-        "text": "Once you've wrestled, everything else in life is easy.",
-        "source": "Widely attributed (BrainyQuote, Goodreads)",
-        "themes": [
-          "resilience",
-          "attitude",
-          "grit"
-        ]
-      },
-      {
         "text": "More enduringly than any other sport, wrestling teaches self-control and pride. Some have wrestled without great skill. None have wrestled without pride.",
         "source": "Widely attributed (BrainyQuote)",
         "themes": [
@@ -39,28 +21,10 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "The first period is won by the best technician. The second period is won by the kid in the best shape. The third period is won by the kid with the biggest heart.",
-        "source": "Widely attributed (BrainyQuote, AZQuotes)",
-        "themes": [
-          "effort",
-          "resilience",
-          "grit"
-        ]
-      },
-      {
         "text": "Talent is everywhere, winning attitude is not.",
         "source": "Coaching Wrestling Successfully (1998)",
         "themes": [
           "attitude"
-        ]
-      },
-      {
-        "text": "Pain is nothing compared to what it feels like to quit. Give everything you got today, for tomorrow may never come.",
-        "source": "Widely attributed (QuoteFancy)",
-        "themes": [
-          "effort",
-          "resilience",
-          "grit"
         ]
       },
       {
@@ -72,41 +36,10 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "If it's important, do it every day. If it isn't, don't do it at all.",
-        "source": "Widely attributed (BrainyQuote, AZQuotes)",
-        "themes": [
-          "discipline"
-        ]
-      },
-      {
         "text": "I shoot, I score. He shoots, I score.",
         "source": "Widely attributed; cited by Spencer Lee",
         "themes": [
           "belief",
-          "attitude"
-        ]
-      },
-      {
-        "text": "A lot of my intensity in wrestling was due to my mental preparation before the matches. I got myself into a different world.",
-        "source": "BrainyQuote",
-        "themes": [
-          "discipline",
-          "attitude"
-        ]
-      },
-      {
-        "text": "Luck? Ah, we don't want luck. Luck is when you win the lottery. Attitude: that's how you win.",
-        "source": "AZQuotes",
-        "themes": [
-          "attitude",
-          "belief"
-        ]
-      },
-      {
-        "text": "Champions adjust. Champions adapt.",
-        "source": "AZQuotes",
-        "themes": [
-          "resilience",
           "attitude"
         ]
       }
@@ -167,15 +100,6 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "Hard work: you get knocked down, you get back up. You earn your escape. If you lay on your belly, you're going to be there a long time.",
-        "source": "Deseret News, 'Coach Cael Sanderson's secret to success' (Nov 2024)",
-        "themes": [
-          "effort",
-          "resilience",
-          "grit"
-        ]
-      },
-      {
         "text": "You can win this thing on one leg, but it's going to be hard to do that on one leg and with a bad attitude.",
         "source": "Deseret News / Onward State",
         "themes": [
@@ -189,14 +113,6 @@ const TITAN_MINDSET_QUOTES = [
         "themes": [
           "effort",
           "gratitude"
-        ]
-      },
-      {
-        "text": "The greatest weapon is the ability to stay calm and focused under pressure. The mind is the key to victory.",
-        "source": "BrainyQuote",
-        "themes": [
-          "attitude",
-          "belief"
         ]
       },
       {
@@ -234,15 +150,6 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "I got to be a part of something that when you get knocked down, it's a lot easier to get up because of the program around you.",
-        "source": "Retirement press conference, April 2024 (Pistols Firing)",
-        "themes": [
-          "resilience",
-          "gratitude",
-          "grace"
-        ]
-      },
-      {
         "text": "Embrace it. Embrace the challenge of it. I never was afraid of that expectation. It drove me. It excited me. It gave me a reason to be doing what I was doing.",
         "source": "Oklahoma State Athletics press conference transcript",
         "themes": [
@@ -251,12 +158,13 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "There was just a level of motivation of saying 'I can do this.' It made me believe that this is where I belonged and this is a chance, an opportunity for me to capitalize on everything I ever wanted in wrestling.",
-        "source": "Oklahoma State Athletics press conference transcript",
+        "text": "it was just a level of motivation and just saying, I can do this. [...] made me believe that this is where I belong. This is a chance, this is an opportunity for me to capitalize on everything I've ever wanted in wrestling.",
+        "source": "Oklahoma State University Athletics (okstate.com)",
         "themes": [
           "belief",
           "gratitude"
-        ]
+        ],
+        "url": "https://okstate.com/news/2024/4/15/cowboy-wrestling-john-smith-press-conference-transcript"
       },
       {
         "text": "There came a point in my career where that wasn't enough. I wanted to be the greatest pound-for-pound wrestler in the world.",
@@ -299,29 +207,6 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "You don't get what you deserve, you get what you earn.",
-        "source": "AZQuotes",
-        "themes": [
-          "effort"
-        ]
-      },
-      {
-        "text": "We don't deserve anything; we must work for everything.",
-        "source": "AZQuotes",
-        "themes": [
-          "effort"
-        ]
-      },
-      {
-        "text": "I don't believe in dreams. I believe in going after it.",
-        "source": "AZQuotes, QuoteFancy",
-        "themes": [
-          "effort",
-          "attitude",
-          "grit"
-        ]
-      },
-      {
         "text": "You don't like where you're at, go control what you can control and make it go your way, and I've got to do the same.",
         "source": "Post-NCAA comments reported by Tanner Lafever (2026)",
         "themes": [
@@ -343,38 +228,6 @@ const TITAN_MINDSET_QUOTES = [
           "attitude",
           "effort"
         ]
-      },
-      {
-        "text": "I want to see guys that are going to wrestle tough. Emotions under control, wrestle tough, and score points.",
-        "source": "Iowa media day press conference",
-        "themes": [
-          "discipline",
-          "attitude"
-        ]
-      },
-      {
-        "text": "I'm a hustler because I'm mentally tough, because I'm emotionally tough, I'm spiritually tough.",
-        "source": "Iowa media day press conference",
-        "themes": [
-          "grit",
-          "discipline"
-        ]
-      },
-      {
-        "text": "You train your body and your mind and your spirit to the point where nothing really matters.",
-        "source": "Iowa media day press conference",
-        "themes": [
-          "discipline",
-          "resilience"
-        ]
-      },
-      {
-        "text": "There has to be a can-do attitude in there.",
-        "source": "Iowa media day press conference",
-        "themes": [
-          "attitude",
-          "belief"
-        ]
       }
     ]
   },
@@ -386,13 +239,6 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "Two-time world champion and 2000 Olympic bronze medalist known for his relentless intensity as Iowa's longtime associate head coach.",
     "quotes": [
       {
-        "text": "You get what you earn.",
-        "source": "FloWrestling, 'Top 20 Best Lines from Terry Brands Film' (TERRY, 2016)",
-        "themes": [
-          "effort"
-        ]
-      },
-      {
         "text": "Nothing was going to derail what I had set out to do, except me.",
         "source": "FloWrestling, 'The BEST Tom and Terry Brands Quotes of All-Time'",
         "themes": [
@@ -402,13 +248,14 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "Teach our men to terrorize on the mat, yet be perfect gentlemen in society.",
-        "source": "Iowa Wrestling Hall of Fame inductee bio (coaching philosophy)",
+        "text": "teaching our men to terrorize on the mat, yet be perfect gentlemen in society.",
+        "source": "Iowa Wrestling Hall of Fame",
         "themes": [
           "grit",
           "grace",
           "attitude"
-        ]
+        ],
+        "url": "https://www.iowawrestlinghalloffame.com/inductee/terry-brands"
       },
       {
         "text": "If you don't want it to happen again, don't let it happen again. Figure it out, buddy.",
@@ -416,22 +263,6 @@ const TITAN_MINDSET_QUOTES = [
         "themes": [
           "resilience",
           "attitude"
-        ]
-      },
-      {
-        "text": "You better be ready to compete at the highest level. And if you are, you will have what you want at the end of the day.",
-        "source": "FloWrestling, 'Top 20 Best Lines from Terry Brands Film'",
-        "themes": [
-          "belief",
-          "effort"
-        ]
-      },
-      {
-        "text": "Success isn't guaranteed or given to you. Success is earned through hard work, dedication, and intelligence. If you don't put in the effort, you aren't going to get the reward you desire.",
-        "source": "TERRY documentary profile",
-        "themes": [
-          "effort",
-          "discipline"
         ]
       }
     ]
@@ -444,43 +275,11 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "Army Ranger, 1972 Olympian, and longtime Gable assistant who coached Minnesota for 30 years and won the program's first three NCAA team championships.",
     "quotes": [
       {
-        "text": "If nothing changes, nothing changes.",
-        "source": "USA Wrestling, TheMat.com",
-        "themes": [
-          "attitude",
-          "discipline"
-        ]
-      },
-      {
-        "text": "I don't choose to be a common man. I want to be better tomorrow than today. And through a commitment to work and discipline, but mostly hard work, I'll be a little more content, and a little different from the average guy.",
-        "source": "AZQuotes; widely circulated",
-        "themes": [
-          "effort",
-          "discipline"
-        ]
-      },
-      {
-        "text": "If you can refine your skills and eliminate your mistakes, you will start winning. That's the price you must pay to be successful in wrestling, and in most aspects of life.",
-        "source": "Wrestling quote compilations",
-        "themes": [
-          "discipline",
-          "effort"
-        ]
-      },
-      {
         "text": "There's four parts to being a good athlete: technique, strength, endurance, and mental attitude. Everybody wants to do the technique part because it's easy. Strength training is a little bit harder, and endurance training is the hardest of all.",
         "source": "Bring Me The News interview",
         "themes": [
           "effort",
           "discipline"
-        ]
-      },
-      {
-        "text": "It is not what you say that counts, it is what you do.",
-        "source": "National Wrestling Hall of Fame bio",
-        "themes": [
-          "discipline",
-          "attitude"
         ]
       }
     ]
@@ -518,11 +317,12 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "When things are going great I can be really soft, so I have to bring some hard things into my life.",
-        "source": "Authority Magazine interview",
+        "text": "[...] I have to bring some hard things into my life because when things are going great I can be really soft.",
+        "source": "Authority Magazine (Medium), interview by Chad Silverstein",
         "themes": [
           "discipline"
-        ]
+        ],
+        "url": "https://medium.com/authority-magazine/building-champions-ohio-states-wrestling-program-under-the-lens-of-head-coach-tom-ryan-54ef8cbcc4f4"
       }
     ]
   },
@@ -534,20 +334,13 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "Undefeated Pennsylvania high school legend, two-time NCAA champion, world medalist, and 2000 Olympian who has coached Navy since 2020.",
     "quotes": [
       {
-        "text": "Winning is important. But the most important part is, how do I get there? The character building and all that stuff comes through the process of getting there.",
-        "source": "Wrestling Snacks newsletter interview",
+        "text": "I think winning is important. [...] But the most important part is, how do I get there? [...] the character building and all that stuff comes through the process of getting there",
+        "source": "Wrestling Snacks Newsletter",
         "themes": [
           "discipline",
           "attitude"
-        ]
-      },
-      {
-        "text": "In wrestling, every practice is a battle, and every match is a war.",
-        "source": "Wrestling quote compilations",
-        "themes": [
-          "effort",
-          "grit"
-        ]
+        ],
+        "url": "https://www.wrestlingsnacks.com/p/cary-kolat-interview"
       }
     ]
   },
@@ -583,14 +376,6 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "Oklahoma State All-American who turned Binghamton and then NC State into national contenders and made the Wolfpack an ACC powerhouse.",
     "quotes": [
       {
-        "text": "We work really hard from day one to set the foundation for our culture.",
-        "source": "On3, 'How Pat Popolizio built NC State wrestling into a powerhouse'",
-        "themes": [
-          "effort",
-          "discipline"
-        ]
-      },
-      {
         "text": "You get in the heat of the battle with the work these guys do in that room. It builds a bond that is like nothing else these guys are going to see in their lifetime.",
         "source": "On3",
         "themes": [
@@ -625,12 +410,13 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "Losing a tough match is like anything else: it makes you stronger, it makes you better.",
+        "text": "I think when you talk about losing a tough match, it's like anything else: It makes you stronger, it makes you better.",
         "source": "The Arizona State Press",
         "themes": [
           "resilience",
           "attitude"
-        ]
+        ],
+        "url": "https://www.statepress.com/article/2017/02/spsports-asu-head-coach-zeke-jones"
       },
       {
         "text": "The thing I have learned most is that there are many paths to the top of the mountain.",
@@ -694,11 +480,12 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "1992 Olympic gold medalist and two-time world champion who coached Iowa State and served as USA Wrestling's national freestyle coach.",
     "quotes": [
       {
-        "text": "I had always believed that I was the best wrestler in my weight class. Winning my first world championship really reaffirmed for me that I was who I thought I was.",
-        "source": "WIN Magazine Coach's Corner via TheMat.com",
+        "text": "I won my first world championship in 1991, and that really reaffirmed for me that I was who I thought I was. I had always believed that I was the best wrestler in my weight class",
+        "source": "University of Michigan Athletics (mgoblue.com)",
         "themes": [
           "belief"
-        ]
+        ],
+        "url": "https://mgoblue.com/news/2024/8/6/wrestling-my-medal-moment-kevin-jackson"
       },
       {
         "text": "I never thought about a legacy, but I do know that when you can leave your imprint on someone for the better, it's a good way to live.",
@@ -719,41 +506,18 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "Nebraska head coach since 2000 and 2025 NCAA Tournament Coach of the Year who has coached more than 40 All-Americans.",
     "quotes": [
       {
-        "text": "The ability to focus when you don't really want to provides a lot of good lessons for you later on in life.",
-        "source": "In Play with Craig Mattick podcast, SDPB (Jan 2024)",
+        "text": "[...] that discipline and that work ethic and that ability to focus when you don't really want to provides a lot of good lessons for you later on in life.",
+        "source": "SDPB (South Dakota Public Broadcasting), podcast transcript",
         "themes": [
           "discipline"
-        ]
+        ],
+        "url": "https://www.sdpb.org/podcast/in-play-with-craig-mattick/2024-01-02/in-play-with-craig-mattick-mark-manning"
       },
       {
         "text": "We're about building, we're not about buying.",
         "source": "Hurrdat Sports / Hail Varsity",
         "themes": [
           "discipline"
-        ]
-      }
-    ]
-  },
-  {
-    "id": "dave-schultz",
-    "name": "Dave Schultz",
-    "role": "wrestler",
-    "affiliation": "USA · 1984 Olympic champion",
-    "bio": "1984 Olympic and 1983 world champion revered as one of wrestling's great technicians and teachers, who mentored a generation of U.S. wrestlers.",
-    "quotes": [
-      {
-        "text": "I just enjoy the challenge of me against the other guy. I've never been able to get enough of wrestling.",
-        "source": "BrainyQuote",
-        "themes": [
-          "attitude"
-        ]
-      },
-      {
-        "text": "I just have my own way of doing things. That's the charm of wrestling. What works for you might not work for me.",
-        "source": "BrainyQuote",
-        "themes": [
-          "belief",
-          "attitude"
         ]
       }
     ]
@@ -770,15 +534,6 @@ const TITAN_MINDSET_QUOTES = [
         "source": "Olympics.com athlete profile; The National",
         "themes": [
           "resilience",
-          "discipline",
-          "grit"
-        ]
-      },
-      {
-        "text": "People cannot believe I am natural because I train every day of my life as they have never trained a day in theirs.",
-        "source": "Widely attributed (AZQuotes)",
-        "themes": [
-          "effort",
           "discipline",
           "grit"
         ]
@@ -825,15 +580,6 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "Fear is there. Anything can happen at an Olympics. I want to use the experience I gained, the fear too, and build a me that can't lose.",
-        "source": "Olympics.com, 'Saori Yoshida, Japan's unbeaten warrior'",
-        "themes": [
-          "resilience",
-          "belief",
-          "grit"
-        ]
-      },
-      {
         "text": "I am not settling for three golds in a row. I now want to try for a fourth.",
         "source": "Olympics.com",
         "themes": [
@@ -851,20 +597,13 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "The first woman in any sport to win individual gold at four consecutive Olympics, known for a quiet, perfectionist pursuit of her own ideal of wrestling.",
     "quotes": [
       {
-        "text": "Although I have become the world champion once again, I am not fully satisfied. I have not yet gotten the most out of myself.",
-        "source": "United World Wrestling, 'Kaori Icho: Pursuing Her Own Perfection'",
-        "themes": [
-          "effort",
-          "attitude"
-        ]
-      },
-      {
-        "text": "My goal, my only goal, is to get closer to the image in my head of what wrestling can be.",
-        "source": "United World Wrestling",
+        "text": "My goal, my only goal, is to get [...] closer to the image in my head of what wrestling can be",
+        "source": "United World Wrestling, by Tim Foley",
         "themes": [
           "discipline",
           "attitude"
-        ]
+        ],
+        "url": "https://uww.org/article/kaori-icho-pursuing-her-own-perfection"
       },
       {
         "text": "I'm only now seeing that improvement is what gives me satisfaction and puts a smile on my face.",
@@ -976,11 +715,12 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "American super-heavyweight who won medals at four straight Olympics, then coached at Edinboro for more than 36 years and now serves as USA Wrestling president.",
     "quotes": [
       {
-        "text": "I believe everybody can and will be successful in life.",
-        "source": "Sharon Herald, 'A dedicated work-ethic built Baumgartner's self-belief' (2021)",
+        "text": "I believe everybody can and will be successful in life ... if they make the choices to do so, and if they put the work in",
+        "source": "Sharon Herald",
         "themes": [
           "belief"
-        ]
+        ],
+        "url": "https://www.sharonherald.com/sports/a-dedicated-work-ethic-built-baumgartners-self-belief-and-he-became-the-best-in-his/article_485b6f94-a09d-11eb-a24c-f3f313ee9e89.html"
       },
       {
         "text": "The most important part for me was representing the United States and having an opportunity to compete at your best.",
@@ -1270,14 +1010,6 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "Dig deep and go get it.",
-        "source": "NBC Sports, on his Paris 2024 bronze-medal comeback (quoting his dad)",
-        "themes": [
-          "effort",
-          "grit"
-        ]
-      },
-      {
         "text": "I'm doing it because I truly love competing, I love wrestling, and I believe this is what God called me to do.",
         "source": "Kyle Dake interview",
         "themes": [
@@ -1339,14 +1071,6 @@ const TITAN_MINDSET_QUOTES = [
         "themes": [
           "attitude",
           "effort"
-        ]
-      },
-      {
-        "text": "You either put in the work or you don't.",
-        "source": "David Taylor interview, his favorite quote",
-        "themes": [
-          "effort",
-          "discipline"
         ]
       },
       {
@@ -1428,14 +1152,6 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "I try to stay motivated by the things I can control: the technique I can improve, my input in matches, and my mental approach to the sport. This makes it easy for me to stay motivated no matter what I accomplish.",
-        "source": "Kyle Snyder interview",
-        "themes": [
-          "attitude",
-          "discipline"
-        ]
-      },
-      {
         "text": "The only limits we have are the ones we impose on ourselves. If you believe you can achieve something, and you're willing to work for it, there's no reason why you can't make it happen.",
         "source": "Kyle Snyder interview",
         "themes": [
@@ -1468,15 +1184,6 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "Won three NCAA titles at Iowa, including one wrestling on two torn ACLs, and earned Olympic silver at Paris 2024.",
     "quotes": [
       {
-        "text": "I didn't want to tell anyone, because excuses are for wusses.",
-        "source": "ESPN post-match interview, 2021 NCAA Championships",
-        "themes": [
-          "attitude",
-          "resilience",
-          "grit"
-        ]
-      },
-      {
         "text": "If you think that you can do something, then do it.",
         "source": "UFC.com, 'Spencer Lee: No Excuses, Just Hard Work'",
         "themes": [
@@ -1484,11 +1191,12 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "One day at a time is my motto. One competition at a time, but all these things are stepping stones and practice for the ultimate goal.",
-        "source": "Olympics.com exclusive interview",
+        "text": "One day at a time is my motto. [...] One World Championships, one competition at a time, but all these things are stepping stones and practice for the ultimate goal of the Olympic gold.",
+        "source": "Olympics.com (Scott Bregman)",
         "themes": [
           "discipline"
-        ]
+        ],
+        "url": "https://www.olympics.com/en/news/spencer-lee-exclusive-interview-wrestling-world-championships"
       },
       {
         "text": "I got beat. I hate when people try to make excuses for me when I got outwrestled and beat.",
@@ -1498,12 +1206,13 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "I only wrote four things down: four-time undefeated state champ, four-time undefeated national champ, and then an obscene amount of world and Olympic gold medals.",
-        "source": "Olympics.com interview",
+        "text": "I only wrote four things down: four-time, undefeated state champ; four-time, undefeated national champ; and then, I wrote down an obscene amount of world and Olympic gold medals.",
+        "source": "Olympics.com (Scott Bregman)",
         "themes": [
           "belief",
           "attitude"
-        ]
+        ],
+        "url": "https://www.olympics.com/en/news/spencer-lee-exclusive-interview-wrestling-world-championships"
       },
       {
         "text": "I've never let it get to my head because I've never been satisfied with my career. I want to do better, compete harder, and win more.",
@@ -1523,11 +1232,12 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "Made history in Rio 2016 by upsetting Saori Yoshida to become the first American woman to win Olympic wrestling gold.",
     "quotes": [
       {
-        "text": "Wrestling is my first love, and there's just nothing like it. It's such a form of therapy and expression for me.",
-        "source": "Olympics.com exclusive",
+        "text": "Wrestling is my first love, and there's just nothing like it. It's just such a form of therapy and expression for me so I had to come back.",
+        "source": "Olympics.com",
         "themes": [
           "gratitude"
-        ]
+        ],
+        "url": "https://www.olympics.com/en/news/wrestling-helen-maroulis-interview-wrestling-therapy-expression"
       },
       {
         "text": "The beauty of wrestling is that everyone can have their own style. No match is ever going to look the same.",
@@ -1546,20 +1256,22 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "I know how fleeting this moment is. When it's done, it's gone forever. I want to really appreciate every moment and maximize as much as I can.",
-        "source": "Olympics.com exclusive",
+        "text": "I think I just know how fleeting this moment is. So when it's done, it's gone forever. I want to really, really appreciate every moment and maximise as much as I can.",
+        "source": "Olympics.com",
         "themes": [
           "gratitude",
           "grace"
-        ]
+        ],
+        "url": "https://www.olympics.com/en/news/wrestling-helen-maroulis-interview-wrestling-therapy-expression"
       },
       {
-        "text": "I am enough.",
-        "source": "Her mantra in the Rio 2016 final; Athletes in Action",
+        "text": "Christ is in me, I am enough",
+        "source": "Sports Spectrum",
         "themes": [
           "belief",
           "grace"
-        ]
+        ],
+        "url": "https://sportsspectrum.com/sports-spectrum/2021/08/03/magazine-wrestler-helen-maroulis-praises-god/"
       },
       {
         "text": "I always say that each Olympics is my last Olympics. I think that just helps me to be really dialed into the present moment.",
@@ -1611,13 +1323,14 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "I just keep looking back at how far I've come. I've been able to mentally not be broken by this tiny little step that I had to take, and just continue to move forward every single time.",
+        "text": "I just keep looking back at how far I've come. [...] I've been able to mentally not be broken by this tiny little step that I had to take and just continue to move forward every single time",
         "source": "NBC Olympics",
         "themes": [
           "resilience",
           "gratitude",
           "grit"
-        ]
+        ],
+        "url": "https://www.nbcolympics.com/news/adeline-gray-us-wrestling-legend-and-mother-hopes-inspire-others-even-after-olympic-trials"
       },
       {
         "text": "Sports is a place where women can find their voice, feel confident in their bodies, and realize that they could be strong or be whatever they want to be.",
@@ -1745,13 +1458,14 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "Won three NCAA titles and two Hodge Trophies at Penn State, then a 2023 world title and a spot on the 2024 Olympic team.",
     "quotes": [
       {
-        "text": "Winning a national title is like having a bouquet of flowers. It's beautiful and everyone says 'Oh, these are beautiful flowers' for a week or so, and then they wither up and die. You've got to get a new set of flowers.",
-        "source": "Olympics.com interview after his 2023 world title (recalling advice from Cael Sanderson)",
+        "text": "Wins and losses in wrestling are like a bouquet of flowers. [...] two weeks later they wither up and die and you have to pick some more flowers.",
+        "source": "Olympics.com (Andrew Binner)",
         "themes": [
           "discipline",
           "attitude",
           "grace"
-        ]
+        ],
+        "url": "https://www.olympics.com/en/news/zain-retherford-interview-pumpkin-farm-work-harder-than-wrestling"
       },
       {
         "text": "Having fun is crucial, and making mistakes is part of the journey. The key is to make up for those mistakes with effort and attitude.",
@@ -1838,12 +1552,13 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "Won Olympic gold at Paris 2024 after bronze in Tokyo, becoming the second American woman with two Olympic wrestling medals.",
     "quotes": [
       {
-        "text": "Can I inspire anyone to be courageous? To step up onto a mat, any passion, and to believe in themselves, the authenticity of themselves, to just trust that?",
-        "source": "Team USA, 'I Just Won the Olympics'",
+        "text": "Can I inspire anyone to be courageous? To step up onto a mat — anything, any passion, and to believe in themselves, the authenticity of themselves, to just trust that?",
+        "source": "NBC Olympics, by Dan Levinsohn",
         "themes": [
           "belief",
           "grace"
-        ]
+        ],
+        "url": "https://www.nbcolympics.com/news/sarah-hildebrandt-grapples-usa-its-second-wrestling-gold-two-days"
       },
       {
         "text": "I'm gonna smile every moment I can and take every moment in.",
@@ -1855,20 +1570,13 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "If I was going to go try for Paris, I was going to do it my way, and it was going to be Sarah.",
-        "source": "Olympics.com exclusive",
+        "text": "I knew that if I was going to go try for Paris, that I was going to do it my way, and it was going to be Sarah.",
+        "source": "Olympics.com",
         "themes": [
           "belief",
           "attitude"
-        ]
-      },
-      {
-        "text": "I was afraid to be that vulnerable again. I really had to dig deep and find some courage to make some changes.",
-        "source": "NBC Sports, 'Sarah Hildebrandt eschews fear to end retirement'",
-        "themes": [
-          "resilience",
-          "grit"
-        ]
+        ],
+        "url": "https://www.olympics.com/en/news/wrestling-sarah-hildebrandt-exclusive-finding-herself-paris-2024"
       }
     ]
   },
@@ -1896,12 +1604,13 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "The No. 1 thing that's helped me develop mentally has been experience. Those experiences have helped me stay focused and solid under pressure.",
-        "source": "NBC Olympics, 'Get to know Amit Elor'",
+        "text": "I think the No. 1 thing that's helped me develop mentally has been experience [...] Those experiences have not only helped me stay focused and solid under pressure, they've also helped me improve as a wrestler and as a person.",
+        "source": "CNN, by Ben Morse",
         "themes": [
           "discipline",
           "resilience"
-        ]
+        ],
+        "url": "https://www.cnn.com/2024/08/07/sport/amit-elor-wrestling-us-paris-olympics-spt-intl/index.html"
       },
       {
         "text": "When I experience something like that, it just reminds me that everything is worth it.",
@@ -1930,12 +1639,13 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "This platform is great to wrestle on, but this stuff comes and goes. I'm blessed with this opportunity, these gifts.",
-        "source": "The Daily Collegian (2022)",
+        "text": "This platform is great to wrestle on, but it's to glorify God. This stuff comes and goes. I'm blessed with this opportunity, these gifts.",
+        "source": "The Daily Collegian, by Ben Serfass",
         "themes": [
           "gratitude",
           "grace"
-        ]
+        ],
+        "url": "https://www.collegian.psu.edu/sports/wrestling/penn-state-wrestling-s-aaron-brooks-answers-wake-up-call-to-win-2nd-consecutive-national/article_0a55cfb2-a855-11ec-82df-5b85b2ce5a92.html"
       }
     ]
   },
@@ -1962,12 +1672,13 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "Take the logo away, take the name away, put whoever is in front of me, and I'm ready to go. And for me, that's why I do it.",
-        "source": "247Sports, press conference after his fifth NCAA title (March 2025)",
+        "text": "You can take the Penn State wrestling championship logo away, take the name away, take you guys away, put whoever is in front of me, and I'm ready to go. And for me, that's why I do it.",
+        "source": "Sports Illustrated (All Penn State), by Mark Wogenrich",
         "themes": [
           "attitude",
           "belief"
-        ]
+        ],
+        "url": "https://www.si.com/college/pennstate/wrestling/penn-state-carter-starocci-wins-landmark-5th-title-ncaa-wrestling-championships"
       },
       {
         "text": "I know it's 'five-time champ,' but it's really just another match.",
@@ -1987,12 +1698,13 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "Won three NCAA titles at Missouri, Olympic bronze in Rio, and back-to-back world championships in 2018 and 2019.",
     "quotes": [
       {
-        "text": "The present is the only thing that counts. I have no world titles. I'm not on a team. I have no Olympic medal. I have nothing. Why would I focus on what I already have, when I'm looking to gain?",
-        "source": "Olympics.com exclusive, 'The J'den Cox dilemma'",
+        "text": "The present is the only thing that counts. [...] I have no world titles. I'm not on a team. I have no Olympic medal. I have nothing. Why would I focus on what I already have, when I'm looking to gain?",
+        "source": "Olympics.com",
         "themes": [
           "discipline",
           "attitude"
-        ]
+        ],
+        "url": "https://olympics.com/en/news/jden-cox-dilemma-wrestling-tokyo-olympics"
       },
       {
         "text": "I sing. I dance. I crack jokes. I'm not worried about the wrestling because I've already done everything it takes to win.",
@@ -2098,11 +1810,12 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "Discipline is not just punishment. It's how do you change somebody's behavior so they have a better chance to be successful.",
-        "source": "Saban on Alabama's discipline philosophy (FootballScoop)",
+        "text": "Discipline is not necessarily just punishment [...] It's how do you change somebody's behavior so they have a better chance to be successful.",
+        "source": "FootballScoop, by Doug Samuels (quoting AL.com)",
         "themes": [
           "discipline"
-        ]
+        ],
+        "url": "http://footballscoop.com/news/nick-saban-explains-how-discipline-works-at-alabama-discipline-is-not-necessarily-just-punishment/"
       },
       {
         "text": "Eliminate the clutter and all the things that are going on outside, and focus on the things that you can control.",
@@ -2278,21 +1991,14 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "Born without lower arms or legs, Maynard won 36 varsity wrestling matches in high school, wrote the bestselling memoir No Excuses, and became the first quadruple amputee to climb Kilimanjaro without prosthetics.",
     "quotes": [
       {
-        "text": "It's not what I can do; it's what I will do. If you wake up and try to help one person and change that person's life, every obstacle you face in front of you is worth it.",
-        "source": "Interview",
+        "text": "It's not what I can do; it's what I WILL do.",
+        "source": "CBN (The 700 Club)",
         "themes": [
           "belief",
           "effort",
           "grace"
-        ]
-      },
-      {
-        "text": "I've always believed that anyone can achieve their dreams, regardless. I've always had this attitude about no excuses.",
-        "source": "No Excuses interviews",
-        "themes": [
-          "belief",
-          "discipline"
-        ]
+        ],
+        "url": "https://cbn.com/article/not-selected/kyle-maynard-accepting-no-excuses"
       },
       {
         "text": "There are no worthy excuses.",
@@ -2343,12 +2049,13 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "Holder of the Guinness World Record for most career wins and pins in collegiate wrestling history, and later a longtime college coach.",
     "quotes": [
       {
-        "text": "Don't lose twice. If you get down on yourself, you've lost twice.",
-        "source": "PennWest profile, recounting his mother's advice",
+        "text": "If you get down on yourself, you've lost twice.",
+        "source": "PennWest University",
         "themes": [
           "resilience",
           "attitude"
-        ]
+        ],
+        "url": "https://www.pennwest.edu/about/people-pennwest/schalles.php"
       }
     ]
   },
@@ -2360,12 +2067,13 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "Two-time NCAA champion at Iowa and longtime college coach who helped build programs at Illinois, Penn State, and Oklahoma State.",
     "quotes": [
       {
-        "text": "It's a war. It's hell, but there's a lot of pride involved in wrestling, and it's a lifetime of work.",
-        "source": "The Daily Illini interview",
+        "text": "[...] It's hell, but there's a lot of pride involved in wrestling and it's a lifetime of work.",
+        "source": "The Daily Illini",
         "themes": [
           "grit",
           "discipline"
-        ]
+        ],
+        "url": "https://dailyillini.com/uncategorized/2013/01/15/mark-perry-wont-stop-until-illinois-gets-to-the-top/"
       }
     ]
   },
@@ -2584,12 +2292,13 @@ const TITAN_MINDSET_QUOTES = [
         ]
       },
       {
-        "text": "Your motivation for wrestling will evolve throughout your career, but knowing your why keeps you focused and driven.",
-        "source": "Wrestling Snacks interview",
+        "text": "I think you have to figure out your \"why\"—why are you doing this? That \"why\" changes periodically throughout your career",
+        "source": "Wrestling Snacks Newsletter",
         "themes": [
           "attitude",
           "belief"
-        ]
+        ],
+        "url": "https://www.wrestlingsnacks.com/p/coleman-scott-interview"
       },
       {
         "text": "There's something beautiful about the way wrestling serves as a microcosm for the real world. Grit. Resilience. Strong will. The world is tough, and it takes staying true to who you are to come out victorious.",
@@ -2609,12 +2318,13 @@ const TITAN_MINDSET_QUOTES = [
     "bio": "2023 world champion and multiple-time world medalist who wrestled for Cornell before turning to senior-level freestyle.",
     "quotes": [
       {
-        "text": "No award, no medal is my goal. My goal is to be the best wrestler that I can.",
-        "source": "EssentiallySports interview",
+        "text": "No award, no piece of medal is my goal. My goal is [...] to be the best wrestler that I can.",
+        "source": "EssentiallySports, by Ankit Singh",
         "themes": [
           "effort",
           "belief"
-        ]
+        ],
+        "url": "https://www.essentiallysports.com/us-sports-news-olympics-news-wrestling-news-no-piece-of-medal-is-my-goal-world-wrestling-champion-vito-arujau-denounces-the-olympics-as-his-ultimate-ambition/"
       }
     ]
   },
@@ -3975,7 +3685,7 @@ const TITAN_MINDSET_QUOTES = [
       }
     ]
   }
-];
+]
 
 if (typeof module === "object" && module.exports) { module.exports = TITAN_MINDSET_QUOTES; }
 if (typeof self !== "undefined") { self.TITAN_MINDSET_QUOTES = TITAN_MINDSET_QUOTES; }
