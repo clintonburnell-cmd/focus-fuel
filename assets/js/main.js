@@ -138,24 +138,91 @@
 
   /* ---------------- Schedule page ---------------- */
 
+  function daysInMonth(year, month) {
+    return new Date(year, month + 1, 0).getDate();
+  }
+
+  /** Every month from the first event to the last, as {year, month} pairs. */
+  function monthSpan(list) {
+    if (!list.length) return [];
+    var first = parseDate(list[0].date);
+    var last = parseDate(list[list.length - 1].endDate || list[list.length - 1].date);
+    var months = [];
+    var y = first.getFullYear();
+    var m = first.getMonth();
+    while (y < last.getFullYear() || (y === last.getFullYear() && m <= last.getMonth())) {
+      months.push({ year: y, month: m });
+      if (++m > 11) { m = 0; y++; }
+    }
+    return months;
+  }
+
+  function coversDay(ev, date) {
+    var start = parseDate(ev.date);
+    var end = parseDate(ev.endDate || ev.date);
+    return date >= start && date <= end;
+  }
+
   function initSchedulePage() {
-    var host = document.getElementById("schedule-list");
-    if (!host) return;
+    var listHost = document.getElementById("schedule-list");
+    if (!listHost) return;
+
+    var monthHost = document.getElementById("schedule-month");
+    var grid = document.getElementById("cal-grid");
+    var calTitle = document.getElementById("cal-title");
+    var agenda = document.getElementById("cal-agenda");
+    var prevBtn = document.getElementById("cal-prev");
+    var nextBtn = document.getElementById("cal-next");
 
     var all = getEvents();
     var nextEvent = upcoming(all)[0];
+    var months = monthSpan(all);
+    var filter = "all";
+    var view = "list";
+
+    // Open on the month we are in, or the one holding the next event.
+    var monthIdx = 0;
+    var today = startOfToday();
+    months.forEach(function (m, i) {
+      if (m.year === today.getFullYear() && m.month === today.getMonth()) monthIdx = i;
+    });
+    if (!monthIdx && nextEvent) {
+      var n = parseDate(nextEvent.date);
+      months.forEach(function (m, i) {
+        if (m.year === n.getFullYear() && m.month === n.getMonth()) monthIdx = i;
+      });
+    }
 
     renderNextUp(nextEvent);
-    render("all");
+    render();
 
-    document.querySelectorAll(".filter-btn").forEach(function (btn) {
+    document.querySelectorAll("[data-filter]").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        document.querySelectorAll(".filter-btn").forEach(function (b) {
+        filter = btn.dataset.filter;
+        document.querySelectorAll("[data-filter]").forEach(function (b) {
           b.setAttribute("aria-pressed", b === btn ? "true" : "false");
         });
-        render(btn.dataset.filter);
+        render();
       });
     });
+
+    document.querySelectorAll("[data-view]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        view = btn.dataset.view;
+        document.querySelectorAll("[data-view]").forEach(function (b) {
+          b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+        });
+        render();
+      });
+    });
+
+    if (prevBtn) prevBtn.addEventListener("click", function () { step(-1); });
+    if (nextBtn) nextBtn.addEventListener("click", function () { step(1); });
+
+    function step(by) {
+      monthIdx = Math.min(months.length - 1, Math.max(0, monthIdx + by));
+      render();
+    }
 
     var download = document.getElementById("download-ics");
     if (download) {
@@ -165,17 +232,28 @@
       });
     }
 
-    function render(filter) {
-      host.innerHTML = "";
-      var shown = all.filter(function (ev) {
+    function filtered() {
+      return all.filter(function (ev) {
         if (filter === "all") return true;
         if (filter === "upcoming") return parseDate(ev.endDate || ev.date) >= startOfToday();
         if (filter === "home") return ev.home === true;
         return (ev.type || "event") === filter;
       });
+    }
 
+    function render() {
+      var shown = filtered();
+      var monthView = view === "month";
+      if (monthHost) monthHost.hidden = !monthView;
+      listHost.hidden = monthView;
+      if (monthView) renderMonth(shown);
+      else renderList(shown);
+    }
+
+    function renderList(shown) {
+      listHost.innerHTML = "";
       if (!shown.length) {
-        host.innerHTML = '<p class="empty-state">No events match that filter.</p>';
+        listHost.innerHTML = '<p class="empty-state">No events match that filter.</p>';
         return;
       }
 
@@ -191,9 +269,60 @@
           var heading = document.createElement("h2");
           heading.textContent = MONTHS[d.getMonth()] + " " + d.getFullYear();
           group.appendChild(heading);
-          host.appendChild(group);
+          listHost.appendChild(group);
         }
         group.appendChild(eventNode(ev, nextEvent && ev === nextEvent));
+      });
+    }
+
+    function renderMonth(shown) {
+      if (!grid || !months.length) return;
+      var view = months[monthIdx];
+      calTitle.textContent = MONTHS[view.month] + " " + view.year;
+      if (prevBtn) prevBtn.disabled = monthIdx === 0;
+      if (nextBtn) nextBtn.disabled = monthIdx === months.length - 1;
+
+      grid.innerHTML = DAYS.map(function (d) {
+        return '<div class="cal-dow">' + d + "</div>";
+      }).join("");
+
+      var first = new Date(view.year, view.month, 1);
+      var total = daysInMonth(view.year, view.month);
+      var lead = first.getDay();
+      var cells = [];
+
+      for (var i = 0; i < lead; i++) cells.push('<div class="cal-day is-out"></div>');
+
+      for (var day = 1; day <= total; day++) {
+        var date = new Date(view.year, view.month, day);
+        var onDay = shown.filter(function (ev) { return coversDay(ev, date); });
+        var isToday = date.getTime() === today.getTime();
+        var chips = onDay.map(function (ev) {
+          var label = (ev.type === "dual" && ev.home === false ? "at " : "") + ev.title;
+          return '<span class="cal-chip cal-chip-' + (ev.type || "event") + '" title="' +
+            escapeHtml(label) + '">' + escapeHtml(label) + "</span>";
+        }).join("");
+
+        cells.push('<div class="cal-day' + (isToday ? " is-today" : "") +
+          (onDay.length ? " has-events" : "") + '">' +
+          '<span class="cal-num">' + day + "</span>" + chips + "</div>");
+      }
+
+      while (cells.length % 7) cells.push('<div class="cal-day is-out"></div>');
+      grid.innerHTML += cells.join("");
+
+      // Everything in this month, spelled out under the grid.
+      agenda.innerHTML = "";
+      var inMonth = shown.filter(function (ev) {
+        var d = parseDate(ev.date);
+        return d.getFullYear() === view.year && d.getMonth() === view.month;
+      });
+      if (!inMonth.length) {
+        agenda.innerHTML = '<p class="empty-state">Nothing on the calendar this month.</p>';
+        return;
+      }
+      inMonth.forEach(function (ev) {
+        agenda.appendChild(eventNode(ev, nextEvent && ev === nextEvent));
       });
     }
   }

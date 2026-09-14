@@ -45,15 +45,43 @@
       <div class="wrap">
         <div class="next-up" id="next-up"></div>
 
+        <div class="card subscribe">
+          <h3>Put this calendar on your phone</h3>
+          <p>Subscribe once and every change the coaches make shows up automatically &mdash; no
+             re-downloading, no missed bus times.</p>
+          <p class="subscribe-actions">
+            <a class="btn btn-primary" href="https://calendar.google.com/calendar/u/0?cid=ZjQwYWNhY2EzYjQxNmQ3NTlhMTliMDVlZTc3NzViNGRhOWEwMGQ5YjRhMmI3ZjViNmU0NGVhMmY1NDU2ZGJlMUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t" target="_blank" rel="noopener">Add to Google Calendar</a>
+            <a class="btn btn-outline" href="webcal://calendar.google.com/calendar/ical/f40acaca3b416d759a19b05ee7775b4da9a00d9b4a2b7f5b6e44ea2f5456dbe1%40group.calendar.google.com/public/basic.ics">Subscribe on iPhone or Outlook</a>
+            <a class="btn btn-outline" href="#" id="download-ics">Download a one-time .ics</a>
+          </p>
+        </div>
+
         <div class="schedule-toolbar">
+          <span class="view-toggle" role="group" aria-label="Calendar view">
+            <button type="button" data-view="list" aria-pressed="true">List</button>
+            <button type="button" data-view="month" aria-pressed="false">Month</button>
+          </span>
           <button class="filter-btn" type="button" data-filter="all" aria-pressed="true">All</button>
           <button class="filter-btn" type="button" data-filter="upcoming" aria-pressed="false">Upcoming</button>
           <button class="filter-btn" type="button" data-filter="dual" aria-pressed="false">Duals</button>
           <button class="filter-btn" type="button" data-filter="tournament" aria-pressed="false">Tournaments</button>
           <button class="filter-btn" type="button" data-filter="home" aria-pressed="false">Home</button>
           <button class="filter-btn" type="button" data-filter="event" aria-pressed="false">Team Events</button>
-          <a class="btn btn-outline" href="#" id="download-ics" style="margin-left:auto;padding:8px 16px;font-size:.88rem">
-            Add to your calendar (.ics)</a>
+        </div>
+
+        <div id="schedule-month" hidden>
+          <div class="cal-head">
+            <button class="cal-nav" type="button" id="cal-prev" aria-label="Previous month">&lsaquo;</button>
+            <h2 id="cal-title"></h2>
+            <button class="cal-nav" type="button" id="cal-next" aria-label="Next month">&rsaquo;</button>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+          <div class="cal-legend">
+            <span><i style="background:#dde9fb"></i> Dual</span>
+            <span><i style="background:#fde5d4"></i> Tournament</span>
+            <span><i style="background:#e4e9f0"></i> Team event</span>
+          </div>
+          <div class="cal-agenda" id="cal-agenda"></div>
         </div>
 
         <div id="schedule-list"></div>
