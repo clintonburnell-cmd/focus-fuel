@@ -38,18 +38,19 @@
  * When a wrestler is known to have placed but the exact finish is not confirmed,
  * leave `place` off and put a short `result` string instead; it prints as-is.
  *
- * SOURCING: 2020-21 through 2024-25 are COMPLETE placer lists, entered from the
+ * SOURCING: every season here is a COMPLETE placer list, entered from the
  * official state tournament brackets — every Mustang who placed, with weight,
  * place and season record. Team scores and divisional results come from
  * published coverage (Deseret News, KSL, The Herald Journal).
  *
- * The one gap is 2025-26: the brackets for that season have not been entered,
- * so only the four state runners-up are listed against a reported 11 medalists.
- * The `medalists` count on a season is the true number who placed, so wherever
- * it exceeds the number of rows, names are still missing.
+ * Keep it that way: when a season is added, enter the whole podium from the
+ * bracket rather than the champions the newspapers name. The `medalists` count
+ * is the true number who placed, so if it ever exceeds the number of rows,
+ * names are missing.
  *
- * Two names were normalized from the brackets, which spell them inconsistently:
- * "Addi Baxtor" (2022) is Addilyn Baxter, and "Anna Van huss" is Anna Van Huss.
+ * Three names were normalized where the brackets spell them inconsistently:
+ * "Addi Baxtor" (2022) is Addilyn Baxter, "Anna Van huss" is Anna Van Huss, and
+ * Audrey DeKorver appears as "DeKorver" in 2025 and "Dekorver" in 2026.
  * ------------------------------------------------------------------------- */
 
 window.MCW_RESULTS = [
@@ -67,15 +68,21 @@ window.MCW_RESULTS = [
       runnerUp: "Ridgeline, 263",
       qualifiers: 20
     },
-    notes: "Fifth team title in six seasons, won on depth at the UCCU Center in Orem: "
-         + "195.5 to Ridgeline's 193.5, with a tournament-best 11 medalists and four finalists "
-         + "but no individual champion. The four runners-up are on the board; the third-place "
-         + "finisher, four fifth-place finishers and two sixth-place finishers still need names.",
+    notes: "Fifth team title in six seasons, won on depth at the UCCU Center in Orem: 195.5 to "
+         + "Ridgeline's 193.5, with a tournament-best 11 medalists and four finalists but no "
+         + "individual champion. Complete placer list from the state brackets.",
     placers: [
-      { name: "Sydney Reisner", weight: "100", place: 2 },
-      { name: "Autumn Radmall", weight: "120", place: 2 },
-      { name: "Maggi Budge", weight: "155", place: 2 },
-      { name: "Callie Bates", weight: "235", place: 2 }
+      { name: "Sydney Reisner", weight: "100", place: 2, record: "31-5" },
+      { name: "Autumn Radmall", weight: "120", place: 2, record: "25-10" },
+      { name: "Maggi Budge", weight: "155", place: 2, record: "28-8" },
+      { name: "Callie Bates", weight: "235", place: 2, record: "6-2" },
+      { name: "Audrey DeKorver", weight: "190", place: 3, record: "25-9" },
+      { name: "Zoe Zook", weight: "105", place: 5, record: "20-11" },
+      { name: "Madeline Halligan", weight: "125", place: 5, record: "32-13" },
+      { name: "Nora Pickup", weight: "130", place: 5, record: "22-12" },
+      { name: "Brinlee King", weight: "235", place: 5, record: "18-9" },
+      { name: "Hannah Sanders", weight: "110", place: 6, record: "27-8" },
+      { name: "Mackenzie Saunders", weight: "145", place: 6, record: "16-12" }
     ]
   },
   {
