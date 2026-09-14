@@ -20,22 +20,26 @@ The sportsYou app is linked from the main nav, the footer and several pages.
 
 ## Updating the schedule
 
-Edit **`data/schedule.js`** — it is the only file you need to touch to change the
-calendar. Both the home page and the schedule page read from it. Each event looks
-like this:
+The **"Mountain Crest Wrestling 2026-2027" Google Calendar is the source of truth.**
+Add or change events there, then re-sync the site:
 
-```js
-{
-  date:    "2026-12-05",   // required, YYYY-MM-DD
-  endDate: "2026-12-06",   // optional, multi-day tournaments
-  time:    "9:00 AM",      // optional
-  title:   "Mustang Girls Invitational",
-  type:    "tournament",   // "dual" | "tournament" | "event"
-  location:"Mountain Crest HS",
-  home:    true,           // true = home, false = away, omit = neutral site
-  notes:   "Weigh-ins 7:30 AM"   // optional
-}
-```
+1. Export the calendar's events to `scripts/calendar-events.json` (a Calendar API
+   list-events response, or just its `events` array).
+2. `node scripts/calendar-to-schedule.mjs`
+3. Commit the regenerated `data/schedule.js`.
+
+`data/schedule.js` is a generated file — edits made directly to it are lost on the
+next sync. The script handles the mapping:
+
+- `@ Opponent` becomes an away meet, `Opponent @ MC (home)` or any event at a
+  Mountain Crest venue becomes a home meet
+- all-day spans become single or multi-day events (Google's end date is exclusive)
+- calendar descriptions become the note under each event, minus boilerplate like
+  "Home dual." that the tags already show
+
+Two lists in the script are worth knowing about: `EXTRAS` holds real team dates that
+are not on the calendar yet (currently the Nov 9 first practice), and
+`EXCLUDE_SUMMARIES` drops personal entries that live on the team calendar.
 
 Past events drop off the "Upcoming" views automatically — no need to delete them.
 
@@ -45,14 +49,18 @@ Past events drop off the "Upcoming" views automatically — no need to delete th
    from the athletic director, with the navy background keyed out to transparency
    so it sits on any section, and recolored to the school's PMS 172 orange.
    `assets/img/favicon.png` is the same mustang on PMS 289 navy.
-2. **sportsYou link.** Every `https://sportsyou.com` link should point at the team's
+2. **Subscribing families.** For parents to add the team calendar to their phones,
+   the Google Calendar has to be shared publicly (Calendar settings → Access
+   permissions → "Make available to public"). Once it is, the site can carry a
+   subscribe button and a live embed instead of only the generated list.
+3. **sportsYou link.** Every `https://sportsyou.com` link should point at the team's
    actual join/team URL. They are in the nav and footer of all six pages —
    `grep -rl "sportsyou.com" *.html` finds them.
-3. ~~**Schedule.**~~ Done — `data/schedule.js` holds the real 2026-27 schedule from
+4. ~~**Schedule.**~~ Done — `data/schedule.js` holds the real 2026-27 schedule from
    the team workbook (updated Sept 11, 2026). Two weekends are still marked as being
    decided (Jan 8-9 and Jan 15-16), and most start times are not set yet; add them as
    they come in.
-4. **Accomplishments.** `data/results.js` holds the year-by-year state results. Team
+5. **Accomplishments.** `data/results.js` holds the year-by-year state results. Team
    titles and scores (5 4A championships: 2021, 2022, 2023, 2024, 2026) were compiled
    from published coverage — Deseret News, KSL, The Herald Journal and Cache Valley
    Daily. The individual lists are the champions those articles named, **not** full
@@ -63,7 +71,7 @@ Past events drop off the "Upcoming" views automatically — no need to delete th
    `result` string when the exact finish isn't confirmed. A season's `medalists`
    count shows how many podium names are still missing. The region-results table in
    `accomplishments.html` is still empty.
-5. **Contact info.** Add coach names/emails in the footer if the staff wants them
+6. **Contact info.** Add coach names/emails in the footer if the staff wants them
    public.
 
 ## Nutrition page

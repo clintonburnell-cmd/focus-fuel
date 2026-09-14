@@ -422,6 +422,30 @@
     render();
   }
 
+
+  /* ---------------- Home: Mustang honor roll ---------------- */
+
+  function initHomeHonors() {
+    var host = document.getElementById("home-honors");
+    if (!host) return;
+
+    var seasons = window.MCW_RESULTS || [];
+    host.innerHTML = seasons.map(function (season) {
+      var champs = (season.placers || []).filter(function (p) { return p.place === 1; }).length;
+      var detail = [];
+      if (champs) detail.push(champs + " individual state champion" + (champs === 1 ? "" : "s"));
+      if (season.medalists) detail.push(season.medalists + " medalists");
+      if (season.teamScore) detail.push(season.teamScore + " pts");
+
+      return "<li><span class=\"yr\">" + escapeHtml(season.season) + "</span>" +
+        '<span class="result' + (season.teamTitle ? " title" : "") + '">' +
+        (season.teamTitle ? "&#127942; 4A State Champions" : escapeHtml(season.teamFinish || "")) +
+        "</span>" +
+        (detail.length ? '<span class="detail">' + detail.join(", ") + "</span>" : "") +
+        "</li>";
+    }).join("");
+  }
+
   /* ---------------- Boot ---------------- */
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -429,6 +453,7 @@
     initHomePreview();
     initSchedulePage();
     initResultsPage();
+    initHomeHonors();
     initFuelCalculator();
   });
 })();

@@ -1,25 +1,16 @@
 /* ---------------------------------------------------------------------------
- * Mountain Crest Girls Wrestling — 2026-27 team schedule
+ * Mountain Crest Girls Wrestling — 2026-27 Season schedule
  * ---------------------------------------------------------------------------
- * THIS IS THE ONLY FILE YOU NEED TO EDIT TO UPDATE THE CALENDAR.
- * The home page and the Schedule page both read from it.
+ * GENERATED FILE — do not edit by hand.
  *
- * Each event looks like this:
+ * Source: the "Mountain Crest Wrestling 2026-2027" Google Calendar.
+ * Regenerate with:  node scripts/calendar-to-schedule.mjs
+ * Last synced: Sep 14, 2026.
  *
- *   {
- *     date:    "2026-12-09",   // required, YYYY-MM-DD
- *     endDate: "2026-12-10",   // optional, for multi-day tournaments
- *     time:    "6:00 PM",      // optional, leave out if TBD
- *     title:   "Ridgeline",    // away duals get "at " added automatically
- *     type:    "dual",         // "dual" | "tournament" | "event"
- *     location:"Mountain Crest HS",
- *     home:    true,           // true = home, false = away, omit for neutral
- *     notes:   "Senior Night"  // optional
- *   }
- *
- * Source: the team workbook schedule tab (MC Girls Wrestling Workbook 2026-27,
- * updated Sept 11, 2026) and the Oct 15 parent meeting handout. Start times are
- * only listed where the workbook gives one — add the rest as they are set.
+ * Change the schedule on the Google Calendar, then re-run the sync. Anything
+ * typed into this file directly is lost on the next sync — the one exception
+ * is the EXTRAS list in the script, which holds real team dates that are not
+ * on the calendar yet.
  * ------------------------------------------------------------------------- */
 
 window.MCW_SEASON = "2026-27 Season";
@@ -28,10 +19,9 @@ window.MCW_SCHEDULE = [
   {
     date: "2026-10-15",
     time: "6:30 PM",
-    title: "Parent & Athlete Meeting",
+    title: "Parent meeting",
     type: "event",
-    notes: "6:30 to 8:00 pm. Our season kickoff — values, schedule, fees, paperwork and how "
-         + "families can help. Please bring at least one parent or guardian. Location posted in sportsYou."
+    notes: "Season kickoff meeting for wrestlers and parents: our values, the schedule, fees, paperwork and how to help. Please bring at least one parent or guardian."
   },
   {
     date: "2026-11-09",
@@ -43,139 +33,147 @@ window.MCW_SCHEDULE = [
   {
     date: "2026-11-18",
     time: "5:30 PM",
-    title: "Team Auction",
-    type: "event",
-    notes: "5:30 to 9:00 pm. Our main fundraiser — every family pitches in."
+    title: "Auction",
+    type: "event"
   },
   {
     date: "2026-11-24",
     time: "6:00 PM",
-    title: "Inter-Squad Meet",
+    title: "Inter-squad",
     type: "event",
-    location: "Mountain Crest HS",
-    notes: "First time in front of a crowd. Family and friends welcome."
+    location: "Mountain Crest High School"
   },
   {
     date: "2026-12-02",
     title: "Deseret Peak (boys and girls)",
     type: "dual",
-    location: "Deseret Peak Complex",
+    location: "Deseret Peak High School",
     home: false,
-    notes: "First meet of the season."
+    notes: "Times to come."
   },
   {
     date: "2026-12-04",
     endDate: "2026-12-05",
     title: "Northridge Tournament",
     type: "tournament",
-    location: "Northridge HS, Layton"
+    location: "Northridge High School, Layton, UT",
+    notes: "Times to come."
   },
   {
     date: "2026-12-09",
     title: "Ridgeline",
     type: "dual",
-    location: "Mountain Crest HS",
-    home: true
+    location: "Mountain Crest High School",
+    home: true,
+    notes: "Times to come."
   },
   {
     date: "2026-12-12",
     title: "Bear River Duals",
     type: "tournament",
-    location: "Bear River HS"
+    location: "Bear River High School",
+    notes: "Times to come."
   },
   {
     date: "2026-12-18",
     endDate: "2026-12-19",
     title: "Christmas Clash",
     type: "tournament",
-    location: "Western Sports Arena, Farmington"
+    location: "Western Sports Arena, Farmington, UT",
+    notes: "Times to come."
   },
   {
     date: "2027-01-02",
-    title: "MC Filly Invitational",
+    title: "MC Filly Invitational (we host)",
     type: "tournament",
-    location: "Mountain Crest HS",
+    location: "Mountain Crest High School",
     home: true,
-    notes: "We host. Volunteers needed all day — sign up in sportsYou."
+    notes: "Volunteers needed. Times to come."
   },
   {
     date: "2027-01-06",
     title: "Stansbury (boys and girls)",
     type: "dual",
-    location: "Mountain Crest HS",
-    home: true
+    location: "Mountain Crest High School",
+    home: true,
+    notes: "Times to come."
   },
   {
     date: "2027-01-08",
     endDate: "2027-01-09",
     title: "Best of the West or Ridgeline",
     type: "tournament",
-    notes: "Still being decided — confirmed in sportsYou once it is set."
+    notes: "Not decided yet. Hold the dates; this will be updated once it's set."
   },
   {
     date: "2027-01-12",
     title: "Bear River",
     type: "dual",
-    location: "Mountain Crest HS",
-    home: true
+    location: "Mountain Crest High School",
+    home: true,
+    notes: "Times to come."
   },
   {
     date: "2027-01-14",
     title: "Sky View — Senior Night",
     type: "dual",
-    location: "Mountain Crest HS",
+    location: "Mountain Crest High School",
     home: true,
-    notes: "Senior recognition before the first match."
+    notes: "Times to come."
   },
   {
     date: "2027-01-15",
     endDate: "2027-01-16",
-    title: "Madison, Idaho, or a weekend off",
+    title: "Madison, Idaho or a weekend off",
     type: "tournament",
-    location: "Madison HS, Idaho",
-    notes: "Still being decided — confirmed in sportsYou once it is set."
+    location: "Madison, Idaho",
+    notes: "Not decided yet. Hold the dates; this will be updated once it's set."
   },
   {
     date: "2027-01-19",
     title: "Box Elder",
     type: "dual",
-    location: "Box Elder HS",
-    home: false
+    location: "Box Elder High School",
+    home: false,
+    notes: "Times to come."
   },
   {
     date: "2027-01-21",
     title: "Tooele",
     type: "dual",
-    location: "Tooele HS",
-    home: false
+    location: "Tooele High School",
+    home: false,
+    notes: "Times to come."
   },
   {
     date: "2027-01-22",
     endDate: "2027-01-23",
     title: "Rockwell Rumble",
     type: "tournament",
-    location: "Western Sports Park"
+    location: "Western Sports Park, Farmington, UT",
+    notes: "Times to come."
   },
   {
     date: "2027-01-28",
     title: "Green Canyon",
     type: "dual",
-    location: "Green Canyon HS",
-    home: false
+    location: "Green Canyon High School",
+    home: false,
+    notes: "Times to come."
   },
   {
     date: "2027-02-05",
     endDate: "2027-02-06",
-    title: "4A Divisionals",
+    title: "Divisionals",
     type: "tournament",
-    notes: "Qualifies wrestlers for the state tournament."
+    location: "Jordan High School",
+    notes: "Jordan High School"
   },
   {
     date: "2027-02-19",
     endDate: "2027-02-20",
-    title: "UHSAA State Championships",
+    title: "State",
     type: "tournament",
-    location: "Utah Valley University, Orem",
-    notes: "The whole team travels. Session and ticket details posted in sportsYou."
+    notes: "State tournament. Location and times to come."
   }
 ];
