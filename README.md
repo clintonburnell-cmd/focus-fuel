@@ -48,8 +48,10 @@ Past events drop off the "Upcoming" views automatically — no need to delete th
 2. **sportsYou link.** Every `https://sportsyou.com` link should point at the team's
    actual join/team URL. They are in the nav and footer of all six pages —
    `grep -rl "sportsyou.com" *.html` finds them.
-3. **Schedule.** The events in `data/schedule.js` are placeholders for the 2026-27
-   season. Replace with the real schedule from the athletic office.
+3. ~~**Schedule.**~~ Done — `data/schedule.js` holds the real 2026-27 schedule from
+   the team workbook (updated Sept 11, 2026). Two weekends are still marked as being
+   decided (Jan 8-9 and Jan 15-16), and most start times are not set yet; add them as
+   they come in.
 4. **Accomplishments.** `data/results.js` holds the year-by-year state results. Team
    titles and scores (5 4A championships: 2021, 2022, 2023, 2024, 2026) were compiled
    from published coverage — Deseret News, KSL, The Herald Journal and Cache Valley
