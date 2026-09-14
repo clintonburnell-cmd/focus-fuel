@@ -150,12 +150,12 @@ img { max-width: 100%; height: auto; }
   background: var(--orange);
 }
 
-.site-nav .nav-cta a {
+.site-nav .nav-cta > a {
   background: var(--orange);
   color: var(--navy-deep);
   margin-left: 6px;
 }
-.site-nav .nav-cta a:hover { background: var(--white); color: var(--navy); }
+.site-nav .nav-cta > a:hover { background: var(--white); color: var(--navy); }
 
 @media (max-width: 900px) {
   .nav-toggle { display: block; }
@@ -167,7 +167,23 @@ img { max-width: 100%; height: auto; }
   .site-nav.open { display: block; }
   .header-inner { flex-wrap: wrap; padding-block: 10px; }
   .site-nav ul { flex-direction: column; align-items: stretch; gap: 4px; }
-  .site-nav .nav-cta a { margin-left: 0; text-align: center; }
+  .site-nav .nav-cta > a { margin-left: 0; text-align: center; }
+  .site-nav .nav-note {
+    display: block;
+    padding: 8px 12px 2px;
+    font-size: .82rem;
+    line-height: 1.4;
+    color: var(--silver);
+    text-align: center;
+  }
+  .site-nav .nav-note a {
+    display: inline;
+    padding: 0;
+    background: none;
+    color: var(--orange-light);
+    text-decoration: underline;
+    font-weight: 700;
+  }
 }
 
 /* ---------- Hero ---------- */
@@ -766,3 +782,12 @@ tr.is-champion .place-medal { color: var(--orange-dark); }
   margin-bottom: 0;
 }
 .subscribe-actions .btn { padding: 10px 18px; font-size: .9rem; }
+
+/* sportsYou access note — shown under the nav button once the menu stacks */
+.nav-note { display: none; }
+.hero-note {
+  margin-top: 14px;
+  font-size: .92rem;
+  color: var(--silver-light);
+}
+.hero-note a { color: var(--orange-light); }
