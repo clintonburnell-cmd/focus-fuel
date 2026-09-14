@@ -187,13 +187,18 @@ img { max-width: 100%; height: auto; }
 }
 .hero-copy { flex: 1 1 420px; min-width: 0; }
 .hero-mark {
-  flex: 0 1 380px;
+  /* flex-basis would apply to height once .hero-inner stacks, which stretches
+     the mark out of shape — keep sizing on width and let height follow. */
+  flex: 0 0 auto;
   width: min(380px, 38vw);
+  height: auto;
   filter: drop-shadow(0 10px 24px rgba(0, 0, 0, .35));
 }
 @media (max-width: 780px) {
-  .hero-inner { flex-direction: column-reverse; align-items: flex-start; gap: 24px; }
-  .hero-mark { width: 62%; max-width: 300px; }
+  .hero-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
+  /* the header already carries the mustang — a second giant one just pushes
+     the headline off the first screen */
+  .hero-mark { display: none; }
 }
 
 .hero h1 { color: var(--white); }
