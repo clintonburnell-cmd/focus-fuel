@@ -622,3 +622,147 @@ tr.is-champion .place-medal { color: var(--orange-dark); }
 .honors .result.runner-up { color: var(--navy-soft); }
 .honors .detail { color: var(--ink-soft); font-size: .92rem; }
 .honors .detail::before { content: "· "; }
+
+/* ---------- Schedule: month view ---------- */
+
+.view-toggle {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--white);
+  margin-right: 6px;
+}
+.view-toggle button {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  padding: 8px 18px;
+  cursor: pointer;
+}
+.view-toggle button:hover { color: var(--navy); }
+.view-toggle button[aria-pressed="true"] { background: var(--navy); color: var(--white); }
+
+.cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.cal-head h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  min-width: 11ch;
+  text-align: center;
+}
+.cal-nav {
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--navy);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.cal-nav:hover:not(:disabled) { background: var(--navy); color: var(--white); border-color: var(--navy); }
+.cal-nav:disabled { opacity: .35; cursor: default; }
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+.cal-dow {
+  text-align: center;
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--ink-soft);
+  padding-bottom: 4px;
+}
+.cal-day {
+  min-height: 92px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 5px;
+  background: var(--white);
+  overflow: hidden;
+}
+.cal-day.is-out { background: transparent; border-color: transparent; }
+.cal-day.is-today { border-color: var(--orange); box-shadow: inset 0 0 0 1px var(--orange); }
+.cal-day.has-events { background: var(--silver-light); }
+.cal-num {
+  display: block;
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.cal-day.is-today .cal-num { color: var(--orange-dark); }
+
+.cal-chip {
+  display: block;
+  margin-top: 3px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: .68rem;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cal-chip-dual { background: #dde9fb; color: #17457f; }
+.cal-chip-tournament { background: #fde5d4; color: #a34410; }
+.cal-chip-event { background: #e4e9f0; color: #3f4b5c; }
+
+.cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 18px 0 6px;
+  font-size: .82rem;
+  color: var(--ink-soft);
+}
+.cal-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.cal-legend i {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.cal-agenda { margin-top: 10px; }
+
+@media (max-width: 700px) {
+  .cal-day { min-height: 56px; padding: 3px; }
+  /* the grid becomes an at-a-glance map; the agenda below carries the detail */
+  .cal-chip {
+    font-size: 0;
+    height: 5px;
+    padding: 0;
+    border-radius: 999px;
+    margin-top: 3px;
+  }
+  .cal-grid { gap: 3px; }
+  .cal-head h2 { font-size: 1rem; }
+}
+
+.subscribe { margin-bottom: 26px; }
+.subscribe h3 { margin-top: 0; }
+.subscribe-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 0;
+}
+.subscribe-actions .btn { padding: 10px 18px; font-size: .9rem; }
