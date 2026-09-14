@@ -547,6 +547,38 @@
     }).join("");
   }
 
+
+  /* ---------------- Accomplishments: divisional results ---------------- */
+
+  function initDivisionals() {
+    var host = document.getElementById("divisional-results");
+    if (!host) return;
+
+    var rows = (window.MCW_RESULTS || []).filter(function (s) { return s.divisional; });
+    if (!rows.length) {
+      host.innerHTML = '<p class="empty-state">No divisional results recorded yet.</p>';
+      return;
+    }
+
+    host.innerHTML =
+      '<div class="table-scroll"><table><thead><tr>' +
+      "<th>Season</th><th>Division</th><th>Team finish</th><th>Points</th>" +
+      "<th>Runner-up</th><th>State qualifiers</th>" +
+      "</tr></thead><tbody>" +
+      rows.map(function (s) {
+        var d = s.divisional;
+        var champ = d.finish === "1st";
+        return "<tr" + (champ ? ' class="is-champion"' : "") + ">" +
+          "<td>" + escapeHtml(s.season) + "</td>" +
+          "<td>" + escapeHtml(d.division || "&mdash;") + "</td>" +
+          '<td class="place-medal">' + (champ ? "&#127942; Champions" : escapeHtml(d.finish)) + "</td>" +
+          "<td>" + escapeHtml(d.score || "") + "</td>" +
+          "<td>" + escapeHtml(d.runnerUp || "") + "</td>" +
+          "<td>" + (d.qualifiers ? escapeHtml(d.qualifiers) : "") + "</td></tr>";
+      }).join("") +
+      "</tbody></table></div>";
+  }
+
   /* ---------------- Boot ---------------- */
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -554,6 +586,7 @@
     initHomePreview();
     initSchedulePage();
     initResultsPage();
+    initDivisionals();
     initHomeHonors();
   });
 })();
