@@ -17,6 +17,14 @@
  *     teamScore: "195.5",           // optional
  *     notes: "...",                 // optional
  *     medalists: 11,                // optional — total who placed, if more than are listed
+ *     divisional: {                 // optional — the state-qualifying meet
+ *       division: "Division B",
+ *       finish: "1st",
+ *       score: "316",
+ *       runnerUp: "Ridgeline, 263",
+ *       qualifiers: 20,
+ *       location: "Ridgeline HS"
+ *     },
  *     placers: [
  *       { name: "Jane Doe", weight: "120", place: 1, record: "38-3" },
  *       { name: "Ann Roe",  weight: "145", place: 2 },
@@ -49,6 +57,13 @@ window.MCW_RESULTS = [
     teamTitle: true,
     teamScore: "195.5",
     medalists: 11,
+    divisional: {
+      division: "Division B",
+      finish: "1st",
+      score: "316",
+      runnerUp: "Ridgeline, 263",
+      qualifiers: 20
+    },
     notes: "Fifth team title in six seasons, won on depth at the UCCU Center in Orem: "
          + "195.5 to Ridgeline's 193.5, with a tournament-best 11 medalists and four finalists "
          + "but no individual champion. The four runners-up are on the board; the third-place "
@@ -66,6 +81,13 @@ window.MCW_RESULTS = [
     teamFinish: "2nd",
     teamTitle: false,
     teamScore: "225.5",
+    divisional: {
+      division: "Division B",
+      finish: "1st",
+      score: "404.5",
+      runnerUp: "Uintah, 367",
+      qualifiers: 25
+    },
     notes: "Bear River won the 4A title with 303 points to Mountain Crest's 225.5, ahead of "
          + "Uintah (189.5), ending the Mustangs' four-year run. Four Mustangs reached the "
          + "finals; only Bevan's result is confirmed, and the rest of the placers still need "
@@ -83,6 +105,14 @@ window.MCW_RESULTS = [
     teamFinish: "1st — State Champions",
     teamTitle: true,
     teamScore: "266",
+    divisional: {
+      division: "Division A",
+      finish: "1st",
+      score: "431.5",
+      runnerUp: "Uintah, 321",
+      qualifiers: 26,
+      location: "Ridgeline HS"
+    },
     notes: "Fourth straight team title, ahead of Bear River (234) and Uintah (219), at the "
          + "UCCU Center in Orem. Keller was the only individual champion from Cache Valley. "
          + "The rest of the Mustang placers still need to be added.",
