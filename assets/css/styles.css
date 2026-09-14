@@ -570,65 +570,6 @@ tr.is-champion .place-medal { color: var(--orange-dark); }
   color: var(--ink-soft);
 }
 
-/* ---------- Nutrition: fuel calculator ---------- */
-
-.calc { margin-block: 28px; }
-.calc h3 { margin-top: 0; }
-
-.calc-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 14px;
-  margin-bottom: 18px;
-}
-.calc-row label {
-  font-size: .82rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: var(--ink-soft);
-}
-.calc-row input,
-.calc-row select {
-  font: inherit;
-  padding: 9px 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--white);
-  color: var(--ink);
-  min-width: 120px;
-}
-.calc-row input:focus-visible,
-.calc-row select:focus-visible { outline: 3px solid var(--orange); outline-offset: 1px; }
-
-.calc-out {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 12px;
-}
-.calc-figure {
-  background: var(--navy);
-  border-radius: var(--radius);
-  padding: 16px 18px;
-}
-.calc-num {
-  display: block;
-  font-family: "Arial Black", Impact, sans-serif;
-  font-size: 1.6rem;
-  color: var(--orange-light);
-  line-height: 1.15;
-}
-.calc-label {
-  display: block;
-  font-size: .78rem;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: var(--silver);
-}
-.calc-empty { color: var(--ink-soft); font-style: italic; margin: 0; }
-.calc-note { font-size: .88rem; color: var(--ink-soft); margin: 16px 0 0; }
-
 /* ---------- Home: growth figures ---------- */
 
 .figure-grid {

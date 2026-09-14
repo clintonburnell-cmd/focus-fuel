@@ -381,48 +381,6 @@
   }
 
 
-  /* ---------------- Nutrition: daily fuel calculator ---------------- */
-
-  // Per-kilogram targets from the team's nutrition handouts.
-  var FUEL = {
-    training: { carbs: [7, 10] },
-    competition: { carbs: [6, 8] },
-    protein: [1.5, 2]
-  };
-
-  function initFuelCalculator() {
-    var weightInput = document.getElementById("calc-weight");
-    var modeInput = document.getElementById("calc-mode");
-    var out = document.getElementById("calc-out");
-    if (!weightInput || !modeInput || !out) return;
-
-    function render() {
-      var lbs = parseFloat(weightInput.value);
-      if (!lbs || lbs <= 0) {
-        out.innerHTML = '<p class="calc-empty">Enter a bodyweight to see your targets.</p>';
-        return;
-      }
-      var kg = lbs / 2.2;
-      var carbs = FUEL[modeInput.value].carbs;
-      var round = function (n) { return Math.round(n / 5) * 5; };
-
-      out.innerHTML =
-        '<div class="calc-figure"><span class="calc-num">' +
-          round(kg * carbs[0]) + "&ndash;" + round(kg * carbs[1]) +
-          ' g</span><span class="calc-label">Carbohydrates per day</span></div>' +
-        '<div class="calc-figure"><span class="calc-num">' +
-          round(kg * FUEL.protein[0]) + "&ndash;" + round(kg * FUEL.protein[1]) +
-          ' g</span><span class="calc-label">Protein per day</span></div>' +
-        '<div class="calc-figure"><span class="calc-num">' + (Math.round(kg * 10) / 10) +
-          ' kg</span><span class="calc-label">Your bodyweight in kilograms</span></div>';
-    }
-
-    weightInput.addEventListener("input", render);
-    modeInput.addEventListener("change", render);
-    render();
-  }
-
-
   /* ---------------- Home: Mustang honor roll ---------------- */
 
   function initHomeHonors() {
@@ -454,6 +412,5 @@
     initSchedulePage();
     initResultsPage();
     initHomeHonors();
-    initFuelCalculator();
   });
 })();
