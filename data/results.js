@@ -49,8 +49,9 @@
  * names are missing.
  *
  * Three names were normalized where the brackets spell them inconsistently:
- * "Addi Baxtor" (2022) is Addilyn Baxter, "Anna Van huss" is Anna Van Huss, and
- * Audrey DeKorver appears as "DeKorver" in 2025 and "Dekorver" in 2026.
+ * "Addi Baxtor" (2022) is Addilyn Baxter and "Anna Van huss" is Anna Van Huss.
+ * The brackets also vary between "DeKorver" and "Dekorver" — the family spells
+ * it DeKorver, so both Audrey and Ella are DeKorver here.
  * ------------------------------------------------------------------------- */
 
 window.MCW_RESULTS = [
@@ -193,7 +194,7 @@ window.MCW_RESULTS = [
       { name: "Jacie Shock", weight: "110", place: 1, record: "16-3" },
       { name: "Piper Nix", weight: "120", place: 1, record: "13-10" },
       { name: "Eastyn Nyman", weight: "125", place: 1, record: "26-5" },
-      { name: "Ella Dekorver", weight: "135", place: 1, record: "16-4" },
+      { name: "Ella DeKorver", weight: "135", place: 1, record: "16-4" },
       { name: "Gracie Howard", weight: "155", place: 1, record: "20-6" },
       { name: "Teagan Hall", weight: "170", place: 1, record: "16-4" },
       { name: "Katelyn Hardy", weight: "190", place: 1, record: "19-3" },
@@ -229,7 +230,7 @@ window.MCW_RESULTS = [
          + "state brackets.",
     placers: [
       { name: "Jalise Wakley", weight: "124", place: 1, record: "25-3" },
-      { name: "Ella Dekorver", weight: "132", place: 1, record: "15-4" },
+      { name: "Ella DeKorver", weight: "132", place: 1, record: "15-4" },
       { name: "Hanna Evans", weight: "140", place: 1, record: "22-4" },
       { name: "Brynlie Hansen", weight: "150", place: 1, record: "12-6" },
       { name: "Rosa Campos", weight: "170", place: 1, record: "18-5" },

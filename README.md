@@ -14,6 +14,7 @@ dependencies, no framework. Open `index.html` in a browser and it works.
 | `seasons.html` | Pre & Post Season | Summer/fall prep, offseason lifting, freestyle, camps |
 | `accomplishments.html` | Accomplishments | Year-by-year state results, region results, milestones |
 | `faq.html` | FAQ | Joining, gear, weight classes, safety, travel, meet days |
+| `contact.html` | Contact Us | How the team communicates and how to get sportsYou access |
 
 The sportsYou app is linked from the main nav, the footer and several pages, and
 the Pre & Post Season page links to White Rhino Wrestling, where the team's official
