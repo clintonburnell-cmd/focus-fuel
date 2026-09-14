@@ -614,5 +614,6 @@ tr.is-champion .place-medal { color: var(--orange-dark); }
 }
 .honors .result { font-weight: 700; color: var(--ink); }
 .honors .result.title { color: var(--orange-dark); }
+.honors .result.runner-up { color: var(--navy-soft); }
 .honors .detail { color: var(--ink-soft); font-size: .92rem; }
 .honors .detail::before { content: "· "; }

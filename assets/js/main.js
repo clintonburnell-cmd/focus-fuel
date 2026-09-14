@@ -395,10 +395,24 @@
       if (season.medalists) detail.push(season.medalists + " medalists");
       if (season.teamScore) detail.push(season.teamScore + " pts");
 
+      var finish = season.teamFinish || "";
+      var medal = "";
+      var cls = "";
+      if (season.teamTitle) {
+        medal = "&#127942; ";          // trophy
+        cls = " title";
+        finish = "4A State Champions";
+      } else if (/^2nd/.test(finish)) {
+        medal = "&#129352; ";          // second-place medal
+        cls = " runner-up";
+        finish = "2nd — State Runner-Up";
+      } else if (/^3rd/.test(finish)) {
+        medal = "&#129353; ";          // third-place medal
+        cls = " runner-up";
+      }
+
       return "<li><span class=\"yr\">" + escapeHtml(season.season) + "</span>" +
-        '<span class="result' + (season.teamTitle ? " title" : "") + '">' +
-        (season.teamTitle ? "&#127942; 4A State Champions" : escapeHtml(season.teamFinish || "")) +
-        "</span>" +
+        '<span class="result' + cls + '">' + medal + escapeHtml(finish) + "</span>" +
         (detail.length ? '<span class="detail">' + detail.join(", ") + "</span>" : "") +
         "</li>";
     }).join("");
