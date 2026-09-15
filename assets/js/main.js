@@ -60,6 +60,18 @@
     return text;
   }
 
+  var TIMES_TO_COME = /\s*(Location and times to come\.|Times to come\.)\s*/g;
+
+  // "Times to come." is calendar boilerplate; it shows as a tag instead of a sentence.
+  function timeTba(ev) {
+    return !ev.time && TIMES_TO_COME.test(ev.notes || "") && (TIMES_TO_COME.lastIndex = 0, true);
+  }
+
+  function noteText(ev) {
+    var text = String(ev.notes || "").replace(TIMES_TO_COME, " ").trim();
+    return text === (ev.location || "") ? "" : text;
+  }
+
   function getEvents() {
     var list = (window.MCW_SCHEDULE || []).slice();
     list.sort(function (a, b) { return parseDate(a.date) - parseDate(b.date); });
@@ -103,10 +115,11 @@
     body.appendChild(title);
     body.appendChild(meta);
 
-    if (ev.notes) {
+    var notesText = noteText(ev);
+    if (notesText) {
       var notes = document.createElement("p");
       notes.className = "event-meta";
-      notes.textContent = ev.notes;
+      notes.textContent = notesText;
       body.appendChild(notes);
     }
 
@@ -115,6 +128,8 @@
     tags.innerHTML = '<span class="tag tag-' + (ev.type || "event") + '">' + typeLabel(ev.type) + "</span>";
     if (ev.home === true) tags.innerHTML += '<span class="tag tag-home">Home</span>';
     else if (ev.home === false) tags.innerHTML += '<span class="tag tag-away">Away</span>';
+    if (ev.tbd) tags.innerHTML += '<span class="tag tag-tbd">TBD</span>';
+    else if (timeTba(ev)) tags.innerHTML += '<span class="tag tag-tbd">Time TBA</span>';
 
     row.appendChild(dateBox);
     row.appendChild(body);
@@ -342,7 +357,7 @@
       '<span class="big">' + (ev.type === "dual" && ev.home === false ? "at " : "") + escapeHtml(ev.title) + "</span>" +
       "<p><span class=\"when\">" + dateRangeText(ev) + (ev.time ? " · " + escapeHtml(ev.time) : "") + "</span>" +
       escapeHtml(where) + "</p>" +
-      (ev.notes ? "<p>" + escapeHtml(ev.notes) + "</p>" : "");
+      (noteText(ev) ? "<p>" + escapeHtml(noteText(ev)) + "</p>" : "");
   }
 
   function escapeHtml(str) {
@@ -377,7 +392,7 @@
       // All-day events: DTEND is exclusive, so add one day past the last day.
       var last = parseDate(ev.endDate || ev.date);
       var end = new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1);
-      var details = [ev.time ? "Start time: " + ev.time : "", ev.notes || ""]
+      var details = [ev.time ? "Start time: " + ev.time : "", noteText(ev)]
         .filter(Boolean).join("\n");
 
       lines.push(
@@ -422,6 +437,12 @@
     return placer.result || "Placed";
   }
 
+  var SHORT_PLACE = { 1: "Champion", 2: "2nd", 3: "3rd", 4: "4th", 5: "5th", 6: "6th", 7: "7th", 8: "8th" };
+
+  function shortPlace(placer) {
+    return SHORT_PLACE[placer.place] || placeLabel(placer);
+  }
+
   function byPlace(a, b) {
     return (a.place || 99) - (b.place || 99);
   }
@@ -436,25 +457,27 @@
     var totalPlacers = 0;
     var teamTitles = 0;
 
-    seasons.forEach(function (season) {
+    seasons.forEach(function (season, idx) {
       var placers = (season.placers || []).slice().sort(byPlace);
       totalChamps += placers.filter(function (p) { return p.place === 1; }).length;
       totalPlacers += season.medalists || placers.length;
       if (season.teamTitle) teamTitles++;
 
-      var block = document.createElement("section");
+      var block = document.createElement("details");
       block.className = "season-block" + (season.teamTitle ? " is-champ" : "");
+      if (idx === 0) block.open = true;
 
       var metaBits = [];
       if (season.classification) metaBits.push(escapeHtml(season.classification));
       if (season.teamFinish) metaBits.push("<strong>" + escapeHtml(season.teamFinish) + "</strong>");
       if (season.teamScore) metaBits.push(escapeHtml(season.teamScore) + " pts");
 
-      var head = document.createElement("div");
+      var head = document.createElement("summary");
       head.className = "season-head";
       head.innerHTML = "<h3>" + escapeHtml(season.season) + "</h3>" +
         (metaBits.length ? '<p class="season-meta">' + metaBits.join(" &middot; ") + "</p>" : "") +
-        (season.teamTitle ? '<span class="title-badge">&#127942; Team State Title</span>' : "");
+        (season.teamTitle ? '<span class="title-badge">&#127942; Team State Title</span>' : "") +
+        '<span class="season-toggle"><span class="closed">Show placers &#9662;</span><span class="opened">Hide &#9652;</span></span>';
       block.appendChild(head);
 
       var body = document.createElement("div");
@@ -475,7 +498,8 @@
           return '<tr' + (p.place === 1 ? ' class="is-champion"' : "") + ">" +
             "<td>" + escapeHtml(p.name) + "</td>" +
             "<td>" + (p.weight ? escapeHtml(p.weight) : "&mdash;") + "</td>" +
-            '<td class="place-medal">' + escapeHtml(placeLabel(p)) + "</td>" +
+            '<td class="place-medal"><span class="full">' + escapeHtml(placeLabel(p)) + '</span>' +
+            '<span class="short">' + escapeHtml(shortPlace(p)) + "</span></td>" +
             "<td>" + escapeHtml(p.record || "") + "</td></tr>";
         }).join("");
         body.innerHTML +=
@@ -570,7 +594,7 @@
         var champ = d.finish === "1st";
         return "<tr" + (champ ? ' class="is-champion"' : "") + ">" +
           "<td>" + escapeHtml(s.season) + "</td>" +
-          "<td>" + escapeHtml(d.division || "&mdash;") + "</td>" +
+          "<td>" + (d.division ? escapeHtml(d.division) : "&mdash;") + "</td>" +
           '<td class="place-medal">' + (champ ? "&#127942; Champions" : escapeHtml(d.finish)) + "</td>" +
           "<td>" + escapeHtml(d.score || "") + "</td>" +
           "<td>" + escapeHtml(d.runnerUp || "") + "</td>" +

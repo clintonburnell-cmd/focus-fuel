@@ -5,7 +5,7 @@
  *
  * Source: the "Mountain Crest Wrestling 2026-2027" Google Calendar.
  * Regenerate with:  node scripts/calendar-to-schedule.mjs
- * Last synced: Sep 14, 2026.
+ * Last synced: Sep 15, 2026.
  *
  * Change the schedule on the Google Calendar, then re-run the sync. Anything
  * typed into this file directly is lost on the next sync — the one exception
@@ -101,9 +101,10 @@ window.MCW_SCHEDULE = [
   {
     date: "2027-01-08",
     endDate: "2027-01-09",
-    title: "Best of the West or Ridgeline",
+    title: "Weekend TBD",
     type: "tournament",
-    notes: "Not decided yet. Hold the dates; this will be updated once it's set."
+    tbd: true,
+    notes: "Options: Best of the West or Ridgeline. Not decided yet. Hold the dates; this will be updated once it's set."
   },
   {
     date: "2027-01-12",
@@ -124,10 +125,10 @@ window.MCW_SCHEDULE = [
   {
     date: "2027-01-15",
     endDate: "2027-01-16",
-    title: "Madison, Idaho or a weekend off",
+    title: "Weekend TBD",
     type: "tournament",
-    location: "Madison, Idaho",
-    notes: "Not decided yet. Hold the dates; this will be updated once it's set."
+    tbd: true,
+    notes: "Options: Madison, Idaho or a weekend off. Not decided yet. Hold the dates; this will be updated once it's set."
   },
   {
     date: "2027-01-19",
@@ -166,8 +167,7 @@ window.MCW_SCHEDULE = [
     endDate: "2027-02-06",
     title: "Divisionals",
     type: "tournament",
-    location: "Jordan High School",
-    notes: "Jordan High School"
+    location: "Jordan High School"
   },
   {
     date: "2027-02-19",

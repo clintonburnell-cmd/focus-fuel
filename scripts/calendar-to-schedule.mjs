@@ -62,6 +62,11 @@ function homeFlag(summary, location) {
   return undefined;
 }
 
+/** "TBD: Best of the West or Ridgeline" => a "Weekend TBD" event, options in the notes. */
+function isTbd(summary) {
+  return /^TBD:/i.test(summary);
+}
+
 function cleanTitle(summary) {
   return summary
     .replace(/^@\s*/, "")
@@ -89,7 +94,8 @@ function formatTime(dateTime) {
 
 function convert(ev) {
   const summary = (ev.summary || "").trim();
-  const out = { title: cleanTitle(summary), type: classify(summary) };
+  const tbd = isTbd(summary);
+  const out = { title: tbd ? "Weekend TBD" : cleanTitle(summary), type: classify(summary) };
 
   if (ev.start.date) {
     out.date = ev.start.date.slice(0, 10);
@@ -100,12 +106,19 @@ function convert(ev) {
     out.time = formatTime(ev.start.dateTime);
   }
 
-  if (ev.location) out.location = ev.location;
+  // An undecided weekend has no settled location; the options go in the notes instead.
+  if (ev.location && !tbd) out.location = ev.location;
 
   const home = homeFlag(summary, ev.location);
-  if (home !== undefined && out.type !== "event") out.home = home;
+  if (home !== undefined && out.type !== "event" && !tbd) out.home = home;
 
-  const notes = (ev.description || "").replace(BOILERPLATE, "").trim();
+  let notes = (ev.description || "").replace(BOILERPLATE, "").trim();
+  // A description that only repeats the location says nothing new.
+  if (notes === (ev.location || "").trim()) notes = "";
+  if (tbd) {
+    out.tbd = true;
+    notes = `Options: ${cleanTitle(summary)}. ${notes}`.trim();
+  }
   if (notes) out.notes = notes;
 
   return out;
@@ -121,7 +134,7 @@ const converted = events
 
 const all = [...converted, ...EXTRAS].sort((a, b) => a.date.localeCompare(b.date));
 
-const KEYS = ["date", "endDate", "time", "title", "type", "location", "home", "notes"];
+const KEYS = ["date", "endDate", "time", "title", "type", "location", "home", "tbd", "notes"];
 const body = all
   .map((ev) => {
     const lines = KEYS.filter((k) => ev[k] !== undefined).map((k) => {
