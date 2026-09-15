@@ -386,7 +386,7 @@ img { max-width: 100%; height: auto; }
 .event-title { font-weight: 700; color: var(--navy); margin: 0 0 2px; font-size: 1.02rem; }
 .event-meta { margin: 0; font-size: .9rem; color: var(--ink-soft); }
 
-.event-tags { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.event-tags { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 6px; max-width: 320px; }
 
 .tag {
   display: inline-block;
@@ -423,7 +423,7 @@ img { max-width: 100%; height: auto; }
 
 @media (max-width: 640px) {
   .event { grid-template-columns: 62px 1fr; }
-  .event-tags { grid-column: 2; flex-direction: row; justify-content: flex-start; flex-wrap: wrap; }
+  .event-tags { grid-column: 2; justify-content: flex-start; max-width: none; }
 }
 
 /* ---------- Tables ---------- */
